@@ -1,0 +1,476 @@
+<title>Матстат к экзамену</title>
+<meta name="description" content="Конспект для подготовки к экзамену по математической статистике: определения, теоремы, формулы, разобранные задачи, таблицы квантилей.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&family=PT+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* Тетрадь в клетку: красная линия полей слева, номер раздела на полях, текст справа. Тот же вид, что у «ДЗ №3». */
+:root{
+  --paper:#FAFCFF; --grid:#E4EBF5; --ink:#1B2A4A; --muted:#5B6680;
+  --pen:#2447A8; --margin:#D0424B; --box:#EEF3FC; --warn:#9A4A00; --warnbox:#FFF4E5;
+  --serif:"PT Serif", Georgia, "Times New Roman", serif;
+  --sans:"PT Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --cell:22px; --gut:64px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#12161D; --grid:#1B212B; --ink:#E3E8F1; --muted:#98A3B8;
+    --pen:#8FB0FF; --margin:#E0707A; --box:#18202D; --warn:#F2B36B; --warnbox:#2A2116;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#12161D; --grid:#1B212B; --ink:#E3E8F1; --muted:#98A3B8;
+  --pen:#8FB0FF; --margin:#E0707A; --box:#18202D; --warn:#F2B36B; --warnbox:#2A2116;
+  color-scheme:dark;
+}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 64px)}
+*,*::before,*::after{box-sizing:border-box}
+body{
+  margin:0; color:var(--ink); font-family:var(--serif); font-size:18px; line-height:1.62;
+  background-color:var(--paper);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size:var(--cell) var(--cell);
+  -webkit-text-size-adjust:100%;
+}
+.wrap{max-width:860px; margin:0 auto; padding:0 20px; padding-block:0 64px}
+
+header.top{margin-left:var(--gut); padding:48px 0 20px 20px; border-left:2px solid var(--margin)}
+header.top h1{font-size:36px; line-height:1.15; margin:0 0 10px; font-weight:700; letter-spacing:-0.01em; text-wrap:balance}
+header.top p{margin:0 0 8px; color:var(--muted); font-size:17px; max-width:62ch}
+header.top p.sub{font-style:italic; font-size:19px}
+.tools{display:flex; flex-wrap:wrap; gap:8px; margin-top:14px}
+button.t{
+  font:inherit; font-family:var(--sans); font-size:15px; cursor:pointer;
+  color:var(--pen); background:var(--paper); border:1px solid var(--pen); border-radius:3px; padding:5px 12px;
+}
+button.t:hover{background:var(--pen); color:var(--paper)}
+button.t:focus-visible, summary:focus-visible, nav.toc a:focus-visible{outline:2px solid var(--margin); outline-offset:2px}
+
+nav.toc{
+  position:sticky; top:env(safe-area-inset-top,0px); z-index:5;
+  background:var(--paper); border-bottom:1px solid var(--grid);
+  margin-left:var(--gut); padding:10px 0 10px 20px; border-left:2px solid var(--margin);
+  font-family:var(--sans); font-size:15px;
+  display:flex; flex-wrap:wrap; gap:6px; align-items:center;
+}
+nav.toc span{color:var(--muted); margin-right:6px}
+nav.toc a{
+  display:inline-block; min-width:32px; text-align:center; padding:3px 8px;
+  color:var(--pen); text-decoration:none; border:1px solid var(--pen); border-radius:3px;
+}
+nav.toc a:hover{background:var(--pen); color:var(--paper)}
+
+.sec{display:grid; grid-template-columns:var(--gut) minmax(0,1fr)}
+.num{font-family:var(--sans); font-weight:700; font-size:26px; color:var(--pen); text-align:right; padding:26px 14px 0 0; line-height:1.2}
+.body{padding:24px 0 22px 20px; min-width:0; border-left:2px solid var(--margin)}
+.sec + .sec .body{border-top:1px dashed var(--grid)}
+.body h2{font-family:var(--sans); font-size:26px; line-height:1.2; margin:0 0 12px; text-wrap:balance}
+.body h3{font-family:var(--sans); font-size:18px; font-weight:700; margin:22px 0 8px; color:var(--pen)}
+.body p{margin:0 0 10px; max-width:68ch}
+.body ul,.body ol{margin:0 0 12px; padding-left:22px; max-width:68ch}
+.body li{margin-bottom:4px}
+.lead{color:var(--muted); font-style:italic}
+
+.def,.thm{border:1.5px solid var(--pen); background:var(--box); border-radius:2px; padding:10px 14px; margin:12px 0}
+.thm{border-style:solid; border-width:1.5px 1.5px 1.5px 5px}
+.def b.k,.thm b.k{font-family:var(--sans); color:var(--pen); margin-right:6px}
+.def p:last-child,.thm p:last-child{margin-bottom:0}
+.trap{border-left:4px solid var(--warn); background:var(--warnbox); padding:8px 14px; margin:12px 0; border-radius:0 2px 2px 0}
+.trap b{font-family:var(--sans); color:var(--warn)}
+
+details{border:1px solid var(--grid); background:var(--paper); border-radius:2px; margin:10px 0; padding:0 14px}
+details[open]{padding-bottom:10px}
+summary{cursor:pointer; padding:9px 0; font-family:var(--sans); font-weight:700; color:var(--ink); list-style-position:outside}
+summary .tag{font-weight:400; color:var(--muted); margin-left:6px}
+details .ans{border-top:1px dashed var(--grid); padding-top:10px}
+
+.tbl{overflow-x:auto; margin:12px 0; max-width:100%}
+table{border-collapse:collapse; font-family:var(--sans); font-size:15px; background:var(--paper); font-variant-numeric:tabular-nums}
+th,td{border:1px solid var(--grid); padding:6px 10px; text-align:left; vertical-align:top}
+th{background:var(--box); color:var(--pen); font-weight:700}
+td.n{text-align:right}
+
+mjx-container[jax="SVG"]{font-size:95%}
+mjx-container[jax="SVG"][display="true"]{
+  text-align:left !important; margin:10px 0 12px !important; padding:2px 0 2px 18px;
+  overflow-x:auto; overflow-y:hidden; max-width:100%;
+}
+mjx-container[jax="SVG"][display="true"] > svg{max-width:none}
+td mjx-container[jax="SVG"]{font-size:90%}
+
+footer{margin-left:var(--gut); padding:24px 0 0 20px; border-left:2px solid var(--margin); color:var(--muted); font-size:15px; font-family:var(--sans)}
+
+@media (max-width:620px){
+  :root{--gut:34px}
+  body{font-size:17px}
+  .wrap{padding:0 16px; padding-block:0 48px}
+  header.top{padding:32px 0 16px 12px}
+  header.top h1{font-size:28px}
+  nav.toc{padding-left:12px; flex-wrap:nowrap; overflow-x:auto; font-size:14px}
+  nav.toc a{min-width:30px; padding:2px 6px; flex:0 0 auto}
+  .num{font-size:20px; padding-right:8px}
+  .body{padding-left:12px}
+  .body h2{font-size:22px}
+  footer{padding-left:12px}
+  mjx-container[jax="SVG"][display="true"]{padding-left:4px}
+}
+@media (prefers-reduced-motion: reduce){ *{scroll-behavior:auto} }
+</style>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] },
+  svg: { fontCache: 'global' },
+  options: { skipHtmlTags: ['script','style','textarea','code'] }
+};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.js" defer></script>
+
+<div class="wrap">
+<header class="top">
+  <h1>Матстат к экзамену</h1>
+  <p class="sub">Определения, теоремы, формулы, разобранные задачи и таблицы, всё на одной странице.</p>
+  <p>Обозначения как в ДЗ №3: \(\nu_k\) — начальные моменты, \(\mu_k\) — центральные, звёздочка — выборочные (\(\nu_k^*,\ \mu_k^*\)), \(b(\theta)\) — смещение, \(I(\theta)\) — информация Фишера одного наблюдения, \(e = D_{\min}/D\) — эффективность.</p>
+  <div class="tools">
+    <button class="t" id="btn-hide" type="button">Свернуть все ответы</button>
+    <button class="t" id="btn-show" type="button">Развернуть все ответы</button>
+  </div>
+</header>
+
+<nav class="toc" aria-label="Разделы"><span>Разделы:</span>
+<a href="#s1">1</a><a href="#s2">2</a><a href="#s3">3</a><a href="#s4">4</a><a href="#s5">5</a><a href="#s6">6</a><a href="#s7">7</a><a href="#s8">8</a><a href="#s9">9</a><a href="#s10">10</a><a href="#s11">11</a><a href="#s12">12</a>
+</nav>
+
+<!-- 1 -->
+<section class="sec" id="s1"><div class="num">1</div><div class="body">
+<h2>Выборка и её характеристики</h2>
+<div class="def"><p><b class="k">Выборка.</b> \(X_1,\dots,X_n\) — независимые одинаково распределённые случайные величины с функцией распределения \(F\). Вариационный ряд: \(X_{(1)}\le X_{(2)}\le\dots\le X_{(n)}\).</p></div>
+<div class="def"><p><b class="k">Эмпирическая функция распределения.</b></p>
+\[F_n(x)=\frac1n\sum_{i=1}^n \mathbb{1}\{X_i\le x\},\qquad \mathbb{E}F_n(x)=F(x),\qquad D F_n(x)=\frac{F(x)(1-F(x))}{n}.\]
+<p>При фиксированном \(x\) величина \(nF_n(x)\sim \mathrm{Bin}(n,F(x))\).</p></div>
+<div class="thm"><p><b class="k">Гливенко–Кантелли.</b> \(\sup_x |F_n(x)-F(x)|\to 0\) почти наверное.</p>
+<p><b class="k">Колмогоров.</b> Если \(F\) непрерывна, то \(\sqrt n\,\sup_x|F_n(x)-F(x)|\) сходится по распределению к закону Колмогорова \(K(t)=\sum_{j=-\infty}^{\infty}(-1)^j e^{-2j^2t^2}\).</p></div>
+
+<h3>Выборочные моменты</h3>
+\[\bar X=\nu_1^*=\frac1n\sum X_i,\qquad \nu_k^*=\frac1n\sum X_i^k,\qquad \mu_k^*=\frac1n\sum (X_i-\bar X)^k.\]
+\[S^2=\mu_2^*=\frac1n\sum (X_i-\bar X)^2=\nu_2^*-(\nu_1^*)^2,\qquad s^2=\frac{n}{n-1}S^2 .\]
+\[\mathbb{E}\nu_k^*=\nu_k,\qquad D\nu_k^*=\frac{\nu_{2k}-\nu_k^2}{n},\qquad \mathbb{E}S^2=\frac{n-1}{n}\sigma^2,\qquad \mathbb{E}s^2=\sigma^2.\]
+<p>Выборочные моменты состоятельны (ЗБЧ) и асимптотически нормальны (ЦПТ): \(\sqrt n(\nu_k^*-\nu_k)\Rightarrow N(0,\ \nu_{2k}-\nu_k^2)\).</p>
+<p>Порядковые статистики: \(F_{X_{(n)}}(x)=F(x)^n\), \(F_{X_{(1)}}(x)=1-(1-F(x))^n\).</p>
+
+<div class="trap"><b>Ловушка.</b> \(S^2\) смещена, \(s^2\) несмещена. На экзамене почти всегда спрашивают, какую из них брать в доверительном интервале и в t-критерии: берут \(s^2\) (или эквивалентно \(nS^2/\sigma^2\sim\chi^2_{n-1}\)).</div>
+
+<details><summary>Проверь себя: почему \(\mathbb{E}S^2=\frac{n-1}{n}\sigma^2\)?</summary><div class="ans">
+\[\sum (X_i-\bar X)^2=\sum (X_i-\mu)^2-n(\bar X-\mu)^2\ \Rightarrow\ \mathbb{E}\sum (X_i-\bar X)^2=n\sigma^2-n\cdot\frac{\sigma^2}{n}=(n-1)\sigma^2.\]
+</div></details>
+</div></section>
+
+<!-- 2 -->
+<section class="sec" id="s2"><div class="num">2</div><div class="body">
+<h2>Свойства точечных оценок</h2>
+<div class="def">
+<p><b class="k">Несмещённость.</b> \(\mathbb{E}_\theta\theta^*=\theta\) при всех \(\theta\). Смещение \(b(\theta)=\mathbb{E}_\theta\theta^*-\theta\).</p>
+<p><b class="k">Асимптотическая несмещённость.</b> \(b(\theta)\to0\) при \(n\to\infty\).</p>
+<p><b class="k">Состоятельность.</b> \(\theta^*\xrightarrow{P}\theta\), то есть \(P(|\theta^*-\theta|\ge\varepsilon)\to0\) для любого \(\varepsilon>0\). Сильная состоятельность: сходимость почти наверное.</p>
+<p><b class="k">Эффективность.</b> В классе оценок с данным смещением оценка эффективна, если её дисперсия минимальна (достигает нижней границы Рао–Крамера или, шире, оптимальна).</p>
+</div>
+<div class="thm"><p><b class="k">Достаточное условие состоятельности.</b> Если \(\mathbb{E}\theta^*\to\theta\) и \(D\theta^*\to0\), то \(\theta^*\) состоятельна. Доказательство через неравенство Чебышёва (как в задаче 1 ДЗ №3):</p>
+\[P(|\theta^*-\theta|\ge\varepsilon)\le\frac{\mathbb{E}(\theta^*-\theta)^2}{\varepsilon^2}=\frac{D\theta^*+b^2(\theta)}{\varepsilon^2}\to0.\]
+</div>
+<p>Среднеквадратичная ошибка: \(\mathrm{MSE}(\theta^*)=\mathbb{E}(\theta^*-\theta)^2=D\theta^*+b^2(\theta)\). Две оценки сравнивают по MSE, несмещённые — просто по дисперсии.</p>
+<p>Если \(\theta^*\) состоятельна для \(\theta\), а \(g\) непрерывна, то \(g(\theta^*)\) состоятельна для \(g(\theta)\). Несмещённость при этом не сохраняется: \(\mathbb{E}g(\theta^*)\ne g(\mathbb{E}\theta^*)\) в общем случае.</p>
+
+<h3>Полезные моменты нормального закона (из ДЗ №3)</h3>
+<p>Для \(X\sim N(\mu,\sigma^2)\): \(\mu_2=\sigma^2,\ \mu_3=0,\ \mu_4=3\sigma^4\), и</p>
+\[\nu_2=\mu^2+\sigma^2,\quad \nu_3=\mu^3+3\mu\sigma^2,\quad \nu_4=\mu^4+6\mu^2\sigma^2+3\sigma^4,\]
+\[D(X^2)=4\mu^2\sigma^2+2\sigma^4,\qquad \mathrm{cov}(X^2,X)=2\mu\sigma^2.\]
+<p>Выражение центральных моментов через начальные: \(\mu_2=\nu_2-\nu_1^2,\ \mu_3=\nu_3-3\nu_1\nu_2+2\nu_1^3,\ \mu_4=\nu_4-4\nu_1\nu_3+6\nu_1^2\nu_2-3\nu_1^4\).</p>
+
+<details><summary>Проверь себя: состоятельна ли \(\nu_k^*\)? <span class="tag">ДЗ №3, задача 1</span></summary><div class="ans">
+<p>Да. \(\mathbb{E}\nu_k^*=\nu_k\), \(D\nu_k^*=(\nu_{2k}-\nu_k^2)/n\to0\), поэтому по Чебышёву \(P(|\nu_k^*-\nu_k|\ge\varepsilon)\le\frac{\nu_{2k}-\nu_k^2}{n\varepsilon^2}\to0\). Нужно, чтобы \(\nu_{2k}\) был конечен.</p>
+</div></details>
+</div></section>
+
+<!-- 3 -->
+<section class="sec" id="s3"><div class="num">3</div><div class="body">
+<h2>Метод моментов</h2>
+<p>Приравниваем теоретические моменты к выборочным и решаем систему относительно параметров:</p>
+\[\nu_j(\theta_1,\dots,\theta_r)=\nu_j^*,\qquad j=1,\dots,r.\]
+<p>Если отображение \(\theta\mapsto(\nu_1,\dots,\nu_r)\) обратимо, а обратное непрерывно, оценки метода моментов состоятельны. Обычно они смещены и не эффективны, зато находятся легко.</p>
+<div class="tbl"><table>
+<tr><th>Модель</th><th>Уравнение</th><th>Оценка ММ</th></tr>
+<tr><td>\(U[0,\theta]\)</td><td>\(\theta/2=\bar X\)</td><td>\(\theta^*=2\bar X\)</td></tr>
+<tr><td>\(U[a,b]\)</td><td>\(\frac{a+b}2=\bar X,\ \frac{(b-a)^2}{12}=S^2\)</td><td>\(\bar X\mp\sqrt3\,S\)</td></tr>
+<tr><td>\(\mathrm{Exp}(\lambda)\)</td><td>\(1/\lambda=\bar X\)</td><td>\(\lambda^*=1/\bar X\)</td></tr>
+<tr><td>\(\mathrm{Pois}(\lambda)\)</td><td>\(\lambda=\bar X\)</td><td>\(\lambda^*=\bar X\)</td></tr>
+<tr><td>\(N(\mu,\sigma^2)\)</td><td>\(\mu=\bar X,\ \sigma^2=S^2\)</td><td>\(\bar X,\ S^2\)</td></tr>
+<tr><td>\(\Gamma(\alpha,\beta)\), \(\mathbb{E}=\alpha/\beta\)</td><td>\(\alpha/\beta=\bar X,\ \alpha/\beta^2=S^2\)</td><td>\(\beta^*=\bar X/S^2,\ \alpha^*=\bar X^2/S^2\)</td></tr>
+</table></div>
+</div></section>
+
+<!-- 4 -->
+<section class="sec" id="s4"><div class="num">4</div><div class="body">
+<h2>Метод максимального правдоподобия</h2>
+\[L(\theta)=\prod_{i=1}^n f(X_i;\theta),\qquad \hat\theta=\arg\max_\theta L(\theta),\qquad \frac{\partial\ln L}{\partial\theta}=0 .\]
+<div class="thm"><p><b class="k">Свойства ОМП</b> (при условиях регулярности):</p>
+<ul>
+<li>состоятельна;</li>
+<li>асимптотически нормальна и асимптотически эффективна: \(\sqrt n(\hat\theta-\theta)\Rightarrow N\big(0,\ 1/I(\theta)\big)\);</li>
+<li>инвариантна: ОМП для \(g(\theta)\) равна \(g(\hat\theta)\);</li>
+<li>если существует эффективная оценка, ОМП с ней совпадает;</li>
+<li>ОМП — функция от достаточной статистики.</li>
+</ul></div>
+<div class="trap"><b>Ловушка.</b> Если носитель зависит от \(\theta\) (например, \(U[0,\theta]\)), уравнение правдоподобия не работает: максимум находится на границе. Для \(U[0,\theta]\): \(L=\theta^{-n}\mathbb{1}\{X_{(n)}\le\theta\}\), убывает по \(\theta\), значит \(\hat\theta=X_{(n)}\).</div>
+<div class="tbl"><table>
+<tr><th>Модель</th><th>ОМП</th></tr>
+<tr><td>\(\mathrm{Bern}(p)\)</td><td>\(\hat p=\bar X\)</td></tr>
+<tr><td>\(\mathrm{Pois}(\lambda)\)</td><td>\(\hat\lambda=\bar X\)</td></tr>
+<tr><td>\(\mathrm{Exp}(\lambda)\), плотность \(\lambda e^{-\lambda x}\)</td><td>\(\hat\lambda=1/\bar X\)</td></tr>
+<tr><td>\(N(\mu,\sigma^2)\)</td><td>\(\hat\mu=\bar X,\ \hat\sigma^2=S^2\) (смещённая)</td></tr>
+<tr><td>\(U[0,\theta]\)</td><td>\(\hat\theta=X_{(n)}\)</td></tr>
+<tr><td>\(U[a,b]\)</td><td>\(\hat a=X_{(1)},\ \hat b=X_{(n)}\)</td></tr>
+<tr><td>\(\mathrm{Geom}(p)\), \(P(X=k)=p(1-p)^{k-1}\)</td><td>\(\hat p=1/\bar X\)</td></tr>
+</table></div>
+</div></section>
+
+<!-- 5 -->
+<section class="sec" id="s5"><div class="num">5</div><div class="body">
+<h2>Информация Фишера и неравенство Рао–Крамера</h2>
+\[I(\theta)=\mathbb{E}_\theta\Big(\frac{\partial\ln f(X;\theta)}{\partial\theta}\Big)^2=-\,\mathbb{E}_\theta\frac{\partial^2\ln f(X;\theta)}{\partial\theta^2},\qquad I_n(\theta)=nI(\theta).\]
+<p>Вклад \(U=\frac{\partial\ln L}{\partial\theta}\) (функция вклада, score) имеет \(\mathbb{E}U=0\), \(DU=nI(\theta)\).</p>
+<div class="thm"><p><b class="k">Неравенство Рао–Крамера.</b> Пусть модель регулярна: множество значений \(X\) не зависит от \(\theta\), плотность дифференцируема по \(\theta\), можно дифференцировать под знаком интеграла, \(0\lt I(\theta)\lt\infty\). Тогда для любой оценки \(\theta^*\) со смещением \(b(\theta)\)</p>
+\[D\theta^*\ \ge\ \frac{\big(1+b'(\theta)\big)^2}{nI(\theta)} .\]
+<p>Для несмещённой оценки функции \(\tau(\theta)\): \(D\theta^*\ge \dfrac{\tau'(\theta)^2}{nI(\theta)}\).</p></div>
+<div class="thm"><p><b class="k">Критерий эффективности.</b> Граница достигается тогда и только тогда, когда</p>
+\[\frac{\partial\ln L}{\partial\theta}=a(\theta)\big(\theta^*-\tau(\theta)\big).\]
+<p>Это возможно только для экспоненциального семейства \(f(x;\theta)=\exp\{A(\theta)T(x)+B(\theta)+h(x)\}\); тогда эффективна \(\frac1n\sum T(X_i)\) как оценка \(\tau(\theta)=-B'(\theta)/A'(\theta)\).</p></div>
+
+<div class="tbl"><table>
+<tr><th>Модель</th><th>\(I(\theta)\)</th><th>Эффективная оценка</th><th>\(D_{\min}\)</th></tr>
+<tr><td>\(\mathrm{Bern}(p)\)</td><td>\(\dfrac1{p(1-p)}\)</td><td>\(\bar X\)</td><td>\(\dfrac{p(1-p)}n\)</td></tr>
+<tr><td>\(\mathrm{Bin}(m,p)\), \(m\) известно</td><td>\(\dfrac m{p(1-p)}\)</td><td>\(\bar X/m\)</td><td>\(\dfrac{p(1-p)}{mn}\)</td></tr>
+<tr><td>\(\mathrm{Pois}(\lambda)\)</td><td>\(\dfrac1\lambda\)</td><td>\(\bar X\)</td><td>\(\dfrac\lambda n\)</td></tr>
+<tr><td>\(N(\mu,\sigma^2)\), \(\sigma\) известно</td><td>\(\dfrac1{\sigma^2}\)</td><td>\(\bar X\)</td><td>\(\dfrac{\sigma^2}n\)</td></tr>
+<tr><td>\(N(\mu,\sigma^2)\), \(\mu\) известно, параметр \(\sigma^2\)</td><td>\(\dfrac1{2\sigma^4}\)</td><td>\(\frac1n\sum(X_i-\mu)^2\)</td><td>\(\dfrac{2\sigma^4}n\)</td></tr>
+<tr><td>\(\mathrm{Exp}\) со средним \(\theta\), плотность \(\frac1\theta e^{-x/\theta}\)</td><td>\(\dfrac1{\theta^2}\)</td><td>\(\bar X\)</td><td>\(\dfrac{\theta^2}n\)</td></tr>
+<tr><td>\(\mathrm{Exp}(\lambda)\), плотность \(\lambda e^{-\lambda x}\)</td><td>\(\dfrac1{\lambda^2}\)</td><td>для \(\lambda\) нет; для \(1/\lambda\) это \(\bar X\)</td><td>—</td></tr>
+<tr><td>\(U[0,\theta]\)</td><td colspan="3">модель нерегулярна, неравенство Рао–Крамера неприменимо</td></tr>
+</table></div>
+
+<details><summary>Разбор: эффективность \(\bar X\) для Пуассона</summary><div class="ans">
+\[\ln f=x\ln\lambda-\lambda-\ln x!,\qquad \frac{\partial\ln f}{\partial\lambda}=\frac x\lambda-1,\qquad I(\lambda)=\frac{\mathbb{E}(X-\lambda)^2}{\lambda^2}=\frac1\lambda .\]
+<p>Граница \(\lambda/n\); \(D\bar X=\lambda/n\). Значит \(e=1\), оценка эффективна. Через критерий: \(\frac{\partial\ln L}{\partial\lambda}=\frac{n}{\lambda}(\bar X-\lambda)\).</p>
+</div></details>
+<details><summary>Разбор: \(s^2\) для нормальной выборки при неизвестном \(\mu\)</summary><div class="ans">
+<p>\(D s^2=\dfrac{2\sigma^4}{n-1}\), граница \(\dfrac{2\sigma^4}{n}\). Эффективность \(e=\dfrac{n-1}{n}\lt1\): по Рао–Крамеру \(s^2\) неэффективна, но асимптотически эффективна. При этом она оптимальна в классе несмещённых (функция от полной достаточной статистики, раздел 6): граница Рао–Крамера здесь просто недостижима.</p>
+</div></details>
+<details><summary>Разбор: оценка со смещением <span class="tag">как в ДЗ №3, задача 9</span></summary><div class="ans">
+<p>Для \(\mathrm{Exp}(\lambda)\) ОМП \(\hat\lambda=1/\bar X\). Сумма \(\sum X_i\sim\Gamma(n,\lambda)\), откуда \(\mathbb{E}\hat\lambda=\frac{n\lambda}{n-1}\), \(b(\lambda)=\frac{\lambda}{n-1}\), \(1+b'=\frac n{n-1}\).</p>
+\[D\hat\lambda=\frac{n^2\lambda^2}{(n-1)^2(n-2)},\qquad \frac{(1+b')^2}{nI(\lambda)}=\frac{n\lambda^2}{(n-1)^2}.\]
+<p>Отношение \(\frac{n-2}{n}\lt1\): граница не достигается. Несмещённая \(\frac{n-1}{n\bar X}\) имеет дисперсию \(\frac{\lambda^2}{n-2}\) против границы \(\frac{\lambda^2}{n}\). Схема рассуждения та же, что в задачах ДЗ: найти \(b(\theta)\), посчитать \(D\), сравнить с \((1+b')^2/(nI)\).</p>
+</div></details>
+</div></section>
+
+<!-- 6 -->
+<section class="sec" id="s6"><div class="num">6</div><div class="body">
+<h2>Достаточные статистики и оптимальные оценки</h2>
+<div class="def"><p><b class="k">Достаточная статистика.</b> \(T(X)\) достаточна, если условное распределение выборки при фиксированном \(T\) не зависит от \(\theta\).</p></div>
+<div class="thm"><p><b class="k">Критерий факторизации Неймана–Фишера.</b> \(T\) достаточна \(\iff\) \(L(x;\theta)=g\big(T(x),\theta\big)\,h(x)\).</p>
+<p><b class="k">Рао–Блэкуэлл–Колмогоров.</b> Если \(\theta^*\) несмещённая, \(T\) достаточная, то \(\tilde\theta=\mathbb{E}(\theta^*\mid T)\) несмещённая и \(D\tilde\theta\le D\theta^*\).</p>
+<p><b class="k">Лемана–Шеффе.</b> Если \(T\) полная достаточная, а \(\varphi(T)\) несмещённая для \(\tau(\theta)\), то \(\varphi(T)\) — единственная оптимальная (несмещённая с минимальной дисперсией) оценка.</p></div>
+<div class="tbl"><table>
+<tr><th>Модель</th><th>Полная достаточная статистика</th><th>Оптимальная оценка</th></tr>
+<tr><td>\(\mathrm{Bern}(p)\)</td><td>\(\sum X_i\)</td><td>\(\bar X\) для \(p\)</td></tr>
+<tr><td>\(\mathrm{Pois}(\lambda)\)</td><td>\(\sum X_i\)</td><td>\(\bar X\) для \(\lambda\)</td></tr>
+<tr><td>\(N(\mu,\sigma^2)\)</td><td>\((\sum X_i,\ \sum X_i^2)\)</td><td>\(\bar X\), \(s^2\)</td></tr>
+<tr><td>\(U[0,\theta]\)</td><td>\(X_{(n)}\)</td><td>\(\frac{n+1}{n}X_{(n)}\)</td></tr>
+<tr><td>\(\mathrm{Exp}(\lambda)\)</td><td>\(\sum X_i\)</td><td>\(\frac{n-1}{\sum X_i}\) для \(\lambda\)</td></tr>
+</table></div>
+
+<details><summary>Разбор: \(U[0,\theta]\), сравнить \(2\bar X\) и \(\frac{n+1}{n}X_{(n)}\)</summary><div class="ans">
+<p>\(F_{X_{(n)}}(x)=(x/\theta)^n\) на \([0,\theta]\), \(\mathbb{E}X_{(n)}=\frac{n}{n+1}\theta\), \(\mathbb{E}X_{(n)}^2=\frac{n}{n+2}\theta^2\), \(DX_{(n)}=\frac{n\theta^2}{(n+1)^2(n+2)}\).</p>
+\[D(2\bar X)=\frac{4}{n}\cdot\frac{\theta^2}{12}=\frac{\theta^2}{3n},\qquad D\Big(\frac{n+1}{n}X_{(n)}\Big)=\frac{\theta^2}{n(n+2)} .\]
+<p>Обе несмещённые и состоятельные. При \(n\ge2\) вторая лучше, и её дисперсия убывает как \(1/n^2\), быстрее «регулярного» \(1/n\). Это возможно именно потому, что модель нерегулярна.</p>
+</div></details>
+</div></section>
+
+<!-- 7 -->
+<section class="sec" id="s7"><div class="num">7</div><div class="body">
+<h2>Распределения, связанные с нормальным</h2>
+<div class="tbl"><table>
+<tr><th>Закон</th><th>Определение</th><th>\(\mathbb{E}\)</th><th>\(D\)</th></tr>
+<tr><td>\(\chi^2_k\)</td><td>\(\xi_1^2+\dots+\xi_k^2,\ \xi_i\sim N(0,1)\) независимы</td><td>\(k\)</td><td>\(2k\)</td></tr>
+<tr><td>\(t_k\) (Стьюдент)</td><td>\(\dfrac{\xi_0}{\sqrt{\chi^2_k/k}}\), числитель и знаменатель независимы</td><td>\(0\) (\(k\gt1\))</td><td>\(\frac{k}{k-2}\) (\(k\gt2\))</td></tr>
+<tr><td>\(F_{k,m}\) (Фишер)</td><td>\(\dfrac{\chi^2_k/k}{\chi^2_m/m}\), независимы</td><td>\(\frac{m}{m-2}\)</td><td>—</td></tr>
+</table></div>
+<p>Свойства: \(t_k\Rightarrow N(0,1)\) при \(k\to\infty\); \(t_k^2\sim F_{1,k}\); \(1/F_{k,m}\sim F_{m,k}\), поэтому \(F_{\alpha;k,m}=1/F_{1-\alpha;m,k}\).</p>
+<div class="thm"><p><b class="k">Теорема Фишера.</b> Для выборки из \(N(\mu,\sigma^2)\):</p>
+<ol>
+<li>\(\bar X\) и \(S^2\) независимы;</li>
+<li>\(\bar X\sim N(\mu,\sigma^2/n)\), то есть \(\sqrt n\,\frac{\bar X-\mu}{\sigma}\sim N(0,1)\);</li>
+<li>\(\dfrac{nS^2}{\sigma^2}=\dfrac{(n-1)s^2}{\sigma^2}\sim\chi^2_{n-1}\);</li>
+<li>\(\sqrt n\,\dfrac{\bar X-\mu}{s}=\sqrt{n-1}\,\dfrac{\bar X-\mu}{S}\sim t_{n-1}\).</li>
+</ol>
+<p>Если \(\mu\) известно: \(\frac1{\sigma^2}\sum(X_i-\mu)^2\sim\chi^2_{n}\) (степеней свободы \(n\), а не \(n-1\)).</p></div>
+</div></section>
+
+<!-- 8 -->
+<section class="sec" id="s8"><div class="num">8</div><div class="body">
+<h2>Доверительные интервалы</h2>
+<div class="def"><p><b class="k">Определение.</b> \((\theta_1^*,\theta_2^*)\) — доверительный интервал уровня \(1-\alpha\), если \(P_\theta(\theta_1^*\lt\theta\lt\theta_2^*)\ge1-\alpha\) при всех \(\theta\). Асимптотический: вероятность стремится к \(1-\alpha\).</p>
+<p><b class="k">Метод центральной статистики.</b> Найти \(G(X,\theta)\), распределение которой не зависит от \(\theta\); взять квантили \(g_{\alpha/2},g_{1-\alpha/2}\); решить \(g_{\alpha/2}\lt G\lt g_{1-\alpha/2}\) относительно \(\theta\).</p></div>
+<p>Ниже \(z_p\), \(t_{p,k}\), \(\chi^2_{p,k}\) — квантили уровня \(p\) (таблицы в разделе 12).</p>
+<div class="tbl"><table>
+<tr><th>Что оцениваем</th><th>Центральная статистика</th><th>Интервал уровня \(1-\alpha\)</th></tr>
+<tr><td>\(\mu\), \(\sigma\) известна</td><td>\(\sqrt n\frac{\bar X-\mu}{\sigma}\sim N(0,1)\)</td><td>\(\bar X\pm z_{1-\alpha/2}\frac{\sigma}{\sqrt n}\)</td></tr>
+<tr><td>\(\mu\), \(\sigma\) неизвестна</td><td>\(\sqrt n\frac{\bar X-\mu}{s}\sim t_{n-1}\)</td><td>\(\bar X\pm t_{1-\alpha/2,\,n-1}\frac{s}{\sqrt n}\)</td></tr>
+<tr><td>\(\sigma^2\), \(\mu\) неизвестно</td><td>\(\frac{(n-1)s^2}{\sigma^2}\sim\chi^2_{n-1}\)</td><td>\(\Big(\frac{(n-1)s^2}{\chi^2_{1-\alpha/2,\,n-1}},\ \frac{(n-1)s^2}{\chi^2_{\alpha/2,\,n-1}}\Big)\)</td></tr>
+<tr><td>\(\sigma^2\), \(\mu\) известно</td><td>\(\frac{\sum(X_i-\mu)^2}{\sigma^2}\sim\chi^2_{n}\)</td><td>\(\Big(\frac{\sum(X_i-\mu)^2}{\chi^2_{1-\alpha/2,\,n}},\ \frac{\sum(X_i-\mu)^2}{\chi^2_{\alpha/2,\,n}}\Big)\)</td></tr>
+<tr><td>\(\mu_1-\mu_2\), дисперсии равны, неизвестны</td><td>\(\frac{\bar X-\bar Y-(\mu_1-\mu_2)}{s_p\sqrt{1/n+1/m}}\sim t_{n+m-2}\)</td><td>\(\bar X-\bar Y\pm t_{1-\alpha/2,\,n+m-2}\,s_p\sqrt{\tfrac1n+\tfrac1m}\)</td></tr>
+<tr><td>\(\sigma_1^2/\sigma_2^2\)</td><td>\(\frac{s_1^2/\sigma_1^2}{s_2^2/\sigma_2^2}\sim F_{n-1,m-1}\)</td><td>\(\Big(\frac{s_1^2/s_2^2}{F_{1-\alpha/2}},\ \frac{s_1^2/s_2^2}{F_{\alpha/2}}\Big)\)</td></tr>
+<tr><td>\(p\) (Бернулли), асимптотический</td><td>\(\frac{\bar X-p}{\sqrt{\bar X(1-\bar X)/n}}\Rightarrow N(0,1)\)</td><td>\(\bar X\pm z_{1-\alpha/2}\sqrt{\frac{\bar X(1-\bar X)}{n}}\)</td></tr>
+<tr><td>любой \(\theta\) через ОМП, асимптотический</td><td>\(\sqrt{nI(\hat\theta)}\,(\hat\theta-\theta)\Rightarrow N(0,1)\)</td><td>\(\hat\theta\pm\frac{z_{1-\alpha/2}}{\sqrt{nI(\hat\theta)}}\)</td></tr>
+<tr><td>\(\theta\) в \(U[0,\theta]\)</td><td>\(X_{(n)}/\theta\), \(P(X_{(n)}/\theta\le x)=x^n\)</td><td>\(\big[X_{(n)},\ X_{(n)}/\alpha^{1/n}\big]\)</td></tr>
+</table></div>
+<p>Здесь \(s_p^2=\dfrac{(n-1)s_1^2+(m-1)s_2^2}{n+m-2}\) — объединённая оценка дисперсии.</p>
+
+<details><summary>Задача: \(n=16\), \(\bar x=10{,}3\), \(s=2\). Интервалы уровня 0,95 для \(\mu\) и \(\sigma^2\)</summary><div class="ans">
+<p>Для \(\mu\): \(t_{0.975,15}=2{,}131\), полуширина \(2{,}131\cdot 2/4=1{,}066\). Интервал \((9{,}23;\ 11{,}37)\).</p>
+<p>Для \(\sigma^2\): \((n-1)s^2=60\), \(\chi^2_{0.975,15}=27{,}49\), \(\chi^2_{0.025,15}=6{,}26\). Интервал \((60/27{,}49;\ 60/6{,}26)=(2{,}18;\ 9{,}58)\).</p>
+</div></details>
+<details><summary>Задача: асимптотический интервал для \(\lambda\) в \(\mathrm{Exp}(\lambda)\)</summary><div class="ans">
+<p>\(\hat\lambda=1/\bar X\), \(I(\lambda)=1/\lambda^2\), \(\sqrt{nI(\hat\lambda)}=\sqrt n/\hat\lambda\). Интервал \(\hat\lambda\big(1\pm z_{1-\alpha/2}/\sqrt n\big)\).</p>
+<p>Точный вариант: \(2\lambda\sum X_i\sim\chi^2_{2n}\), отсюда \(\Big(\frac{\chi^2_{\alpha/2,2n}}{2\sum X_i},\ \frac{\chi^2_{1-\alpha/2,2n}}{2\sum X_i}\Big)\).</p>
+</div></details>
+<div class="trap"><b>Ловушка.</b> У интервала для \(\sigma^2\) верхний квантиль \(\chi^2\) стоит в знаменателе левого конца. Интервал несимметричен относительно \(s^2\).</div>
+</div></section>
+
+<!-- 9 -->
+<section class="sec" id="s9"><div class="num">9</div><div class="body">
+<h2>Проверка гипотез: общая теория</h2>
+<div class="def">
+<p><b class="k">Критерий</b> задаётся критической областью \(W\): если \(X\in W\), гипотезу \(H_0\) отвергаем.</p>
+<p><b class="k">Ошибка I рода</b> \(\alpha=P(X\in W\mid H_0)\) — уровень значимости. <b class="k">Ошибка II рода</b> \(\beta=P(X\notin W\mid H_1)\). <b class="k">Мощность</b> \(1-\beta\).</p>
+<p><b class="k">p-значение</b> — вероятность при \(H_0\) получить статистику не менее экстремальную, чем наблюдённая. \(H_0\) отвергаем, если \(p\lt\alpha\).</p>
+<p><b class="k">Состоятельный критерий</b>: мощность при любой фиксированной альтернативе стремится к 1. <b class="k">Несмещённый</b>: мощность не меньше \(\alpha\).</p>
+</div>
+<div class="thm"><p><b class="k">Лемма Неймана–Пирсона.</b> Для простых \(H_0:\theta=\theta_0\) против \(H_1:\theta=\theta_1\) наиболее мощный критерий уровня \(\alpha\) имеет вид</p>
+\[W=\Big\{x:\ \frac{L(x;\theta_1)}{L(x;\theta_0)}\gt c\Big\},\qquad P_{\theta_0}(W)=\alpha .\]
+<p>Для дискретных законов может понадобиться рандомизация на границе. Если отношение правдоподобия монотонно по статистике \(T\), критерий \(\{T\gt c\}\) равномерно наиболее мощный для односторонней альтернативы \(\theta\gt\theta_0\).</p></div>
+
+<details><summary>Задача: \(N(\mu,1)\), \(n=25\), \(H_0:\mu=0\) против \(H_1:\mu=0{,}5\), \(\alpha=0{,}05\)</summary><div class="ans">
+\[\frac{L_1}{L_0}=\exp\Big\{n\bar x\mu_1-\tfrac n2\mu_1^2\Big\}\ \text{возрастает по }\bar x\ \Rightarrow\ W=\{\bar X\gt c\}.\]
+<p>\(c=z_{0.95}/\sqrt n=1{,}645/5=0{,}329\). Мощность \(1-\beta=\Phi\big(\sqrt n\,\mu_1-z_{0.95}\big)=\Phi(2{,}5-1{,}645)=\Phi(0{,}855)\approx0{,}80\).</p>
+<p>Объём выборки для заданных \(\alpha,\beta\): \(n\ge\Big(\dfrac{(z_{1-\alpha}+z_{1-\beta})\sigma}{\mu_1-\mu_0}\Big)^2\).</p>
+</div></details>
+<details><summary>Задача: монету бросили 100 раз, 60 гербов. Симметрична ли она при \(\alpha=0{,}05\)?</summary><div class="ans">
+<p>\(H_0:p=0{,}5\), двусторонняя альтернатива. \(Z=\dfrac{0{,}6-0{,}5}{\sqrt{0{,}25/100}}=2\gt1{,}96\): \(H_0\) отвергаем. p-значение \(2(1-\Phi(2))\approx0{,}046\). При \(\alpha=0{,}01\) (\(z=2{,}576\)) уже не отвергли бы.</p>
+</div></details>
+</div></section>
+
+<!-- 10 -->
+<section class="sec" id="s10"><div class="num">10</div><div class="body">
+<h2>Основные критерии</h2>
+<div class="tbl"><table>
+<tr><th>Гипотеза</th><th>Статистика</th><th>Закон при \(H_0\)</th></tr>
+<tr><td>\(\mu=\mu_0\), \(\sigma\) известна</td><td>\(Z=\sqrt n\frac{\bar X-\mu_0}{\sigma}\)</td><td>\(N(0,1)\)</td></tr>
+<tr><td>\(\mu=\mu_0\), \(\sigma\) неизвестна (t-критерий)</td><td>\(T=\sqrt n\frac{\bar X-\mu_0}{s}\)</td><td>\(t_{n-1}\)</td></tr>
+<tr><td>\(\sigma^2=\sigma_0^2\)</td><td>\(\frac{(n-1)s^2}{\sigma_0^2}\)</td><td>\(\chi^2_{n-1}\)</td></tr>
+<tr><td>\(\mu_1=\mu_2\), дисперсии равны (двухвыборочный t)</td><td>\(\frac{\bar X-\bar Y}{s_p\sqrt{1/n+1/m}}\)</td><td>\(t_{n+m-2}\)</td></tr>
+<tr><td>\(\mu_1=\mu_2\), парные наблюдения</td><td>t-критерий для разностей \(D_i=X_i-Y_i\)</td><td>\(t_{n-1}\)</td></tr>
+<tr><td>\(\sigma_1^2=\sigma_2^2\) (F-критерий)</td><td>\(s_1^2/s_2^2\)</td><td>\(F_{n-1,m-1}\)</td></tr>
+<tr><td>Согласие с законом \(p_1,\dots,p_k\) (Пирсон)</td><td>\(\chi^2=\sum\frac{(\nu_i-np_i)^2}{np_i}\)</td><td>\(\chi^2_{k-1-r}\), \(r\) — число оценённых параметров</td></tr>
+<tr><td>Независимость признаков, таблица \(a\times b\)</td><td>\(\sum\frac{(\nu_{ij}-\nu_{i\cdot}\nu_{\cdot j}/n)^2}{\nu_{i\cdot}\nu_{\cdot j}/n}\)</td><td>\(\chi^2_{(a-1)(b-1)}\)</td></tr>
+<tr><td>Согласие с непрерывной \(F_0\) (Колмогоров)</td><td>\(\sqrt n\,\sup|F_n-F_0|\)</td><td>\(K\): \(k_{0.95}=1{,}358\), \(k_{0.99}=1{,}628\)</td></tr>
+<tr><td>Однородность двух выборок (Смирнов)</td><td>\(\sqrt{\frac{nm}{n+m}}\sup|F_n-G_m|\)</td><td>\(K\)</td></tr>
+<tr><td>\(\rho=0\) для нормальной пары</td><td>\(\frac{r\sqrt{n-2}}{\sqrt{1-r^2}}\)</td><td>\(t_{n-2}\)</td></tr>
+</table></div>
+<p>Критерий Пирсона асимптотический: ожидаемые частоты \(np_i\) должны быть не меньше 5, иначе соседние интервалы объединяют. Если параметры оцениваются, их берут по группированным данным (ОМП по частотам), тогда предел \(\chi^2_{k-1-r}\) верен.</p>
+
+<details><summary>Задача: кубик бросили 60 раз, частоты 8, 7, 12, 9, 15, 9. Правильный ли он при \(\alpha=0{,}05\)?</summary><div class="ans">
+<p>\(np_i=10\). \(\chi^2=\frac{4+9+4+1+25+1}{10}=4{,}4\). Степеней свободы \(6-1=5\), \(\chi^2_{0.95,5}=11{,}07\). \(4{,}4\lt11{,}07\), \(H_0\) не отвергаем.</p>
+</div></details>
+<div class="trap"><b>Ловушка.</b> «Не отвергаем \(H_0\)» не означает «доказали \(H_0\)». Так и пишите в ответе: данные не противоречат гипотезе на уровне \(\alpha\).</div>
+</div></section>
+
+<!-- 11 -->
+<section class="sec" id="s11"><div class="num">11</div><div class="body">
+<h2>Линейная регрессия и МНК</h2>
+<p>Модель \(Y=X\beta+\varepsilon\), \(\mathbb{E}\varepsilon=0\), \(\mathrm{cov}\,\varepsilon=\sigma^2 I\), \(X\) — матрица \(n\times k\) полного ранга.</p>
+\[\hat\beta=(X^\top X)^{-1}X^\top Y,\qquad \mathrm{cov}\,\hat\beta=\sigma^2(X^\top X)^{-1},\qquad \hat\sigma^2=\frac{\mathrm{RSS}}{n-k}=\frac{\|Y-X\hat\beta\|^2}{n-k}.\]
+<div class="thm"><p><b class="k">Гаусс–Марков.</b> \(\hat\beta\) — наилучшая линейная несмещённая оценка (НЛНО): у любой другой линейной несмещённой оценки дисперсия любой линейной комбинации не меньше.</p>
+<p>Если \(\varepsilon\sim N(0,\sigma^2I)\), то \(\hat\beta\) совпадает с ОМП, \(\frac{\mathrm{RSS}}{\sigma^2}\sim\chi^2_{n-k}\) и не зависит от \(\hat\beta\), а \(\frac{\hat\beta_j-\beta_j}{\hat\sigma\sqrt{[(X^\top X)^{-1}]_{jj}}}\sim t_{n-k}\).</p></div>
+<p>Парная регрессия \(y=b_0+b_1x\):</p>
+\[\hat b_1=\frac{\sum(x_i-\bar x)(y_i-\bar y)}{\sum(x_i-\bar x)^2},\qquad \hat b_0=\bar y-\hat b_1\bar x,\qquad R^2=1-\frac{\mathrm{RSS}}{\mathrm{TSS}}=r_{xy}^2 .\]
+
+<details><summary>Задача: \(x=1,2,3,4,5\); \(y=2,4,5,4,5\)</summary><div class="ans">
+<p>\(\bar x=3,\ \bar y=4\), \(S_{xy}=6\), \(S_{xx}=10\). \(\hat b_1=0{,}6\), \(\hat b_0=4-1{,}8=2{,}2\).</p>
+<p>Прогнозы \(2{,}8;\ 3{,}4;\ 4{,}0;\ 4{,}6;\ 5{,}2\). Остатки \(-0{,}8;\ 0{,}6;\ 1{,}0;\ -0{,}6;\ -0{,}2\). \(\mathrm{RSS}=2{,}4\), \(\mathrm{TSS}=6\), \(R^2=0{,}6\), \(\hat\sigma^2=2{,}4/3=0{,}8\).</p>
+</div></details>
+</div></section>
+
+<!-- 12 -->
+<section class="sec" id="s12"><div class="num">12</div><div class="body">
+<h2>Таблицы и план ответа</h2>
+<h3>Квантили \(N(0,1)\)</h3>
+<div class="tbl"><table>
+<tr><th>\(p\)</th><td class="n">0,90</td><td class="n">0,95</td><td class="n">0,975</td><td class="n">0,99</td><td class="n">0,995</td></tr>
+<tr><th>\(z_p\)</th><td class="n">1,282</td><td class="n">1,645</td><td class="n">1,960</td><td class="n">2,326</td><td class="n">2,576</td></tr>
+</table></div>
+<h3>Квантили \(t_k\) и \(\chi^2_k\)</h3>
+<div class="tbl"><table>
+<tr><th>\(k\)</th><th>\(t_{0.95}\)</th><th>\(t_{0.975}\)</th><th>\(t_{0.995}\)</th><th>\(\chi^2_{0.025}\)</th><th>\(\chi^2_{0.05}\)</th><th>\(\chi^2_{0.95}\)</th><th>\(\chi^2_{0.975}\)</th></tr>
+<tr><td class="n">1</td><td class="n">6,314</td><td class="n">12,706</td><td class="n">63,657</td><td class="n">0,001</td><td class="n">0,004</td><td class="n">3,84</td><td class="n">5,02</td></tr>
+<tr><td class="n">2</td><td class="n">2,920</td><td class="n">4,303</td><td class="n">9,925</td><td class="n">0,05</td><td class="n">0,10</td><td class="n">5,99</td><td class="n">7,38</td></tr>
+<tr><td class="n">3</td><td class="n">2,353</td><td class="n">3,182</td><td class="n">5,841</td><td class="n">0,22</td><td class="n">0,35</td><td class="n">7,81</td><td class="n">9,35</td></tr>
+<tr><td class="n">4</td><td class="n">2,132</td><td class="n">2,776</td><td class="n">4,604</td><td class="n">0,48</td><td class="n">0,71</td><td class="n">9,49</td><td class="n">11,14</td></tr>
+<tr><td class="n">5</td><td class="n">2,015</td><td class="n">2,571</td><td class="n">4,032</td><td class="n">0,83</td><td class="n">1,15</td><td class="n">11,07</td><td class="n">12,83</td></tr>
+<tr><td class="n">6</td><td class="n">1,943</td><td class="n">2,447</td><td class="n">3,707</td><td class="n">1,24</td><td class="n">1,64</td><td class="n">12,59</td><td class="n">14,45</td></tr>
+<tr><td class="n">7</td><td class="n">1,895</td><td class="n">2,365</td><td class="n">3,499</td><td class="n">1,69</td><td class="n">2,17</td><td class="n">14,07</td><td class="n">16,01</td></tr>
+<tr><td class="n">8</td><td class="n">1,860</td><td class="n">2,306</td><td class="n">3,355</td><td class="n">2,18</td><td class="n">2,73</td><td class="n">15,51</td><td class="n">17,53</td></tr>
+<tr><td class="n">9</td><td class="n">1,833</td><td class="n">2,262</td><td class="n">3,250</td><td class="n">2,70</td><td class="n">3,33</td><td class="n">16,92</td><td class="n">19,02</td></tr>
+<tr><td class="n">10</td><td class="n">1,812</td><td class="n">2,228</td><td class="n">3,169</td><td class="n">3,25</td><td class="n">3,94</td><td class="n">18,31</td><td class="n">20,48</td></tr>
+<tr><td class="n">14</td><td class="n">1,761</td><td class="n">2,145</td><td class="n">2,977</td><td class="n">5,63</td><td class="n">6,57</td><td class="n">23,68</td><td class="n">26,12</td></tr>
+<tr><td class="n">15</td><td class="n">1,753</td><td class="n">2,131</td><td class="n">2,947</td><td class="n">6,26</td><td class="n">7,26</td><td class="n">25,00</td><td class="n">27,49</td></tr>
+<tr><td class="n">19</td><td class="n">1,729</td><td class="n">2,093</td><td class="n">2,861</td><td class="n">8,91</td><td class="n">10,12</td><td class="n">30,14</td><td class="n">32,85</td></tr>
+<tr><td class="n">20</td><td class="n">1,725</td><td class="n">2,086</td><td class="n">2,845</td><td class="n">9,59</td><td class="n">10,85</td><td class="n">31,41</td><td class="n">34,17</td></tr>
+<tr><td class="n">24</td><td class="n">1,711</td><td class="n">2,064</td><td class="n">2,797</td><td class="n">12,40</td><td class="n">13,85</td><td class="n">36,42</td><td class="n">39,36</td></tr>
+<tr><td class="n">29</td><td class="n">1,699</td><td class="n">2,045</td><td class="n">2,756</td><td class="n">16,05</td><td class="n">17,71</td><td class="n">42,56</td><td class="n">45,72</td></tr>
+<tr><td class="n">30</td><td class="n">1,697</td><td class="n">2,042</td><td class="n">2,750</td><td class="n">16,79</td><td class="n">18,49</td><td class="n">43,77</td><td class="n">46,98</td></tr>
+</table></div>
+<p>При \(k\gt30\): \(t_{p,k}\approx z_p\), \(\chi^2_{p,k}\approx k+z_p\sqrt{2k}\). Для F: \(F_{0.95;9,9}=3{,}18\), \(F_{0.975;9,9}=4{,}03\).</p>
+
+<h3>Схема решения задачи на свойства оценки</h3>
+<ol>
+<li>Найти \(\mathbb{E}\theta^*\) и смещение \(b(\theta)\): несмещённая, асимптотически несмещённая или нет.</li>
+<li>Найти \(D\theta^*\). Если \(D\to0\) и \(b\to0\), оценка состоятельна (Чебышёв). Иначе проверить ЗБЧ и непрерывность функции.</li>
+<li>Проверить регулярность модели: зависит ли носитель от \(\theta\).</li>
+<li>Посчитать \(I(\theta)\) и границу \((1+b')^2/(nI)\). Сравнить с \(D\theta^*\), выписать \(e=D_{\min}/D\).</li>
+<li>Записать вывод одной строкой: смещённая или нет, состоятельная или нет, эффективная или нет. Так оформлены ответы в ДЗ №3.</li>
+</ol>
+<h3>Схема ответа на теоретический вопрос</h3>
+<ol>
+<li>Определение и условия (регулярность, независимость, нормальность).</li>
+<li>Формулировка теоремы.</li>
+<li>Идея доказательства в 3–5 строк: Чебышёв, ЦПТ, неравенство Коши–Буняковского (для Рао–Крамера), факторизация.</li>
+<li>Пример из таблиц выше.</li>
+</ol>
+<details><summary>Доказательство Рао–Крамера в пяти строках</summary><div class="ans">
+<p>Пусть \(U=\partial\ln L/\partial\theta\), \(\mathbb{E}U=0\), \(DU=nI(\theta)\). Дифференцируем \(\mathbb{E}\theta^*=\theta+b(\theta)\) под интегралом:</p>
+\[1+b'(\theta)=\int\theta^*\,\frac{\partial L}{\partial\theta}\,dx=\mathbb{E}(\theta^*U)=\mathrm{cov}(\theta^*,U).\]
+<p>По Коши–Буняковскому \(\mathrm{cov}^2(\theta^*,U)\le D\theta^*\cdot DU\), откуда \(D\theta^*\ge(1+b')^2/(nI)\). Равенство при линейной зависимости \(U=a(\theta)(\theta^*-\mathbb{E}\theta^*)\), это и есть критерий эффективности.</p>
+</div></details>
+</div></section>
+
+<footer>Собрано по материалам ДЗ №3 по курсу «Математическая статистика», 2026. Квантили посчитаны в SciPy.</footer>
+</div>
+
+<script>
+(function(){
+  function setAll(open){ document.querySelectorAll('details').forEach(function(d){ d.open = open; }); }
+  document.getElementById('btn-hide').addEventListener('click', function(){ setAll(false); });
+  document.getElementById('btn-show').addEventListener('click', function(){ setAll(true); });
+})();
+</script>
