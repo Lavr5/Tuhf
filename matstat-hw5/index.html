@@ -1,0 +1,401 @@
+<title>ДЗ №5 по матстату</title>
+<meta name="description" content="Решения ДЗ №5 по математической статистике: свойства точечных оценок, метод моментов, метод максимального правдоподобия, теоретические частоты биномиального закона.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&family=PT+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* Тетрадь в клетку: красная линия полей, номер задачи на полях, решение справа; на телефоне номер уходит в заголовок над решением.
+   Формулы записаны по одному шагу в строке, чтобы помещаться в ширину телефона. */
+:root{
+  --paper:#FAFCFF; --grid:#E4EBF5; --ink:#1B2A4A; --muted:#5B6680;
+  --pen:#2447A8; --margin:#D0424B; --box:#EEF3FC;
+  --s1:#2447A8; --s2:#D97A1E;
+  --serif:"PT Serif", Georgia, "Times New Roman", serif;
+  --sans:"PT Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --cell:22px; --gut:64px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#12161D; --grid:#1B212B; --ink:#E3E8F1; --muted:#98A3B8;
+    --pen:#8FB0FF; --margin:#E0707A; --box:#18202D;
+    --s1:#3987E5; --s2:#D95926;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#12161D; --grid:#1B212B; --ink:#E3E8F1; --muted:#98A3B8;
+  --pen:#8FB0FF; --margin:#E0707A; --box:#18202D;
+  --s1:#3987E5; --s2:#D95926;
+  color-scheme:dark;
+}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 64px)}
+*,*::before,*::after{box-sizing:border-box}
+body{
+  margin:0; color:var(--ink); font-family:var(--serif); font-size:18px; line-height:1.62;
+  background-color:var(--paper);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size:var(--cell) var(--cell);
+  -webkit-text-size-adjust:100%;
+}
+.wrap{max-width:820px; margin:0 auto; padding:0 20px; padding-block:0 64px}
+
+header.top{margin-left:var(--gut); padding:48px 0 20px 20px; border-left:2px solid var(--margin)}
+header.top h1{font-size:34px; line-height:1.15; margin:0 0 10px; font-weight:700; letter-spacing:-0.01em; text-wrap:balance}
+header.top p.sub{margin:0; font-style:italic; color:var(--muted); font-size:19px}
+
+nav.toc{
+  position:sticky; top:env(safe-area-inset-top,0px); z-index:5;
+  background:var(--paper); border-bottom:1px solid var(--grid);
+  margin-left:var(--gut); padding:10px 0 10px 20px; border-left:2px solid var(--margin);
+  font-family:var(--sans); font-size:15px;
+  display:flex; flex-wrap:wrap; gap:6px; align-items:center;
+}
+nav.toc span{color:var(--muted); margin-right:6px}
+nav.toc a{
+  display:inline-block; min-width:32px; text-align:center; padding:3px 8px;
+  color:var(--pen); text-decoration:none; border:1px solid var(--pen); border-radius:3px;
+}
+nav.toc a:hover{background:var(--pen); color:var(--paper)}
+nav.toc a:focus-visible{outline:2px solid var(--margin); outline-offset:2px}
+
+.task{display:grid; grid-template-columns:var(--gut) minmax(0,1fr)}
+.num{font-family:var(--sans); font-weight:700; font-size:26px; color:var(--pen); text-align:right; padding:24px 14px 0 0; line-height:1.2}
+.num span{display:none}
+.body{padding:24px 0 22px 20px; min-width:0; border-left:2px solid var(--margin)}
+.task + .task .body{border-top:1px dashed var(--grid)}
+.cond{font-style:italic; color:var(--muted); margin:0 0 14px}
+.body p{margin:0 0 10px}
+.body h4{font-family:var(--sans); font-size:16px; font-weight:700; margin:18px 0 6px; color:var(--pen)}
+.answer{border:1.5px solid var(--pen); background:var(--box); border-radius:2px; padding:10px 14px; margin:14px 0 6px}
+.answer b{font-family:var(--sans); color:var(--pen); margin-right:6px}
+.answer p{margin:0 0 6px}
+.answer p:last-child{margin:0}
+
+.tbl{overflow-x:auto; margin:12px 0; max-width:100%}
+table{border-collapse:collapse; font-family:var(--sans); font-size:15px; background:var(--paper); font-variant-numeric:tabular-nums}
+th,td{border:1px solid var(--grid); padding:4px 12px; text-align:center}
+th{background:var(--box); color:var(--pen); font-weight:700}
+tr.sum td{font-weight:700}
+
+figure.chart{margin:14px 0 6px; background:var(--paper); border:1px solid var(--grid); padding:12px 12px 6px; position:relative; max-width:560px}
+figure.chart figcaption{font-family:var(--sans); font-size:15px; font-weight:700; margin:0 0 6px}
+.legend{display:flex; flex-wrap:wrap; gap:4px 18px; font-family:var(--sans); font-size:14px; color:var(--muted); margin:0 0 6px}
+.legend i{display:inline-block; width:12px; height:12px; border-radius:2px; margin-right:6px; vertical-align:-1px}
+.plot svg{display:block; width:100%; height:auto}
+.plot .gl{stroke:var(--grid); stroke-width:1}
+.plot .ax{stroke:var(--muted); stroke-width:1}
+.plot text{fill:var(--muted); font-family:var(--sans); font-size:12px; font-variant-numeric:tabular-nums}
+.plot .b1{fill:var(--s1)} .plot .b2{fill:var(--s2)}
+.plot .hit{fill:transparent; cursor:default}
+.plot .hit:hover, .plot .hit.on{fill:var(--grid); fill-opacity:.55}
+.tip{position:absolute; pointer-events:none; background:var(--paper); color:var(--ink); border:1px solid var(--muted); border-radius:3px; padding:5px 9px; font-family:var(--sans); font-size:13px; line-height:1.35; white-space:nowrap; font-variant-numeric:tabular-nums; box-shadow:0 2px 8px rgba(0,0,0,.12)}
+.tip i{display:inline-block; width:9px; height:9px; border-radius:2px; margin-right:5px}
+
+mjx-container[jax="SVG"]{font-size:95%}
+mjx-container[jax="SVG"][display="true"]{
+  text-align:left !important; margin:10px 0 12px !important; padding:2px 0 2px 18px;
+  overflow-x:auto; overflow-y:hidden; max-width:100%;
+}
+mjx-container[jax="SVG"][display="true"] > svg{max-width:none}
+td mjx-container[jax="SVG"], th mjx-container[jax="SVG"]{font-size:90%}
+
+footer{margin-left:var(--gut); padding:24px 0 0 20px; border-left:2px solid var(--margin); color:var(--muted); font-size:15px; font-family:var(--sans)}
+
+/* Телефон: без колонки полей, номер задачи — заголовком, всё место под формулы. */
+@media (max-width:620px){
+  :root{--gut:0px}
+  body{font-size:17px; line-height:1.55}
+  .wrap{padding:0 16px; padding-block:0 48px}
+  header.top{padding:28px 0 14px 12px}
+  header.top h1{font-size:27px}
+  header.top p.sub{font-size:17px}
+  nav.toc{padding-left:12px; flex-wrap:nowrap; overflow-x:auto; font-size:14px}
+  nav.toc a{min-width:30px; padding:2px 6px; flex:0 0 auto}
+  .task{display:block}
+  .num{text-align:left; font-size:21px; padding:20px 0 0 12px; border-left:2px solid var(--margin)}
+  .num span{display:inline}
+  .task + .task .num{border-top:1px dashed var(--muted)}
+  .task + .task .body{border-top:0}
+  .body{padding:4px 0 18px 12px}
+  .body h4{margin-top:16px}
+  .answer{padding:10px 12px}
+  footer{padding-left:12px}
+  mjx-container[jax="SVG"][display="true"]{padding-left:0; margin:8px 0 12px !important}
+  figure.chart{padding:10px 8px 4px}
+}
+@media (max-width:370px){
+  mjx-container[jax="SVG"]{font-size:88%}
+}
+@media (prefers-reduced-motion: reduce){ *{scroll-behavior:auto} }
+</style>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] },
+  svg: { fontCache: 'global' },
+  options: { skipHtmlTags: ['script','style','textarea','code'] }
+};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.js" defer></script>
+
+<div class="wrap">
+<header class="top">
+  <h1>ДЗ №5 по матстату</h1>
+  <p class="sub">Основные свойства точечных оценок и методы их нахождения</p>
+</header>
+
+<nav class="toc" aria-label="Задачи"><span>Задачи:</span>
+<a href="#t1">1</a><a href="#t2">2</a><a href="#t3">3</a><a href="#t4">4</a><a href="#t5">5</a><a href="#t6">6</a><a href="#t7">7</a><a href="#t8">8</a>
+</nav>
+
+<!-- 1 -->
+<section class="task" id="t1"><div class="num"><span>Задача </span>1</div><div class="body">
+<p class="cond">\(X\) — число промахов до 3-го попадания, \(X\sim NB(3;p)\); наблюдения \(m_1,\dots,m_k\).</p>
+\[\begin{aligned}&P(X=m)=C_{m+2}^{2}\,p^3q^m,\\&m=0,1,2,\dots;\quad q=1-p\end{aligned}\]
+\[M(X)=\frac{3q}{p}=\frac{3(1-p)}{p}\]
+\[\bar m=\frac1k\sum_{i=1}^k m_i\]
+<h4>Метод моментов</h4>
+\[\begin{aligned}&\frac{3(1-p^*)}{p^*}=\bar m\\&\Rightarrow\ 3-3p^*=p^*\bar m\\&\Rightarrow\ p^*_{\text{ММ}}=\frac{3}{3+\bar m}\end{aligned}\]
+<h4>ММП</h4>
+\[\begin{aligned}L(p)&=\prod_{i=1}^k C_{m_i+2}^{2}\,p^3(1-p)^{m_i}\\&=\prod_{i=1}^k C_{m_i+2}^{2}\cdot p^{3k}(1-p)^{\sum m_i}\end{aligned}\]
+\[\begin{aligned}\ln L={}&\text{const}+3k\ln p\\&+\sum_{i=1}^k m_i\cdot\ln(1-p)\end{aligned}\]
+\[\begin{aligned}&\frac{\partial\ln L}{\partial p}=\frac{3k}{p}-\frac{\sum m_i}{1-p}=0\\&\Rightarrow\ 3k(1-p)=p\sum m_i\\&\Rightarrow\ p^*_{\text{МП}}=\frac{3k}{3k+\sum m_i}\end{aligned}\]
+\[\begin{aligned}&\frac{\partial^2\ln L}{\partial p^2}=-\frac{3k}{p^2}-\frac{\sum m_i}{(1-p)^2}\lt 0\\&\Rightarrow\ \max\end{aligned}\]
+<div class="answer"><p><b>Ответ.</b> Оценки совпадают: \(p^*=\dfrac{3k}{3k+\sum m_i}\), т.е. \(p^*=\dfrac{3}{3+\bar m}\).</p></div>
+</div></section>
+
+<!-- 2 -->
+<section class="task" id="t2"><div class="num"><span>Задача </span>2</div><div class="body">
+\[\begin{aligned}L(\theta)&=\prod_{i=1}^n\frac{\theta\,e^{-\theta^2/(2x_i)}}{\sqrt{2\pi x_i^3}}\\&=\frac{\theta^n}{\prod_{i=1}^n\sqrt{2\pi x_i^3}}\cdot e^{-\frac{\theta^2}{2}\sum\frac1{x_i}}\end{aligned}\]
+\[\begin{aligned}\ln L={}&n\ln\theta-\frac{\theta^2}{2}\sum_{i=1}^n\frac1{x_i}\\&-\frac12\sum_{i=1}^n\ln\left(2\pi x_i^3\right)\end{aligned}\]
+\[\begin{aligned}&\frac{\partial\ln L}{\partial\theta}=\frac n\theta-\theta\sum_{i=1}^n\frac1{x_i}=0\\&\Rightarrow\ \theta^2=\frac{n}{\sum_{i=1}^n 1/x_i}\end{aligned}\]
+\[\begin{aligned}&\frac{\partial^2\ln L}{\partial\theta^2}=-\frac n{\theta^2}-\sum_{i=1}^n\frac1{x_i}\lt 0\\&\Rightarrow\ \max\end{aligned}\]
+<div class="answer"><p><b>Ответ.</b> \(\theta^*=\sqrt{\dfrac{n}{\sum_{i=1}^n 1/X_i}}\) (корень берём положительный, т.к. \(\theta>0\)).</p></div>
+</div></section>
+
+<!-- 3 -->
+<section class="task" id="t3"><div class="num"><span>Задача </span>3</div><div class="body">
+<h4>а) \(\mathrm{Exp}(\theta)\): \(f(x)=\theta e^{-\theta x},\ x\ge0\)</h4>
+\[L=\theta^n e^{-\theta\sum x_i}\]
+\[\ln L=n\ln\theta-\theta\sum_{i=1}^n x_i\]
+\[\begin{aligned}&\frac{\partial\ln L}{\partial\theta}=\frac n\theta-\sum x_i=0\\&\Rightarrow\ \theta^*=\frac{n}{\sum X_i}=\frac1{\bar X}\end{aligned}\]
+\[\frac{\partial^2\ln L}{\partial\theta^2}=-\frac n{\theta^2}\lt 0\ \Rightarrow\ \max\]
+<p>\(Y=\sum_{i=1}^n X_i\sim\Gamma(n;\theta)\) — сумма \(n\) независимых \(\mathrm{Exp}(\theta)\):</p>
+\[f_Y(y)=\frac{\theta^n y^{n-1}e^{-\theta y}}{\Gamma(n)},\quad y>0\]
+\[\begin{aligned}&M\left(\frac1Y\right)=\int_0^{\infty}\frac1y\cdot f_Y(y)\,dy\\&=\frac{\theta^n}{\Gamma(n)}\int_0^{\infty}y^{n-2}e^{-\theta y}\,dy\\&=\frac{\theta^n}{\Gamma(n)}\cdot\frac{\Gamma(n-1)}{\theta^{n-1}}=\frac{\theta}{n-1}\end{aligned}\]
+<p>(при \(n\ge2\))</p>
+\[\begin{aligned}M(\theta^*)&=n\cdot M\left(\frac1Y\right)\\&=\frac{n}{n-1}\,\theta\ne\theta\end{aligned}\]
+<p>\(\Rightarrow\) оценка смещённая.</p>
+\[\begin{aligned}b_n(\theta)&=M(\theta^*)-\theta\\&=\frac{\theta}{n-1}\xrightarrow[n\to\infty]{}0\end{aligned}\]
+<p>\(\Rightarrow\) асимптотически несмещённая.</p>
+<h4>б) \(\mathrm{Exp}\left(\frac1\theta\right)\): \(f(x)=\frac1\theta e^{-x/\theta},\ x\ge0\)</h4>
+\[L=\theta^{-n}e^{-\frac1\theta\sum x_i}\]
+\[\ln L=-n\ln\theta-\frac1\theta\sum_{i=1}^n x_i\]
+\[\begin{aligned}&\frac{\partial\ln L}{\partial\theta}=-\frac n\theta+\frac{\sum x_i}{\theta^2}=0\\&\Rightarrow\ \theta^*=\frac{\sum X_i}{n}=\bar X\end{aligned}\]
+\[\begin{aligned}\left.\frac{\partial^2\ln L}{\partial\theta^2}\right|_{\theta=\bar x}&=\frac n{\bar x^2}-\frac{2n\bar x}{\bar x^3}\\&=-\frac n{\bar x^2}\lt 0\ \Rightarrow\ \max\end{aligned}\]
+\[\begin{aligned}M(\theta^*)&=M(\bar X)=\frac1n\sum_{i=1}^n M(X_i)\\&=\frac1n\cdot n\theta=\theta\end{aligned}\]
+<p>\(\Rightarrow\) оценка несмещённая.</p>
+<div class="answer">
+<p><b>Ответ.</b> а) \(\theta^*=\dfrac1{\bar X}\) — смещённая, \(b_n(\theta)=\dfrac{\theta}{n-1}\to0\), асимптотически несмещённая. Несмещённая поправка: \(\tilde\theta=\dfrac{n-1}{\sum X_i}\).</p>
+<p>б) \(\theta^*=\bar X\) — несмещённая.</p>
+</div>
+</div></section>
+
+<!-- 4 -->
+<section class="task" id="t4"><div class="num"><span>Задача </span>4</div><div class="body">
+\[\begin{aligned}&M(T_1)=M(T_2)=\theta\\&D(T_1)=D(T_2)=\sigma^2\\&\operatorname{cov}(T_1,T_2)=\rho\,\sigma\cdot\sigma=0{,}5\sigma^2\end{aligned}\]
+<p>\(M(S)=\frac{\theta+\theta}{2}=\theta\), \(M(R)=\frac{2\theta+\theta}{3}=\theta\) — все три оценки несмещённые \(\Rightarrow\) \(MSE=D\).</p>
+\[MSE(T_1)=D(T_1)=\sigma^2\]
+\[\begin{aligned}&MSE(S)=D\left(\frac{T_1+T_2}{2}\right)\\&=\frac14\left(DT_1+DT_2+2\operatorname{cov}\right)\\&=\frac14\left(\sigma^2+\sigma^2+\sigma^2\right)\\&=\frac34\sigma^2=0{,}75\sigma^2\end{aligned}\]
+\[\begin{aligned}&MSE(R)=D\left(\frac{2T_1+T_2}{3}\right)\\&=\frac19\left(4DT_1+DT_2+4\operatorname{cov}\right)\\&=\frac19\left(4\sigma^2+\sigma^2+2\sigma^2\right)\\&=\frac79\sigma^2\approx0{,}78\sigma^2\end{aligned}\]
+\[0{,}75\sigma^2\lt 0{,}78\sigma^2\lt \sigma^2\]
+<p>Значит:</p>
+\[MSE(S)\lt MSE(R)\lt MSE(T_1)\]
+<div class="answer"><p><b>Ответ.</b> Лучшая — \(S\) (\(0{,}75\sigma^2\)), худшая — \(T_1\) (\(\sigma^2\)); \(R\) между ними (\(\frac79\sigma^2\)).</p></div>
+</div></section>
+
+<!-- 5 -->
+<section class="task" id="t5"><div class="num"><span>Задача </span>5</div><div class="body">
+<p>Пусть \(\sigma_Y^2=\sigma^2\), тогда \(\sigma_X^2=\frac14\sigma^2\); выборки независимы.</p>
+\[D(\bar X)=\frac{\sigma_X^2}{20}=\frac{\sigma^2}{80}\]
+\[D(\bar Y)=\frac{\sigma_Y^2}{30}=\frac{\sigma^2}{30}\]
+\[\begin{aligned}&M(\hat\mu)=c_1\mu+c_2\mu=\mu\\&\Rightarrow\ c_1+c_2=1,\quad c_2=1-c_1\end{aligned}\]
+\[\begin{aligned}&D(\hat\mu)=c_1^2\,\frac{\sigma^2}{80}+(1-c_1)^2\,\frac{\sigma^2}{30}\\&D(\hat\mu)\to\min\end{aligned}\]
+\[\begin{aligned}&\frac{dD}{dc_1}=\sigma^2\left(\frac{c_1}{40}-\frac{1-c_1}{15}\right)=0\\&\Rightarrow\ 15c_1=40(1-c_1)\\&\Rightarrow\ 55c_1=40,\quad c_1=\frac{8}{11}\end{aligned}\]
+\[\begin{aligned}&\frac{d^2D}{dc_1^2}=\sigma^2\left(\frac1{40}+\frac1{15}\right)\gt 0\\&\Rightarrow\ \min\end{aligned}\]
+\[c_1=\frac8{11},\qquad c_2=1-\frac8{11}=\frac3{11}\]
+\[\begin{aligned}D_{\min}&=\frac{64}{121}\cdot\frac{\sigma^2}{80}+\frac{9}{121}\cdot\frac{\sigma^2}{30}\\&=\frac{\sigma^2}{110}\end{aligned}\]
+<div class="answer"><p><b>Ответ.</b> \(c_1=\frac8{11}\), \(c_2=\frac3{11}\): \(\hat\mu=\frac8{11}\bar X+\frac3{11}\bar Y\), \(D(\hat\mu)=\frac{\sigma_Y^2}{110}\).</p></div>
+</div></section>
+
+<!-- 6 -->
+<section class="task" id="t6"><div class="num"><span>Задача </span>6</div><div class="body">
+\[f(x)=F'(x)=\theta\,2^\theta x^{-(\theta+1)}\]
+<p>при \(x>2\).</p>
+\[\begin{aligned}L&=\prod_{i=1}^{n}\theta\,2^\theta x_i^{-(\theta+1)}\\&=\theta^n\,2^{n\theta}\left(\prod_{i=1}^n x_i\right)^{-(\theta+1)}\end{aligned}\]
+\[\begin{aligned}\ln L={}&n\ln\theta+n\theta\ln2\\&-(\theta+1)\sum_{i=1}^n\ln x_i\end{aligned}\]
+\[\frac{\partial\ln L}{\partial\theta}=\frac n\theta+n\ln2-\sum_{i=1}^n\ln x_i=0\]
+\[\frac{\partial^2\ln L}{\partial\theta^2}=-\frac n{\theta^2}\lt 0\ \Rightarrow\ \max\]
+<p>Так как \(\frac1n\sum\ln x_i=\ln g\), где \(g\) — среднее геометрическое:</p>
+\[\begin{aligned}\hat\theta&=\frac{n}{\sum_{i=1}^n\ln x_i-n\ln2}\\&=\frac{1}{\ln g-\ln2}=\frac1{\ln(g/2)}\end{aligned}\]
+<h4>а)</h4>
+\[\begin{aligned}\hat\theta&=\frac1{\ln\frac{3{,}7795}{2}}=\frac1{\ln1{,}88975}\\&=\frac1{0{,}6364}\approx1{,}571\end{aligned}\]
+<h4>б)</h4>
+\[\begin{aligned}P(\xi>5)&=1-F(5)=\left(\frac25\right)^{\hat\theta}\\&=0{,}4^{1{,}571}\approx0{,}237\end{aligned}\]
+<p>Доля «очень богатых» среди всего населения:</p>
+\[0{,}025\cdot0{,}237\approx0{,}0059\]
+<div class="answer"><p><b>Ответ.</b> а) \(\hat\theta=\dfrac{1}{\ln(g/2)}\approx1{,}571\); б) доля «очень богатых» \(\approx0{,}0059\), т.е. около \(0{,}6\%\) населения.</p></div>
+</div></section>
+
+<!-- 7 -->
+<section class="task" id="t7"><div class="num"><span>Задача </span>7</div><div class="body">
+<p>Вариационный ряд — первые два столбца таблицы.</p>
+\[\begin{aligned}\bar x&=\frac{\sum x_im_i}{N}\\&=\frac{0+15+36+30+16+5+8}{50}\\&=\frac{110}{50}=2{,}2\end{aligned}\]
+<p>Биномиальный закон \(B(20;p)\): \(M(X)=np\).</p>
+\[p^*=\frac{\bar x}{n}=\frac{2{,}2}{20}=0{,}11,\quad q^*=0{,}89\]
+\[P_{20}(x)=C_{20}^x\cdot0{,}11^x\cdot0{,}89^{20-x}\]
+\[m_i^T=N\cdot P_{20}(x_i)=50\cdot P_{20}(x_i)\]
+<p>Удобно считать подряд:</p>
+\[P_{20}(0)=0{,}89^{20}=0{,}0972\]
+\[\begin{aligned}&P_{20}(x+1)=\\&=P_{20}(x)\cdot\frac{20-x}{x+1}\cdot\frac{0{,}11}{0{,}89}\end{aligned}\]
+<div class="tbl"><table>
+<tr><th>\(x_i\)</th><th>\(m_i\)</th><th>\(P_{20}(x_i)\)</th><th>\(m_i^T\)</th></tr>
+<tr><td>0</td><td>1</td><td>0,0972</td><td>4,86</td></tr>
+<tr><td>1</td><td>15</td><td>0,2403</td><td>12,02</td></tr>
+<tr><td>2</td><td>18</td><td>0,2822</td><td>14,11</td></tr>
+<tr><td>3</td><td>10</td><td>0,2093</td><td>10,46</td></tr>
+<tr><td>4</td><td>4</td><td>0,1099</td><td>5,50</td></tr>
+<tr><td>5</td><td>1</td><td>0,0435</td><td>2,17</td></tr>
+<tr><td>6</td><td>0</td><td>0,0134</td><td>0,67</td></tr>
+<tr><td>7</td><td>0</td><td>0,0033</td><td>0,17</td></tr>
+<tr><td>\(\ge8\)</td><td>1</td><td>0,0008</td><td>0,04</td></tr>
+<tr class="sum"><td>\(\Sigma\)</td><td>50</td><td>1</td><td>50</td></tr>
+</table></div>
+<figure class="chart" id="chart7">
+<figcaption>Гистограмма: эмпирические и теоретические частоты</figcaption>
+<div class="legend"><span><i style="background:var(--s1)"></i>\(m_i\) — эмпирические</span><span><i style="background:var(--s2)"></i>\(m_i^T\) — теоретические</span></div>
+<div class="plot"><svg viewBox="0 0 360 230" role="img" aria-label="Гистограмма эмпирических и теоретических частот, x от 0 до 8">
+<line class="gl" x1="28" x2="354" y1="192.0" y2="192.0"/>
+<text x="20" y="196.0" text-anchor="end">0</text>
+<line class="gl" x1="28" x2="354" y1="146.5" y2="146.5"/>
+<text x="20" y="150.5" text-anchor="end">5</text>
+<line class="gl" x1="28" x2="354" y1="101.0" y2="101.0"/>
+<text x="20" y="105.0" text-anchor="end">10</text>
+<line class="gl" x1="28" x2="354" y1="55.5" y2="55.5"/>
+<text x="20" y="59.5" text-anchor="end">15</text>
+<line class="gl" x1="28" x2="354" y1="10.0" y2="10.0"/>
+<text x="20" y="14.0" text-anchor="end">20</text>
+<path class="b1" d="M31.1,192.0 V186.9 Q31.1,182.9 35.1,182.9 H41.1 Q45.1,182.9 45.1,186.9 V192.0 Z"/>
+<path class="b2" d="M47.1,192.0 V151.8 Q47.1,147.8 51.1,147.8 H57.1 Q61.1,147.8 61.1,151.8 V192.0 Z"/>
+<text x="46.1" y="210" text-anchor="middle">0</text>
+<path class="b1" d="M67.3,192.0 V59.5 Q67.3,55.5 71.3,55.5 H77.3 Q81.3,55.5 81.3,59.5 V192.0 Z"/>
+<path class="b2" d="M83.3,192.0 V86.6 Q83.3,82.6 87.3,82.6 H93.3 Q97.3,82.6 97.3,86.6 V192.0 Z"/>
+<text x="82.3" y="210" text-anchor="middle">1</text>
+<path class="b1" d="M103.6,192.0 V32.2 Q103.6,28.2 107.6,28.2 H113.6 Q117.6,28.2 117.6,32.2 V192.0 Z"/>
+<path class="b2" d="M119.6,192.0 V67.6 Q119.6,63.6 123.6,63.6 H129.6 Q133.6,63.6 133.6,67.6 V192.0 Z"/>
+<text x="118.6" y="210" text-anchor="middle">2</text>
+<path class="b1" d="M139.8,192.0 V105.0 Q139.8,101.0 143.8,101.0 H149.8 Q153.8,101.0 153.8,105.0 V192.0 Z"/>
+<path class="b2" d="M155.8,192.0 V100.8 Q155.8,96.8 159.8,96.8 H165.8 Q169.8,96.8 169.8,100.8 V192.0 Z"/>
+<text x="154.8" y="210" text-anchor="middle">3</text>
+<path class="b1" d="M176.0,192.0 V159.6 Q176.0,155.6 180.0,155.6 H186.0 Q190.0,155.6 190.0,159.6 V192.0 Z"/>
+<path class="b2" d="M192.0,192.0 V145.9 Q192.0,141.9 196.0,141.9 H202.0 Q206.0,141.9 206.0,145.9 V192.0 Z"/>
+<text x="191.0" y="210" text-anchor="middle">4</text>
+<path class="b1" d="M212.2,192.0 V186.9 Q212.2,182.9 216.2,182.9 H222.2 Q226.2,182.9 226.2,186.9 V192.0 Z"/>
+<path class="b2" d="M228.2,192.0 V176.3 Q228.2,172.3 232.2,172.3 H238.2 Q242.2,172.3 242.2,176.3 V192.0 Z"/>
+<text x="227.2" y="210" text-anchor="middle">5</text>
+<path class="b2" d="M264.4,192.0 V189.9 Q264.4,185.9 268.4,185.9 H274.4 Q278.4,185.9 278.4,189.9 V192.0 Z"/>
+<text x="263.4" y="210" text-anchor="middle">6</text>
+<path class="b2" d="M300.7,192.0 V192.0 Q300.7,190.5 302.2,190.5 H313.1 Q314.7,190.5 314.7,192.0 V192.0 Z"/>
+<text x="299.7" y="210" text-anchor="middle">7</text>
+<path class="b1" d="M320.9,192.0 V186.9 Q320.9,182.9 324.9,182.9 H330.9 Q334.9,182.9 334.9,186.9 V192.0 Z"/>
+<path class="b2" d="M336.9,192.0 V192.0 Q336.9,191.6 337.3,191.6 H350.5 Q350.9,191.6 350.9,192.0 V192.0 Z"/>
+<text x="335.9" y="210" text-anchor="middle">8</text>
+<line class="ax" x1="28" x2="354" y1="192.0" y2="192.0"/>
+<text x="191.0" y="226" text-anchor="middle">x — число бракованных изделий</text>
+<rect class="hit" x="28.0" y="10" width="36.2" height="182" tabindex="0" data-x="0" data-m="1" data-t="4,86"><title>x = 0: m = 1, mT = 4,86</title></rect>
+<rect class="hit" x="64.2" y="10" width="36.2" height="182" tabindex="0" data-x="1" data-m="15" data-t="12,02"><title>x = 1: m = 15, mT = 12,02</title></rect>
+<rect class="hit" x="100.4" y="10" width="36.2" height="182" tabindex="0" data-x="2" data-m="18" data-t="14,11"><title>x = 2: m = 18, mT = 14,11</title></rect>
+<rect class="hit" x="136.7" y="10" width="36.2" height="182" tabindex="0" data-x="3" data-m="10" data-t="10,46"><title>x = 3: m = 10, mT = 10,46</title></rect>
+<rect class="hit" x="172.9" y="10" width="36.2" height="182" tabindex="0" data-x="4" data-m="4" data-t="5,50"><title>x = 4: m = 4, mT = 5,50</title></rect>
+<rect class="hit" x="209.1" y="10" width="36.2" height="182" tabindex="0" data-x="5" data-m="1" data-t="2,17"><title>x = 5: m = 1, mT = 2,17</title></rect>
+<rect class="hit" x="245.3" y="10" width="36.2" height="182" tabindex="0" data-x="6" data-m="0" data-t="0,67"><title>x = 6: m = 0, mT = 0,67</title></rect>
+<rect class="hit" x="281.6" y="10" width="36.2" height="182" tabindex="0" data-x="7" data-m="0" data-t="0,17"><title>x = 7: m = 0, mT = 0,17</title></rect>
+<rect class="hit" x="317.8" y="10" width="36.2" height="182" tabindex="0" data-x="8" data-m="1" data-t="0,04"><title>x = 8: m = 1, mT = 0,04</title></rect>
+</svg></div>
+<div class="tip" id="tip7" hidden></div>
+</figure>
+<div class="answer"><p><b>Ответ.</b> \(p^*=0{,}11\); теоретические частоты — последний столбец таблицы. Столбики рисуем отдельно стоящими (величина дискретная).</p></div>
+</div></section>
+
+<!-- 8 -->
+<section class="task" id="t8"><div class="num"><span>Задача </span>8</div><div class="body">
+<h4>а)</h4>
+<p>\(F(x)\) непрерывна в точке \(2\theta\):</p>
+\[\begin{aligned}&F(2\theta)=a\theta\ln\frac{2\theta}{\theta}=a\theta\ln2=1\\&\Rightarrow\ a=\frac1{\theta\ln2}\end{aligned}\]
+\[F(x)=\frac{\ln(x/\theta)}{\ln2}=\log_2\frac{x}{\theta}\]
+\[f(x)=F'(x)=\frac{1}{x\ln2}\]
+<p>при \(x\in[\theta;2\theta]\).</p>
+<h4>б) Метод моментов</h4>
+\[\begin{aligned}M(X)&=\int_\theta^{2\theta}x\cdot\frac{1}{x\ln2}\,dx\\&=\frac{2\theta-\theta}{\ln2}=\frac{\theta}{\ln2}\end{aligned}\]
+\[\frac{\theta^*}{\ln2}=\bar X\ \Rightarrow\ \theta^*_{\text{ММ}}=\bar X\ln2\]
+\[\begin{aligned}M(\theta^*_{\text{ММ}})&=\ln2\cdot M(\bar X)\\&=\ln2\cdot\frac{\theta}{\ln2}=\theta\end{aligned}\]
+<p>\(\Rightarrow\) оценка несмещённая.</p>
+<h4>в) ММП</h4>
+\[L(\theta)=\prod_{i=1}^n\frac{1}{x_i\ln2}=\frac{1}{(\ln2)^n\prod x_i}\]
+<p>если \(\theta\le x_i\le2\theta\) для всех \(i\); иначе \(L(\theta)=0\).</p>
+\[\begin{aligned}&\theta\le x_{(1)},\quad 2\theta\ge x_{(n)}\\&\iff\ \frac{x_{(n)}}2\le\theta\le x_{(1)}\end{aligned}\]
+<p>Случай нерегулярный (область значений зависит от \(\theta\)), уравнение \(\frac{\partial\ln L}{\partial\theta}=0\) не применяется. На отрезке \(\left[\frac{x_{(n)}}2;\,x_{(1)}\right]\) функция \(L\) постоянна и положительна, вне его \(L=0\) \(\Rightarrow\) максимум достигается в любой точке отрезка.</p>
+<p>Существование: для истинного \(\theta\) все \(X_i\in[\theta;2\theta]\), поэтому \(\frac{X_{(n)}}2\le\theta\le X_{(1)}\) — отрезок не пуст.</p>
+\[\hat\theta_{\text{МП}}\in\left[\frac{X_{(n)}}{2};\ X_{(1)}\right]\]
+<p>МП-оценка существует, но не единственна (например, \(\hat\theta=X_{(1)}\) или \(\hat\theta=\frac{X_{(n)}}2\)).</p>
+<h4>г)</h4>
+\[\begin{aligned}&n=10,\quad\sum x_i=14{,}0,\quad\bar x=1{,}4\\&x_{(1)}=1{,}0,\quad x_{(n)}=1{,}9\end{aligned}\]
+\[\begin{aligned}\theta^*_{\text{ММ}}&=1{,}4\cdot\ln2=1{,}4\cdot0{,}6931\\&=0{,}970\in[0{,}95;\,1{,}0]\end{aligned}\]
+\[\hat\theta_{\text{МП}}\in\left[\frac{1{,}9}{2};\ 1{,}0\right]=[0{,}95;\ 1{,}0]\]
+\[\begin{aligned}P(X>1{,}5)&=1-F(1{,}5)\\&=1-\log_2\frac{1{,}5}{\theta}\end{aligned}\]
+<p>ММ, \(\theta^*=0{,}970\):</p>
+\[\begin{aligned}P&=1-\log_2\frac{1{,}5}{0{,}970}\\&=1-\log_2 1{,}546\\&=1-0{,}628=0{,}372\end{aligned}\]
+<p>МП, \(\hat\theta=X_{(1)}=1{,}0\):</p>
+\[\begin{aligned}P&=1-\log_2 1{,}5\\&=1-0{,}585=0{,}415\end{aligned}\]
+<p>МП, \(\hat\theta=\frac{X_{(n)}}2=0{,}95\):</p>
+\[\begin{aligned}P&=1-\log_2\frac{1{,}5}{0{,}95}\\&=1-0{,}659=0{,}341\end{aligned}\]
+<div class="answer">
+<p><b>Ответ.</b> а) \(a=\dfrac1{\theta\ln2}\); б) \(\theta^*=\bar X\ln2\), несмещённая; в) \(\hat\theta_{\text{МП}}\) — любая точка \(\left[\frac{X_{(n)}}2;\,X_{(1)}\right]\).</p>
+<p>г) ММ: \(\theta^*=0{,}970\), \(P(X>1{,}5)\approx0{,}372\).</p>
+<p>МП: \(\hat\theta\in[0{,}95;\,1]\), \(P(X>1{,}5)\in[0{,}341;\,0{,}415]\); при \(\hat\theta=X_{(1)}=1\): \(P\approx0{,}415\).</p>
+</div>
+</div></section>
+
+<footer>ДЗ №5, «Математическая статистика», 2026</footer>
+</div>
+
+<script>
+(function(){
+  var fig = document.getElementById('chart7');
+  var tip = document.getElementById('tip7');
+  if(!fig || !tip) return;
+  var hits = fig.querySelectorAll('.hit');
+  function show(h){
+    hits.forEach(function(x){ x.classList.toggle('on', x === h); });
+    var lab = h.getAttribute('data-x') === '8' ? '8 и более' : h.getAttribute('data-x');
+    tip.innerHTML = '<div><b>x = ' + lab + '</b></div>' +
+      '<div><i style="background:var(--s1)"></i>m<sub>i</sub> = ' + h.getAttribute('data-m') + '</div>' +
+      '<div><i style="background:var(--s2)"></i>m<sub>i</sub><sup>T</sup> = ' + h.getAttribute('data-t') + '</div>';
+    tip.hidden = false;
+    var fr = fig.getBoundingClientRect(), hr = h.getBoundingClientRect();
+    var left = hr.left - fr.left + hr.width / 2 - tip.offsetWidth / 2;
+    left = Math.max(4, Math.min(left, fig.clientWidth - tip.offsetWidth - 4));
+    tip.style.left = left + 'px';
+    tip.style.top = (hr.top - fr.top + 4) + 'px';
+  }
+  function hide(){ tip.hidden = true; hits.forEach(function(x){ x.classList.remove('on'); }); }
+  hits.forEach(function(h){
+    h.addEventListener('mouseenter', function(){ show(h); });
+    h.addEventListener('click', function(){ show(h); });
+    h.addEventListener('focus', function(){ show(h); });
+    h.addEventListener('blur', hide);
+  });
+  fig.addEventListener('mouseleave', hide);
+})();
+</script>
