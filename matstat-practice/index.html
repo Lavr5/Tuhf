@@ -1,0 +1,971 @@
+<title>Матстат на практике</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Golos+Text:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Unbounded:wght@500;700&display=swap">
+<style>
+/* Layout: одна колонка-«тетрадь в клетку»; синяя ручка для действий, красная ручка преподавателя для ловушек */
+:root{
+  --paper:#f8fafd; --grid:#e4ebf4; --ink:#17213b; --muted:#56617a; --line:#d2dae7; --card:#ffffff;
+  --pen:#2346c0; --pen-soft:#e9eefc; --red:#c22f2a; --red-soft:#fcecea; --ok:#1c7a4b; --ok-soft:#e3f3ea;
+  --f-display:"Unbounded","Golos Text",system-ui,sans-serif;
+  --f-body:"Golos Text",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-hand:"Caveat","Segoe Print","Comic Sans MS",cursive;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+  --s-1:.8125rem; --s0:1rem; --s1:1.125rem; --s2:1.375rem; --s3:1.75rem; --s4:2.5rem;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0f141e; --grid:#182030; --ink:#e3e8f3; --muted:#9ba6be; --line:#29334a; --card:#151c2a;
+    --pen:#93abff; --pen-soft:#1b2544; --red:#ff7d72; --red-soft:#3a1c1d; --ok:#55c992; --ok-soft:#12301f;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0f141e; --grid:#182030; --ink:#e3e8f3; --muted:#9ba6be; --line:#29334a; --card:#151c2a;
+  --pen:#93abff; --pen-soft:#1b2544; --red:#ff7d72; --red-soft:#3a1c1d; --ok:#55c992; --ok-soft:#12301f;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+body{
+  background-color:var(--paper);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:22px 22px;
+  color:var(--ink); font-family:var(--f-body); font-size:var(--s0); line-height:1.6;
+  -webkit-text-size-adjust:100%;
+}
+.page{max-width:880px;margin:0 auto;padding-inline:16px;padding-block:28px 80px}
+h1,h2,h3{text-wrap:balance;line-height:1.2;margin:0}
+h1{font-family:var(--f-display);font-weight:700;font-size:clamp(2rem,6vw,var(--s4));letter-spacing:-.01em}
+h2{font-family:var(--f-display);font-weight:500;font-size:var(--s3)}
+h3{font-size:var(--s1);font-weight:600;margin-top:8px}
+p{margin:0}
+a{color:var(--pen)}
+.mono,.tbl{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+
+/* hero */
+.hero{display:grid;gap:14px;padding-block:8px 20px}
+.eyebrow{font-size:var(--s-1);text-transform:uppercase;letter-spacing:.09em;color:var(--muted);font-weight:600}
+.lead{font-size:var(--s1);max-width:62ch}
+.howto{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:6px}
+.howto div{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;min-width:0}
+.howto b{display:block;font-family:var(--f-display);font-weight:500;font-size:var(--s-1);color:var(--pen);letter-spacing:.04em;margin-bottom:4px}
+.hand{font-family:var(--f-hand);font-size:1.45rem;line-height:1.25;color:var(--red);font-weight:600}
+
+/* sticky bar */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);border-bottom:1px solid var(--line);margin-inline:-16px;padding:10px 16px;display:grid;gap:8px}
+.progress{display:flex;align-items:center;gap:12px;font-size:var(--s-1);color:var(--muted)}
+.progress .track{flex:1;height:6px;border-radius:3px;background:var(--line);overflow:hidden}
+.progress .fill{height:100%;width:0;background:var(--ok);transition:width .3s}
+.progress strong{color:var(--ink);font-variant-numeric:tabular-nums}
+.nav{display:flex;gap:6px;overflow-x:auto;scrollbar-width:thin;padding-bottom:2px}
+.nav a{flex:none;text-decoration:none;color:var(--ink);font-size:var(--s-1);border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 11px;white-space:nowrap}
+.nav a:hover,.nav a:focus-visible{border-color:var(--pen);color:var(--pen)}
+.nav a span{font-family:var(--f-mono);color:var(--muted);margin-right:4px}
+
+/* topics */
+.topic{display:grid;gap:16px;padding-block:44px 8px;scroll-margin-top:96px}
+.topic-head{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center;border-top:2px solid var(--ink);padding-top:18px}
+.num{font-family:var(--f-display);font-weight:700;font-size:2.6rem;line-height:1;color:var(--pen);min-width:1.4em}
+.src{font-size:var(--s-1);color:var(--muted);margin-top:4px}
+.plain{background:var(--pen-soft);border-radius:var(--r);padding:14px 18px;display:grid;gap:6px}
+.label{font-size:var(--s-1);text-transform:uppercase;letter-spacing:.08em;font-weight:700;color:var(--pen)}
+.plain p,.body p{max-width:68ch}
+.body{display:grid;gap:10px}
+
+ol.recipe{counter-reset:r;list-style:none;margin:0;padding:0;display:grid;gap:8px}
+ol.recipe>li{counter-increment:r;display:grid;grid-template-columns:2rem 1fr;gap:10px;align-items:start}
+ol.recipe>li::before{content:counter(r);font-family:var(--f-display);font-weight:500;font-size:var(--s-1);color:var(--paper);background:var(--pen);width:1.7rem;height:1.7rem;border-radius:50%;display:grid;place-items:center;margin-top:1px}
+ol.recipe>li>div{min-width:0}
+.recipe-box{border:1.5px solid var(--pen);border-radius:var(--r);padding:16px 18px;display:grid;gap:12px;background:var(--card)}
+.recipe-box>.label{color:var(--pen)}
+
+.trap{font-family:var(--f-hand);font-size:1.4rem;line-height:1.25;color:var(--red);font-weight:600;padding:4px 2px 6px;border-bottom:2px dashed var(--red);justify-self:start;max-width:100%}
+.trap::before{content:"Ловушка: ";font-weight:700}
+
+/* cards */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;display:grid;gap:12px;min-width:0}
+.card-head{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:baseline}
+.chip{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;font-weight:700;border-radius:4px;padding:2px 7px}
+.chip.ex{background:var(--pen);color:var(--card)}
+.chip.self{background:var(--ink);color:var(--card)}
+.card-title{font-weight:600}
+.from{font-size:var(--s-1);color:var(--muted)}
+.cond{max-width:70ch}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.step{border-left:2px solid var(--line);padding:2px 0 2px 14px;display:grid;gap:4px;min-width:0}
+.step>b{font-size:var(--s-1);color:var(--pen);text-transform:uppercase;letter-spacing:.06em}
+.step.fresh{animation:pop .35s ease-out}
+@keyframes pop{from{opacity:.25;transform:translateY(4px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){.step.fresh{animation:none}}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{font:inherit;font-size:var(--s-1);font-weight:600;border-radius:8px;padding:7px 13px;border:1.5px solid var(--pen);background:var(--pen);color:var(--card);cursor:pointer}
+.btn.ghost{background:transparent;color:var(--pen)}
+.btn:disabled{opacity:.45;cursor:default}
+.btn:focus-visible,.nav a:focus-visible,summary:focus-visible{outline:3px solid var(--pen);outline-offset:2px}
+.counter{font-size:var(--s-1);color:var(--muted);font-variant-numeric:tabular-nums}
+details{border-top:1px dashed var(--line);padding-top:8px}
+details+details{border-top:none;padding-top:0}
+summary{cursor:pointer;font-weight:600;color:var(--pen);font-size:.95rem;width:max-content;max-width:100%}
+details[open]>summary{margin-bottom:8px}
+details>div{display:grid;gap:8px;min-width:0}
+.task.is-done{border-color:var(--ok);background:linear-gradient(var(--ok-soft),var(--ok-soft)) top/100% 4px no-repeat,var(--card)}
+.done-btn{font:inherit;font-size:var(--s-1);font-weight:600;border-radius:8px;padding:6px 12px;border:1.5px solid var(--line);background:transparent;color:var(--muted);cursor:pointer;justify-self:start}
+.done-btn[aria-pressed="true"]{border-color:var(--ok);color:var(--ok);background:var(--ok-soft)}
+.answer{font-weight:600}
+
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:14px}
+.scroll{overflow-x:auto;max-width:100%}
+.tbl{border-collapse:collapse;font-size:.86rem;min-width:100%}
+.tbl th,.tbl td{border:1px solid var(--line);padding:5px 9px;text-align:right;white-space:nowrap}
+.tbl th{font-family:var(--f-body);font-weight:600;background:var(--pen-soft);text-align:center}
+.tbl td.l,.tbl th.l{text-align:left;white-space:normal}
+.tbl tr.sum td{font-weight:600;border-top:2px solid var(--ink)}
+.tbl.text td{font-family:var(--f-body);white-space:normal;text-align:left;vertical-align:top}
+ul.dense{margin:0;padding-left:1.2em;display:grid;gap:4px}
+mjx-container[display="true"]{overflow-x:auto;overflow-y:hidden;max-width:100%;padding-block:2px}
+mjx-container{color:inherit}
+mjx-container.wide-math{display:block!important;overflow-x:auto;overflow-y:hidden;max-width:100%;padding-block:2px}
+.card p,.plain p,.recipe li,.tbl.text td{overflow-wrap:anywhere}
+.foot{margin-top:56px;font-size:var(--s-1);color:var(--muted);border-top:1px solid var(--line);padding-top:14px}
+@media (max-width:520px){
+  .num{font-size:2rem}
+  .card,.recipe-box{padding:14px}
+  .trap{font-size:1.3rem}
+}
+</style>
+
+<div class="page">
+<header class="hero">
+  <span class="eyebrow">Матстатистика · точечные оценки · семинары 1–8 и ДЗ №5</span>
+  <h1>Матстат на практике</h1>
+  <p class="lead">Все задачи с семинаров и из ДЗ разобраны по шагам. Теории здесь ровно столько, сколько нужно, чтобы решить задачу. Остальное ты добираешь руками.</p>
+  <div class="howto">
+    <div><b>1 · Рецепт</b>Алгоритм темы. Он один и тот же во всех задачах раздела, его и надо запомнить.</div>
+    <div><b>2 · Разбор</b>Жми «Следующий шаг». Перед каждым нажатием попробуй сам угадать, что будет дальше.</div>
+    <div><b>3 · Сам</b>Реши на бумаге, сверься и отметь задачу как решённую. Прогресс запоминается в этом браузере.</div>
+  </div>
+  <p class="hand">Мало времени? Иди по порядку 0 → 2 → 6 → 7 → 10. Задача 10 — это ИКР из ДЗ №5, по ней видно, что реально спросят.</p>
+</header>
+
+<nav class="bar" aria-label="Разделы">
+  <div class="progress"><span>Решено <strong id="done-count">0</strong> из <strong id="total-count">0</strong></span><div class="track"><div class="fill" id="fill"></div></div></div>
+  <div class="nav">
+    <a href="#t0"><span>0</span>M и D</a>
+    <a href="#t1"><span>1</span>Числа по выборке</a>
+    <a href="#t2"><span>2</span>Несмещённость</a>
+    <a href="#t3"><span>3</span>min / max</a>
+    <a href="#t4"><span>4</span>Фишер, χ²</a>
+    <a href="#t5"><span>5</span>Рао–Крамер</a>
+    <a href="#t6"><span>6</span>Метод моментов</a>
+    <a href="#t7"><span>7</span>ММП</a>
+    <a href="#t8"><span>8</span>Какая оценка лучше</a>
+    <a href="#t9"><span>9</span>Теор. частоты</a>
+    <a href="#t10"><span>10</span>ИКР</a>
+    <a href="#t11"><span>11</span>Шпаргалка</a>
+  </div>
+</nav>
+
+<!-- ============ 0 ============ -->
+<section class="topic" id="t0">
+  <div class="topic-head"><span class="num">0</span><div><h2>Инструменты: M и D</h2><p class="src">Нужно в каждой задаче. Если плаваешь здесь, дальше будет больно.</p></div></div>
+  <div class="plain"><span class="label">По-человечески</span>
+    <p>$M(X)$ — среднее значение случайной величины, её «центр». $D(X)$ — насколько она разбросана вокруг центра. Выборка $X_1,\dots,X_n$ — это $n$ независимых копий одной и той же $X$. Поэтому у каждого $X_i$ те же $M$ и $D$, что и у $X$.</p>
+  </div>
+  <div class="recipe-box"><span class="label">Семь правил, на которых держится всё</span>
+    <ol class="recipe">
+      <li><div>$M(aX+b)=a\,M(X)+b$</div></li>
+      <li><div>$D(aX+b)=a^2D(X)$ — множитель выходит в квадрате, сдвиг $b$ пропадает</div></li>
+      <li><div>$M(X\pm Y)=M(X)\pm M(Y)$ — всегда</div></li>
+      <li><div>$D(X\pm Y)=D(X)+D(Y)$, если $X$ и $Y$ независимы. В обоих случаях плюс</div></li>
+      <li><div>$D(X)=M(X^2)-\big(M(X)\big)^2$, отсюда главный трюк: $M(X^2)=D(X)+\big(M(X)\big)^2$</div></li>
+      <li><div>Для выборки: $M(\bar X)=M(X)$, $\;D(\bar X)=\dfrac{D(X)}{n}$, где $\bar X=\frac1n\sum X_i$</div></li>
+      <li><div>$M\big(g(X)\big)=\sum g(x_i)\,p_i$ (дискретная) или $\int g(x)f(x)\,dx$ (непрерывная)</div></li>
+    </ol>
+  </div>
+  <p class="trap">$D(X-Y)=D(X)+D(Y)$. Минуса не бывает, дисперсия всегда ≥ 0.</p>
+
+  <h3>Таблица распределений. Её знать наизусть</h3>
+  <div class="scroll">
+  <table class="tbl text">
+    <thead><tr><th class="l">Распределение</th><th class="l">Вероятность / плотность</th><th class="l">$M(X)$</th><th class="l">$D(X)$</th></tr></thead>
+    <tbody>
+      <tr><td>Бернулли</td><td>$P(1)=p,\;P(0)=q=1-p$</td><td>$p$</td><td>$pq$</td></tr>
+      <tr><td>Биномиальное $B(n,p)$ — число успехов из $n$</td><td>$C_n^k p^k q^{n-k}$</td><td>$np$</td><td>$npq$</td></tr>
+      <tr><td>Пуассона $\mathrm{Pois}(\lambda)$</td><td>$\dfrac{\lambda^k e^{-\lambda}}{k!}$</td><td>$\lambda$</td><td>$\lambda$</td></tr>
+      <tr><td>Отриц. биномиальное — число неудач до $r$-го успеха</td><td>$C_{k+r-1}^{k}\,p^r q^k$</td><td>$\dfrac{rq}{p}$</td><td>$\dfrac{rq}{p^2}$</td></tr>
+      <tr><td>Равномерное $U[a;b]$</td><td>$\dfrac{1}{b-a}$ на $[a;b]$</td><td>$\dfrac{a+b}{2}$</td><td>$\dfrac{(b-a)^2}{12}$</td></tr>
+      <tr><td>Показательное $\mathrm{Exp}(\lambda)$</td><td>$\lambda e^{-\lambda x},\;x\ge0$</td><td>$\dfrac1\lambda$</td><td>$\dfrac1{\lambda^2}$</td></tr>
+      <tr><td>Нормальное $N(\mu,\sigma)$</td><td>$\dfrac{1}{\sigma\sqrt{2\pi}}e^{-\frac{(x-\mu)^2}{2\sigma^2}}$</td><td>$\mu$</td><td>$\sigma^2$</td></tr>
+      <tr><td>Хи-квадрат $\chi^2(k)$</td><td>сумма квадратов $k$ независимых $N(0,1)$</td><td>$k$</td><td>$2k$</td></tr>
+      <tr><td>Гамма $\Gamma(n,\lambda)$ — сумма $n$ независимых $\mathrm{Exp}(\lambda)$</td><td>$\dfrac{\lambda^n x^{n-1}e^{-\lambda x}}{(n-1)!}$</td><td>$\dfrac n\lambda$</td><td>$\dfrac n{\lambda^2}$</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="trap">«Показательное с параметром $1/\alpha$» значит $f=\frac1\alpha e^{-x/\alpha}$, и тогда $M(X)=\alpha$, $D(X)=\alpha^2$.</p>
+
+  <div class="grid2">
+    <article class="card task" data-id="0a">
+      <div class="card-head"><span class="chip self">Сам</span><span class="card-title">Разминка 1</span></div>
+      <p class="cond">$M(X)=2$, $D(X)=3$. Найди $M(5X-1)$, $D(5X-1)$, $M(X^2)$.</p>
+      <details><summary>Ответ</summary><div><p>$M=5\cdot2-1=9$; $\;D=25\cdot3=75$; $\;M(X^2)=D+M^2=3+4=7$ (правило 5).</p></div></details>
+      <button class="done-btn" type="button" id="done-0a">Отметить: решил сам</button>
+    </article>
+    <article class="card task" data-id="0b">
+      <div class="card-head"><span class="chip self">Сам</span><span class="card-title">Разминка 2</span></div>
+      <p class="cond">$X$ и $Y$ независимы, $D(X)=D(Y)=\sigma^2$. Найди $D(X-Y)$ и $D(2X+3Y)$.</p>
+      <details><summary>Ответ</summary><div><p>$D(X-Y)=\sigma^2+\sigma^2=2\sigma^2$; $\;D(2X+3Y)=4\sigma^2+9\sigma^2=13\sigma^2$.</p></div></details>
+      <button class="done-btn" type="button" id="done-0b">Отметить: решил сам</button>
+    </article>
+    <article class="card task" data-id="0c">
+      <div class="card-head"><span class="chip self">Сам</span><span class="card-title">Разминка 3 — понадобится в теме 2</span></div>
+      <p class="cond">Выборка из распределения с $M(X)=\mu$, $D(X)=\sigma^2$. Найди $M(\bar X^2)$.</p>
+      <details><summary>Подсказка</summary><div><p>Правило 5, применённое к $\bar X$, плюс правило 6.</p></div></details>
+      <details><summary>Ответ</summary><div><p>$M(\bar X^2)=D(\bar X)+\big(M(\bar X)\big)^2=\dfrac{\sigma^2}{n}+\mu^2$. Не просто $\mu^2$.</p></div></details>
+      <button class="done-btn" type="button" id="done-0c">Отметить: решил сам</button>
+    </article>
+    <article class="card task" data-id="0d">
+      <div class="card-head"><span class="chip self">Сам</span><span class="card-title">Разминка 4</span></div>
+      <p class="cond">$X\sim U[0;\theta]$. Найди $M(X^2)$ двумя способами: через правило 5 и через интеграл.</p>
+      <details><summary>Ответ</summary><div><p>Правило 5: $\dfrac{\theta^2}{12}+\dfrac{\theta^2}{4}=\dfrac{\theta^2}{3}$. Интеграл: $\displaystyle\int_0^\theta x^2\cdot\frac1\theta\,dx=\frac{\theta^2}{3}$. Совпало.</p></div></details>
+      <button class="done-btn" type="button" id="done-0d">Отметить: решил сам</button>
+    </article>
+  </div>
+</section>
+
+<!-- ============ 1 ============ -->
+<section class="topic" id="t1">
+  <div class="topic-head"><span class="num">1</span><div><h2>Считаем числа по выборке</h2><p class="src">Семинары 1–2, задачи 1–2 · Семинары 3–4, задача 6 (Excel)</p></div></div>
+  <div class="plain"><span class="label">По-человечески</span>
+    <p>Дан столбик чисел. Нужно найти центр (среднее, медиана, мода), разброс (дисперсия, отклонение, вариация) и форму (асимметрия, эксцесс). Это чистая арифметика по формулам. Все формулы строятся вокруг отклонений $d_i=x_i-\bar x$.</p>
+  </div>
+  <div class="recipe-box"><span class="label">Рецепт: несгруппированные данные (n маленькое)</span>
+    <ol class="recipe">
+      <li><div>Среднее: $\bar x=\dfrac{\sum x_i}{n}$</div></li>
+      <li><div>Таблица со столбцами $d$, $d^2$, $d^3$, $d^4$, где $d=x-\bar x$. Проверка: $\sum d=0$ всегда</div></li>
+      <li><div>$S^2=\dfrac{\sum d^2}{n}$ — обычная (смещённая), $\;\hat S^2=\dfrac{\sum d^2}{n-1}$ — исправленная (несмещённая), $S=\sqrt{S^2}$</div></li>
+      <li><div>Центральные моменты: $\mu_3=\dfrac{\sum d^3}{n}$, $\;\mu_4=\dfrac{\sum d^4}{n}$</div></li>
+      <li><div>$A_c=\dfrac{\mu_3}{S^3}$, $\;E_k=\dfrac{\mu_4}{S^4}-3$, $\;V_S=\dfrac{S}{\bar x}\cdot100\%$</div></li>
+      <li><div>Медиана: отсортируй и возьми середину (при чётном $n$ — среднее двух средних). Мода: самое частое значение</div></li>
+    </ol>
+  </div>
+
+  <article class="card ex">
+    <div class="card-head"><span class="chip ex">Разбор</span><span class="card-title">Время обработки запросов</span><span class="from">Сем 1–2, №1</span></div>
+    <p class="cond">Время обработки 9 запросов: 50; 58; 48; 54; 50; 52; 51; 49; 47 мин. Найти $\bar x$, $\hat S^2$, $\hat S$, медиану, $A_c$, $E_k$, $V_S$.</p>
+    <ol class="steps">
+      <li class="step"><b>Шаг 1 · среднее</b><p>Сумма $=459$, $n=9$, $\bar x=459/9=51$.</p></li>
+      <li class="step"><b>Шаг 2 · таблица отклонений</b>
+        <div class="scroll"><table class="tbl">
+          <thead><tr><th>$x$</th><th>$d=x-51$</th><th>$d^2$</th><th>$d^3$</th><th>$d^4$</th></tr></thead>
+          <tbody>
+            <tr><td>50</td><td>−1</td><td>1</td><td>−1</td><td>1</td></tr>
+            <tr><td>58</td><td>7</td><td>49</td><td>343</td><td>2401</td></tr>
+            <tr><td>48</td><td>−3</td><td>9</td><td>−27</td><td>81</td></tr>
+            <tr><td>54</td><td>3</td><td>9</td><td>27</td><td>81</td></tr>
+            <tr><td>50</td><td>−1</td><td>1</td><td>−1</td><td>1</td></tr>
+            <tr><td>52</td><td>1</td><td>1</td><td>1</td><td>1</td></tr>
+            <tr><td>51</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+            <tr><td>49</td><td>−2</td><td>4</td><td>−8</td><td>16</td></tr>
+            <tr><td>47</td><td>−4</td><td>16</td><td>−64</td><td>256</td></tr>
+            <tr class="sum"><td>Σ</td><td>0 ✓</td><td>90</td><td>270</td><td>2838</td></tr>
+          </tbody>
+        </table></div>
+      </li>
+      <li class="step"><b>Шаг 3 · дисперсии</b><p>$S^2=90/9=10$, $S=3{,}162$. Несмещённая: $\hat S^2=90/8=11{,}25$, $\hat S=3{,}354$.</p></li>
+      <li class="step"><b>Шаг 4 · моменты</b><p>$\mu_3=270/9=30$, $\;\mu_4=2838/9=315{,}33$.</p></li>
+      <li class="step"><b>Шаг 5 · форма и вариация</b><p>$A_c=\dfrac{30}{3{,}162^3}=\dfrac{30}{31{,}62}=0{,}949$. Больше нуля: длинный хвост вправо, его создаёт значение 58.</p>
+        <p>$E_k=\dfrac{315{,}33}{10^2}-3=0{,}153$. Чуть больше нуля: пик чуть острее нормального.</p>
+        <p>$V_S=\dfrac{3{,}162}{51}\cdot100\%=6{,}2\%$ (если брать $\hat S$, то $6{,}58\%$). Меньше 33%, значит данные однородные.</p></li>
+      <li class="step"><b>Шаг 6 · медиана и мода</b><p>Сортируем: 47 48 49 50 <u>50</u> 51 52 54 58. Пятый элемент из девяти: $Me=50$. Мода тоже 50, оно встречается дважды.</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Следующий шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+  </article>
+
+  <div class="recipe-box"><span class="label">Рецепт: сгруппированные данные (интервалы и частоты)</span>
+    <ol class="recipe">
+      <li><div>Каждый интервал заменяешь его серединой $x_i$, частоты $m_i$, объём $n=\sum m_i$</div></li>
+      <li><div>Всё то же самое, но каждое слагаемое умножаешь на $m_i$: $\bar x=\dfrac{\sum x_i m_i}{n}$, $\;S^2=\dfrac{\sum d_i^2 m_i}{n}$, $\;\mu_3=\dfrac{\sum d_i^3 m_i}{n}$, $\;\mu_4=\dfrac{\sum d_i^4 m_i}{n}$</div></li>
+      <li><div>Мода: берёшь интервал с наибольшей частотой. $Mo=a+h\dfrac{m_{Mo}-m_{\text{пред}}}{(m_{Mo}-m_{\text{пред}})+(m_{Mo}-m_{\text{след}})}$, где $a$ — левая граница, $h$ — ширина</div></li>
+      <li><div>Медиана: ищешь интервал, где накопленная частота переходит через $n/2$. $Me=a+h\dfrac{n/2-(\text{накопленная до него})}{m_{Me}}$</div></li>
+    </ol>
+  </div>
+
+  <article class="card ex">
+    <div class="card-head"><span class="chip ex">Разбор</span><span class="card-title">Себестоимость товара</span><span class="from">Сем 1–2, №2</span></div>
+    <p class="cond">Интервалы 104–106, 106–108, 108–110, 110–112, 112–114 с частотами 2, 12, 17, 12, 7. Найти $\bar x$, $S$, $\mu_3$, $\mu_4$, $A_c$, $E_k$, $V_S$, $Mo$, $Me$.</p>
+    <ol class="steps">
+      <li class="step"><b>Шаг 1 · середины и среднее</b><p>Середины: 105, 107, 109, 111, 113; $n=50$. $\sum x_i m_i=5470$, $\bar x=5470/50=109{,}4$.</p></li>
+      <li class="step"><b>Шаг 2 · таблица</b>
+        <div class="scroll"><table class="tbl">
+          <thead><tr><th>$x_i$</th><th>$m_i$</th><th>$d=x_i-109{,}4$</th><th>$d^2m_i$</th><th>$d^3m_i$</th><th>$d^4m_i$</th></tr></thead>
+          <tbody>
+            <tr><td>105</td><td>2</td><td>−4,4</td><td>38,72</td><td>−170,368</td><td>749,619</td></tr>
+            <tr><td>107</td><td>12</td><td>−2,4</td><td>69,12</td><td>−165,888</td><td>398,131</td></tr>
+            <tr><td>109</td><td>17</td><td>−0,4</td><td>2,72</td><td>−1,088</td><td>0,435</td></tr>
+            <tr><td>111</td><td>12</td><td>1,6</td><td>30,72</td><td>49,152</td><td>78,643</td></tr>
+            <tr><td>113</td><td>7</td><td>3,6</td><td>90,72</td><td>326,592</td><td>1175,731</td></tr>
+            <tr class="sum"><td>Σ</td><td>50</td><td></td><td>232</td><td>38,4</td><td>2402,56</td></tr>
+          </tbody>
+        </table></div>
+      </li>
+      <li class="step"><b>Шаг 3 · разброс</b><p>$S^2=232/50=4{,}64$, $S=2{,}154$. $V_S=2{,}154/109{,}4=1{,}97\%$.</p></li>
+      <li class="step"><b>Шаг 4 · моменты и форма</b><p>$\mu_3=38{,}4/50=0{,}768$, $\;\mu_4=2402{,}56/50=48{,}05$.</p><p>$A_c=0{,}768/2{,}154^3=0{,}768/9{,}995=0{,}077$, почти симметрично. $E_k=48{,}05/4{,}64^2-3=2{,}232-3=-0{,}768$: вершина более плоская, чем у нормального.</p></li>
+      <li class="step"><b>Шаг 5 · мода</b><p>Наибольшая частота 17, интервал 108–110, соседи 12 и 12: $Mo=108+2\cdot\dfrac{17-12}{(17-12)+(17-12)}=109$.</p></li>
+      <li class="step"><b>Шаг 6 · медиана</b><p>$n/2=25$. Накопленные частоты: 2, 14, 31, значит 25 попадает в интервал 108–110. До него накоплено 14: $Me=108+2\cdot\dfrac{25-14}{17}=109{,}29$.</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Следующий шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+  </article>
+
+  <div class="grid2">
+    <article class="card task" data-id="1a">
+      <div class="card-head"><span class="chip self">Сам</span><span class="card-title">Маленькая выборка</span></div>
+      <p class="cond">Данные: 3, 5, 7, 9, 6. Найди $\bar x$, $S^2$, $\hat S^2$, медиану.</p>
+      <details><summary>Ответ</summary><div><p>$\bar x=6$; отклонения −3, −1, 1, 3, 0; $\sum d^2=20$. $S^2=4$, $\hat S^2=5$. Сортируем 3 5 6 7 9: $Me=6$.</p></div></details>
+      <button class="done-btn" type="button" id="done-1a">Отметить: решил сам</button>
+    </article>
+    <article class="card task" data-id="1b">
+      <div class="card-head"><span class="chip self">Сам · Excel</span><span class="card-title">100 предприятий</span><span class="from">Сем 3–4, №6</span></div>
+      <p class="cond">Посчитай характеристики по исходным данным таблицы 1 (объём фондов) и построй интервальный ряд по Стёрджесу.</p>
+      <details><summary>Какие функции Excel</summary><div>
+        <ul class="dense">
+          <li>СРЗНАЧ, МЕДИАНА, МОДА.ОДН</li>
+          <li>ДИСП.Г даёт $S^2$ (делит на $n$), ДИСП.В даёт $\hat S^2$ (делит на $n-1$), СТАНДОТКЛОН.Г даёт $S$</li>
+          <li>ЧАСТОТА(данные; границы) — частоты по интервалам, вводится как формула массива</li>
+          <li>Моменты лучше считать столбцами: $d$, $d^2$, $d^3$, $d^4$ и СУММ. Встроенные СКОС и ЭКСЦЕСС используют поправки и дают немного другие числа, чем $\mu_3/S^3$</li>
+        </ul></div></details>
+      <details><summary>Ответы для сверки (по исходным данным)</summary><div>
+        <p class="mono">x̄ = 5,4493 · Me = 5,43 · Mo = 5,43 (15 раз)<br>S² = 0,02821 · Ŝ² = 0,02850 · S = 0,1680 · V = 3,08%<br>μ₃ = −0,000203 · μ₄ = 0,002374<br>Ac = −0,043 · Ek = −0,017</p>
+        <p>Стёрджес: $k=1+3{,}322\lg100=7{,}64\approx8$ интервалов, размах $5{,}85-5{,}02=0{,}83$, шаг $h\approx0{,}83/8\approx0{,}10$.</p></div></details>
+      <button class="done-btn" type="button" id="done-1b">Отметить: решил сам</button>
+    </article>
+  </div>
+</section>
+
+<!-- ============ 2 ============ -->
+<section class="topic" id="t2">
+  <div class="topic-head"><span class="num">2</span><div><h2>Несмещённость и состоятельность</h2><p class="src">Сем 1–2, №3–5 · Сем 3–4, №1–2</p></div></div>
+  <div class="plain"><span class="label">По-человечески</span>
+    <p>Параметр $\theta$ — правильный ответ, которого мы не знаем. Оценка $\theta^*$ — формула от выборки, которая пытается его угадать.</p>
+    <p><b>Несмещённая</b>: в среднем по всем возможным выборкам она попадает ровно в $\theta$, то есть $M(\theta^*)=\theta$. <b>Состоятельная</b>: чем больше данных, тем ближе к $\theta$. На практике это значит, что смещение и $D(\theta^*)$ стремятся к нулю при $n\to\infty$.</p>
+  </div>
+  <div class="recipe-box"><span class="label">Рецепт</span>
+    <ol class="recipe">
+      <li><div>Выпиши $M(X)$ и $D(X)$ через параметр (из таблицы в теме 0 или посчитай)</div></li>
+      <li><div>Посчитай $M(\theta^*)$ по правилам 1, 3, 6. Если получилось $\theta$, оценка несмещённая. Если нет: смещение $B=M(\theta^*)-\theta$. Если $B\to0$ при $n\to\infty$, оценка <i>асимптотически</i> несмещённая</div></li>
+      <li><div>Посчитай $D(\theta^*)$ по правилам 2, 4, 6. Если $D\to0$ и $B\to0$, оценка состоятельная</div></li>
+    </ol>
+  </div>
+
+  <article class="card ex">
+    <div class="card-head"><span class="chip ex">Разбор</span><span class="card-title">Среднее $\bar X$ для $N(\mu,\sigma)$</span><span class="from">Сем 1–2, №3</span></div>
+    <p class="cond">Доказать, что $\bar X$ — несмещённая и состоятельная оценка $\mu$.</p>
+    <ol class="steps">
+      <li class="step"><b>Шаг 1 · матожидание</b><p>$M(\bar X)=M\Big(\frac1n\sum X_i\Big)=\frac1n\sum M(X_i)=\frac1n\cdot n\mu=\mu$, значит несмещённая.</p></li>
+      <li class="step"><b>Шаг 2 · дисперсия</b><p>$D(\bar X)=\frac1{n^2}\sum D(X_i)=\frac1{n^2}\cdot n\sigma^2=\dfrac{\sigma^2}{n}$. Множитель $\frac1n$ вышел в квадрате, $X_i$ независимы.</p></li>
+      <li class="step"><b>Шаг 3 · вывод</b><p>$\lim\limits_{n\to\infty}\dfrac{\sigma^2}{n}=0$ и оценка несмещённая, значит состоятельная.</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Следующий шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+  </article>
+
+  <article class="card ex">
+    <div class="card-head"><span class="chip ex">Разбор</span><span class="card-title">Почему $S^2$ смещена и откуда $n-1$</span><span class="from">Сем 1–2, №4</span></div>
+    <p class="cond">Найти $M(S^2)$ для $S^2=\frac1n\sum(X_i-\bar X)^2$, смещение и проверить асимптотическую несмещённость.</p>
+    <ol class="steps">
+      <li class="step"><b>Шаг 1 · переписать</b><p>Раскрываем скобки: $S^2=\dfrac1n\sum X_i^2-\bar X^2$. Это та же формула, что $D=M(X^2)-M^2$.</p></li>
+      <li class="step"><b>Шаг 2 · первое слагаемое</b><p>По правилу 5: $M(X_i^2)=D(X_i)+M(X_i)^2=\sigma^2+\mu^2$. Значит $M\big(\frac1n\sum X_i^2\big)=\sigma^2+\mu^2$.</p></li>
+      <li class="step"><b>Шаг 3 · второе слагаемое</b><p>Это разминка 3: $M(\bar X^2)=D(\bar X)+M(\bar X)^2=\dfrac{\sigma^2}{n}+\mu^2$.</p></li>
+      <li class="step"><b>Шаг 4 · вычесть</b><p>$M(S^2)=\sigma^2+\mu^2-\dfrac{\sigma^2}{n}-\mu^2=\dfrac{n-1}{n}\sigma^2\ne\sigma^2$, значит смещённая.</p></li>
+      <li class="step"><b>Шаг 5 · смещение</b><p>$B=\dfrac{n-1}{n}\sigma^2-\sigma^2=-\dfrac{\sigma^2}{n}\to0$, значит асимптотически несмещённая. Если умножить на $\frac{n}{n-1}$, получится $\hat S^2=\frac{n}{n-1}S^2$ с $M(\hat S^2)=\sigma^2$. Вот откуда «исправленная» дисперсия.</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Следующий шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+  </article>
+
+  <article class="card ex">
+    <div class="card-head"><span class="chip ex">Разбор</span><span class="card-title">Дискретная таблица с параметром</span><span class="from">Сем 3–4, №1</span></div>
+    <p class="cond">$X$ принимает 0, 1, 2 с вероятностями $\frac\theta3$, $\frac{2-5\theta}3$, $\frac{1+4\theta}3$. Проверить несмещённость и состоятельность $\hat\theta=\bar X-\frac43$. Какие ограничения на $\theta$?</p>
+    <ol class="steps">
+      <li class="step"><b>Шаг 1 · ограничения</b><p>Сумма: $\frac{\theta+2-5\theta+1+4\theta}{3}=1$, всё сходится. Каждая вероятность от 0 до 1: $\theta\ge0$, $\;2-5\theta\ge0\Rightarrow\theta\le\frac25$, $\;1+4\theta\ge0$ выполняется само. Итого $0\le\theta\le\frac25$.</p></li>
+      <li class="step"><b>Шаг 2 · M(X)</b><p>$M(X)=0\cdot\frac\theta3+1\cdot\frac{2-5\theta}3+2\cdot\frac{1+4\theta}3=\frac{4+3\theta}{3}=\frac43+\theta$.</p></li>
+      <li class="step"><b>Шаг 3 · несмещённость</b><p>$M(\hat\theta)=M(\bar X)-\frac43=\frac43+\theta-\frac43=\theta$, оценка несмещённая.</p></li>
+      <li class="step"><b>Шаг 4 · D(X)</b><p>$M(X^2)=1\cdot\frac{2-5\theta}3+4\cdot\frac{1+4\theta}3=\frac{6+11\theta}{3}$. $D(X)=\frac{6+11\theta}{3}-\Big(\frac43+\theta\Big)^2=\frac29+\theta-\theta^2$.</p></li>
+      <li class="step"><b>Шаг 5 · состоятельность</b><p>$D(\hat\theta)=D(\bar X)=\dfrac{2/9+\theta-\theta^2}{n}\to0$, а константа $\frac43$ на дисперсию не влияет. Несмещённая и $D\to0$, значит состоятельная.</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Следующий шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+  </article>
+
+  <div class="grid2">
+    <article class="card task" data-id="2a">
+      <div class="card-head"><span class="chip self">Сам</span><span class="card-title">Подобрать k</span><span class="from">Сем 1–2, №5</span></div>
+      <p class="cond">$S_x^2=k\sum_{i=2}^{n}(X_i-X_{i-1})^2$, выборка из $N(\mu,\sigma)$. При каком $k$ оценка несмещённая для $\sigma^2$?</p>
+      <details><summary>Подсказка</summary><div><p>Найди $M\big((X_i-X_{i-1})^2\big)$ через правило 5. У разности $M=0$, а $D$ считается по правилу 4. Слагаемых в сумме $n-1$.</p></div></details>
+      <details><summary>Решение</summary><div><p>$M(X_i-X_{i-1})=0$, $D(X_i-X_{i-1})=2\sigma^2$, поэтому $M(X_i-X_{i-1})^2=2\sigma^2$. $M(S_x^2)=k(n-1)\cdot2\sigma^2=\sigma^2$, откуда <span class="answer">$k=\dfrac1{2(n-1)}$</span>.</p></div></details>
+      <button class="done-btn" type="button" id="done-2a">Отметить: решил сам</button>
+    </article>
+    <article class="card task" data-id="2b">
+      <div class="card-head"><span class="chip self">Сам</span><span class="card-title">Равномерное на [0; b]</span><span class="from">Сем 3–4, №2а</span></div>
+      <p class="cond">Оценка $b^*=2\bar X$. Несмещённая? Состоятельная?</p>
+      <details><summary>Решение</summary><div><p>$M(X)=\frac b2$, поэтому $M(b^*)=2\cdot\frac b2=b$, несмещённая. $D(X)=\frac{b^2}{12}$, $D(b^*)=4\cdot\frac{b^2}{12n}=\frac{b^2}{3n}\to0$, состоятельная.</p></div></details>
+      <button class="done-btn" type="button" id="done-2b">Отметить: решил сам</button>
+    </article>
+    <article class="card task" data-id="2c">
+      <div class="card-head"><span class="chip self">Сам</span><span class="card-title">Несмещённая, но бесполезная</span><span class="from">Сем 3–4, №2б</span></div>
+      <p class="cond">$X\sim U[-3\theta;\theta]$, оценка $\theta^*=-2X_n+X_1$. Здесь $X_n$ и $X_1$ — просто последний и первый элементы выборки, а не максимум и минимум.</p>
+      <details><summary>Подсказка</summary><div><p>$M(X)=\frac{-3\theta+\theta}2=-\theta$, $D(X)=\frac{(4\theta)^2}{12}$. Посмотри, зависит ли $D(\theta^*)$ от $n$.</p></div></details>
+      <details><summary>Решение</summary><div><p>$M(\theta^*)=-2(-\theta)+(-\theta)=\theta$, несмещённая. $D(\theta^*)=4D(X)+D(X)=5\cdot\frac{4\theta^2}{3}=\frac{20\theta^2}{3}$. От $n$ не зависит и к нулю не стремится, значит <span class="answer">не состоятельная</span>. Вывод: несмещённость ещё не означает хорошую оценку.</p></div></details>
+      <button class="done-btn" type="button" id="done-2c">Отметить: решил сам</button>
+    </article>
+  </div>
+</section>
+
+<!-- ============ 3 ============ -->
+<section class="topic" id="t3">
+  <div class="topic-head"><span class="num">3</span><div><h2>Распределение функции, минимума и максимума</h2><p class="src">Сем 3–4, №3–5 · Сем 7–8, №2</p></div></div>
+  <div class="plain"><span class="label">По-человечески</span>
+    <p>Если $Y=g(X)$, всегда начинай с функции распределения: $F_Y(y)=P(Y\lt y)$, перепиши неравенство через $X$ и подставь $F_X$. Плотность получается производной.</p>
+    <p>Максимум выборки меньше $x$ тогда и только тогда, когда <b>все</b> элементы меньше $x$. Из этой одной фразы выводится вся тема.</p>
+  </div>
+  <div class="recipe-box"><span class="label">Рецепт</span>
+    <ol class="recipe">
+      <li><div>$Y=g(X)$, $g$ возрастает: $F_Y(y)=P\big(X\lt g^{-1}(y)\big)=F_X\big(g^{-1}(y)\big)$. Если $g$ убывает, знак неравенства переворачивается: $F_Y(y)=1-F_X\big(g^{-1}(y)\big)$</div></li>
+      <li><div>Максимум: $F_{X_{(n)}}(x)=\big(F(x)\big)^n$</div></li>
+      <li><div>Минимум: $F_{X_{(1)}}(x)=1-\big(1-F(x)\big)^n$</div></li>
+      <li><div>Плотность — производная, $M$ и $D$ — через интегралы с этой плотностью</div></li>
+    </ol>
+  </div>
+
+  <article class="card ex">
+    <div class="card-head"><span class="chip ex">Разбор</span><span class="card-title">$Y=X^2$ при $f(x)=2x$ на [0; 1]</span><span class="from">Сем 3–4, №3</span></div>
+    <ol class="steps">
+      <li class="step"><b>Шаг 1 · F для X</b><p>$F_X(x)=\int_0^x2t\,dt=x^2$ при $x\in[0;1]$.</p></li>
+      <li class="step"><b>Шаг 2 · F для Y</b><p>$F_Y(y)=P(X^2\lt y)=P(X\lt\sqrt y)=F_X(\sqrt y)=(\sqrt y)^2=y$, $\;0\le y\le1$.</p></li>
+      <li class="step"><b>Шаг 3 · ответ</b><p>$f_Y(y)=1$ на $[0;1]$, то есть $Y_i\sim U[0;1]$: выборка $Y_1,\dots,Y_n$ равномерная.</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Следующий шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+  </article>
+
+  <article class="card ex">
+    <div class="card-head"><span class="chip ex">Разбор</span><span class="card-title">Максимум выборки из $U[0;\theta]$</span><span class="from">Сем 3–4, №4–5</span></div>
+    <p class="cond">Найти $F$, $f$, $M$, $D$ для $X_{(n)}$ и проверить свойства оценки.</p>
+    <ol class="steps">
+      <li class="step"><b>Шаг 1 · общая формула</b><p>$P(X_{(n)}\lt x)=P(X_1\lt x,\dots,X_n\lt x)=F(x)^n$. Для минимума: $P(X_{(1)}\ge x)=(1-F(x))^n$, поэтому $F_{X_{(1)}}=1-(1-F)^n$.</p></li>
+      <li class="step"><b>Шаг 2 · F и f</b><p>$F(x)=\frac x\theta$, поэтому $F_{X_{(n)}}(x)=\Big(\dfrac x\theta\Big)^n$, $\;f(x)=\dfrac{nx^{n-1}}{\theta^n}$ на $[0;\theta]$.</p></li>
+      <li class="step"><b>Шаг 3 · M</b><p>$M(X_{(n)})=\displaystyle\int_0^\theta x\cdot\frac{nx^{n-1}}{\theta^n}dx=\frac{n}{\theta^n}\cdot\frac{\theta^{n+1}}{n+1}=\frac{n\theta}{n+1}$.</p></li>
+      <li class="step"><b>Шаг 4 · D</b><p>$M(X_{(n)}^2)=\dfrac{n\theta^2}{n+2}$, $\;D=\dfrac{n\theta^2}{n+2}-\dfrac{n^2\theta^2}{(n+1)^2}=\dfrac{n\theta^2}{(n+1)^2(n+2)}$.</p></li>
+      <li class="step"><b>Шаг 5 · свойства</b><p>Смещение $B=\frac{n\theta}{n+1}-\theta=-\frac{\theta}{n+1}\to0$: оценка смещённая, но асимптотически несмещённая. $D\to0$, значит состоятельная. Исправленная оценка $\frac{n+1}{n}X_{(n)}$ уже несмещённая.</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Следующий шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+  </article>
+
+  <div class="grid2">
+    <article class="card task" data-id="3a">
+      <div class="card-head"><span class="chip self">Сам</span><span class="card-title">Минимум из $U[0;\theta]$</span></div>
+      <p class="cond">Найди $F_{X_{(1)}}$ и $M(X_{(1)})$.</p>
+      <details><summary>Ответ</summary><div><p>$F_{X_{(1)}}(x)=1-\big(1-\frac x\theta\big)^n$, $f=\frac n\theta\big(1-\frac x\theta\big)^{n-1}$, $M(X_{(1)})=\dfrac{\theta}{n+1}$. Это зеркальная картина к максимуму.</p></div></details>
+      <button class="done-btn" type="button" id="done-3a">Отметить: решил сам</button>
+    </article>
+    <article class="card task" data-id="3b">
+      <div class="card-head"><span class="chip self">Сам</span><span class="card-title">Убывающая функция</span></div>
+      <p class="cond">$X\sim U[0;1]$, $Y=-\ln X$. Как распределена $Y$?</p>
+      <details><summary>Подсказка</summary><div><p>$-\ln x\lt y\iff x\gt e^{-y}$: знак перевернулся.</p></div></details>
+      <details><summary>Ответ</summary><div><p>$F_Y(y)=P(X\gt e^{-y})=1-e^{-y}$, $y\ge0$, то есть $Y\sim\mathrm{Exp}(1)$.</p></div></details>
+      <button class="done-btn" type="button" id="done-3b">Отметить: решил сам</button>
+    </article>
+    <article class="card task" data-id="3c">
+      <div class="card-head"><span class="chip self">Сам</span><span class="card-title">Предельное распределение</span><span class="from">Сем 7–8, №2</span></div>
+      <p class="cond">$U[0;\theta]$. Найди предел при $n\to\infty$ распределения $T=\dfrac{n(\theta-X_{(n)})}{\theta}$.</p>
+      <details><summary>Подсказка</summary><div><p>Посчитай $P(T\gt t)$. Это то же самое, что $P\big(X_{(n)}\lt\theta(1-\frac tn)\big)$. Вспомни замечательный предел $(1-\frac tn)^n\to e^{-t}$.</p></div></details>
+      <details><summary>Решение</summary><div><p>$P(T\gt t)=\Big(\dfrac{\theta(1-t/n)}{\theta}\Big)^n=\Big(1-\dfrac tn\Big)^n\to e^{-t}$. Значит $F_T(t)\to1-e^{-t}$: <span class="answer">в пределе $T\sim\mathrm{Exp}(1)$</span>.</p></div></details>
+      <button class="done-btn" type="button" id="done-3c">Отметить: решил сам</button>
+    </article>
+  </div>
+</section>
+
+<!-- ============ 4 ============ -->
+<section class="topic" id="t4">
+  <div class="topic-head"><span class="num">4</span><div><h2>Теорема Фишера и хи-квадрат</h2><p class="src">Сем 5–6, теорема и №1</p></div></div>
+  <div class="plain"><span class="label">По-человечески</span>
+    <p>Для <b>нормальной</b> выборки известно точно: $\bar X\sim N\big(\mu,\frac{\sigma}{\sqrt n}\big)$; величина $\dfrac{nS^2}{\sigma^2}=\dfrac{(n-1)\hat S^2}{\sigma^2}$ распределена как $\chi^2(n-1)$; $\bar X$ и $S^2$ независимы.</p>
+    <p>Практический смысл: у $\chi^2(k)$ матожидание $k$, а дисперсия $2k$. Отсюда за одну строку получаются $M$ и $D$ любой оценки дисперсии.</p>
+  </div>
+  <p class="hand">Вопрос со слайда «как распределена $\frac{(n-1)\hat S^2}{\sigma^2}$?» Ответ: это та же величина, что $\frac{nS^2}{\sigma^2}$, поэтому $\chi^2$ с $n-1$ степенями свободы.</p>
+  <div class="recipe-box"><span class="label">Рецепт: дисперсия оценки дисперсии</span>
+    <ol class="recipe">
+      <li><div>Вырази оценку через хи-квадрат: $\hat S^2=\dfrac{\sigma^2}{n-1}\cdot\chi^2(n-1)$</div></li>
+      <li><div>Правило 2: $D(\hat S^2)=\dfrac{\sigma^4}{(n-1)^2}\cdot2(n-1)=\dfrac{2\sigma^4}{n-1}$</div></li>
+      <li><div>Если $\mu$ известно, $S_*^2=\frac1n\sum(X_i-\mu)^2$ и $\frac{nS_*^2}{\sigma^2}\sim\chi^2(n)$, поэтому $D(S_*^2)=\dfrac{2\sigma^4}{n}$</div></li>
+    </ol>
+  </div>
+
+  <article class="card ex">
+    <div class="card-head"><span class="chip ex">Разбор</span><span class="card-title">Две оценки дисперсии</span><span class="from">Сем 5–6, №1</span></div>
+    <p class="cond">$\hat S_1^2=\frac1{n-1}\sum(X_i-\bar X)^2$ и $\hat S_2^2=\frac1{2(n-1)}\sum_{i=1}^{n-1}(X_{i+1}-X_i)^2$. Найти дисперсии, проверить состоятельность.</p>
+    <ol class="steps">
+      <li class="step"><b>Шаг 1 · первая оценка</b><p>По рецепту: $M(\hat S_1^2)=\sigma^2$, $\;D(\hat S_1^2)=\dfrac{2\sigma^4}{n-1}\to0$, значит состоятельная.</p></li>
+      <li class="step"><b>Шаг 2 · вторая, несмещённость</b><p>Обозначим $\Delta_i=X_{i+1}-X_i$: $M(\Delta_i)=0$, $D(\Delta_i)=2\sigma^2$, поэтому $M(\Delta_i^2)=2\sigma^2$, а $M(\hat S_2^2)=\frac{(n-1)\cdot2\sigma^2}{2(n-1)}=\sigma^2$.</p></li>
+      <li class="step"><b>Шаг 3 · нужный факт (задача со звёздочкой)</b><p>Для нормальных с нулевым средним: $D(A^2)=2\big(D(A)\big)^2$, $\;\mathrm{cov}(A^2,B^2)=2\,\mathrm{cov}(A,B)^2$. Соседние $\Delta_i$ и $\Delta_{i+1}$ имеют общий $X_{i+1}$, поэтому $\mathrm{cov}(\Delta_i,\Delta_{i+1})=-\sigma^2$. Несоседние независимы.</p></li>
+      <li class="step"><b>Шаг 4 · считаем</b><p>$D(\Delta_i^2)=2(2\sigma^2)^2=8\sigma^4$, $\;\mathrm{cov}(\Delta_i^2,\Delta_{i+1}^2)=2\sigma^4$. $D\big(\sum\Delta_i^2\big)=(n-1)\cdot8\sigma^4+2(n-2)\cdot2\sigma^4=(12n-16)\sigma^4$.</p></li>
+      <li class="step"><b>Шаг 5 · ответ</b><p>$D(\hat S_2^2)=\dfrac{(12n-16)\sigma^4}{4(n-1)^2}=\dfrac{(3n-4)\sigma^4}{(n-1)^2}\to0$, тоже состоятельная. При больших $n$ это примерно $\frac{3\sigma^4}{n}$ против $\frac{2\sigma^4}{n}$ у первой, поэтому первая оценка точнее.</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Следующий шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+  </article>
+</section>
+
+<!-- ============ 5 ============ -->
+<section class="topic" id="t5">
+  <div class="topic-head"><span class="num">5</span><div><h2>Эффективность: неравенство Рао–Крамера</h2><p class="src">Сем 5–6, №2–4 · Сем 7–8, №1</p></div></div>
+  <div class="plain"><span class="label">По-человечески</span>
+    <p>У любой несмещённой оценки дисперсия не может быть меньше некоторой границы $\dfrac{1}{n\,I(\theta)}$. Если твоя оценка в эту границу упирается, точнее не бывает: она <b>эффективная</b>. Задача всегда одна и та же: посчитать границу и сравнить её с $D(\theta^*)$.</p>
+  </div>
+  <div class="recipe-box"><span class="label">Рецепт: 6 шагов, всегда одинаковых</span>
+    <ol class="recipe">
+      <li><div>Проверь несмещённость и посчитай $D(\theta^*)$ (тема 2)</div></li>
+      <li><div>Выпиши $f(x;\theta)$: плотность, а для дискретной — $P(X=x)$</div></li>
+      <li><div>Возьми $\ln f$. Произведения превратятся в суммы</div></li>
+      <li><div>Производная по $\theta$: $\dfrac{\partial\ln f}{\partial\theta}$. Обычно выходит $c\cdot\big(X-M(X)\big)$</div></li>
+      <li><div>Информация Фишера: $I(\theta)=M\Big[\Big(\dfrac{\partial\ln f}{\partial\theta}\Big)^2\Big]$. Трюк: если производная равна $c\,(X-MX)$, то $I=c^2D(X)$</div></li>
+      <li><div>Граница $\dfrac1{nI(\theta)}$. Если $D(\theta^*)$ равна ей, оценка эффективна; если больше — нет. Для смещённой оценки граница $\dfrac{(1+B'(\theta))^2}{nI(\theta)}$</div></li>
+    </ol>
+  </div>
+  <p class="trap">Рао–Крамер работает только в регулярном случае. Если границы, где $f\gt0$, зависят от $\theta$ (например, $U[0;\theta]$), применять его нельзя.</p>
+
+  <article class="card ex">
+    <div class="card-head"><span class="chip ex">Разбор</span><span class="card-title">Пуассон: $\lambda^*=\bar X$</span><span class="from">Сем 5–6, №2</span></div>
+    <ol class="steps">
+      <li class="step"><b>Шаг 1</b><p>$M(\bar X)=\lambda$, несмещённая; $D(\bar X)=\frac\lambda n$.</p></li>
+      <li class="step"><b>Шаг 2–3</b><p>$f=\dfrac{\lambda^x e^{-\lambda}}{x!}$, $\;\ln f=x\ln\lambda-\lambda-\ln x!$.</p></li>
+      <li class="step"><b>Шаг 4</b><p>$\dfrac{\partial\ln f}{\partial\lambda}=\dfrac x\lambda-1=\dfrac1\lambda(X-\lambda)$, то есть $c=\frac1\lambda$.</p></li>
+      <li class="step"><b>Шаг 5</b><p>$I(\lambda)=\dfrac1{\lambda^2}D(X)=\dfrac{\lambda}{\lambda^2}=\dfrac1\lambda$.</p></li>
+      <li class="step"><b>Шаг 6</b><p>Граница $\dfrac1{n\cdot\frac1\lambda}=\dfrac\lambda n=D(\bar X)$, значит эффективна.</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Следующий шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+  </article>
+
+  <article class="card ex">
+    <div class="card-head"><span class="chip ex">Разбор</span><span class="card-title">Нормальное: $\mu$ и $\sigma^2$</span><span class="from">Сем 5–6, №4 а–в</span></div>
+    <ol class="steps">
+      <li class="step"><b>а) Шаг 1–3</b><p>$\ln f=-\ln(\sigma\sqrt{2\pi})-\dfrac{(x-\mu)^2}{2\sigma^2}$.</p></li>
+      <li class="step"><b>а) Шаг 4–6</b><p>$\dfrac{\partial\ln f}{\partial\mu}=\dfrac{x-\mu}{\sigma^2}$, поэтому $I(\mu)=\dfrac{D(X)}{\sigma^4}=\dfrac1{\sigma^2}$. Граница $\frac{\sigma^2}{n}=D(\bar X)$: <b>$\bar X$ эффективна</b>.</p></li>
+      <li class="step"><b>б) параметр $v=\sigma^2$</b><p>Чтобы не запутаться, обозначим $v=\sigma^2$: $\ln f=-\frac12\ln(2\pi)-\frac12\ln v-\dfrac{(x-\mu)^2}{2v}$.</p></li>
+      <li class="step"><b>б) производная и информация</b><p>$\dfrac{\partial\ln f}{\partial v}=\dfrac{(x-\mu)^2-v}{2v^2}$. $I=\dfrac{D\big((X-\mu)^2\big)}{4v^4}$. Так как $(X-\mu)^2=v\cdot Z^2$ и $D(Z^2)=2$, получаем $D\big((X-\mu)^2\big)=2v^2$ и $I=\dfrac1{2\sigma^4}$.</p></li>
+      <li class="step"><b>б) сравнение</b><p>Граница $\dfrac{2\sigma^4}{n}$, а $D(\hat S_1^2)=\dfrac{2\sigma^4}{n-1}$ больше, значит <b>не эффективна</b>. Отношение стремится к 1, поэтому она асимптотически эффективна.</p></li>
+      <li class="step"><b>в) $\mu$ известно</b><p>$S_*^2=\frac1n\sum(X_i-\mu)^2$: $\frac{nS_*^2}{\sigma^2}\sim\chi^2(n)$, поэтому $D(S_*^2)=\dfrac{2\sigma^4}{n}$. Совпадает с границей: <b>эффективна</b>.</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Следующий шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+  </article>
+
+  <div class="grid2">
+    <article class="card task" data-id="5a">
+      <div class="card-head"><span class="chip self">Сам</span><span class="card-title">Биномиальное: частость</span><span class="from">Сем 5–6, №3</span></div>
+      <p class="cond">$k$ выборок по $n$ испытаний, $m_i\sim B(n,p)$. Доказать, что $\tilde w=\frac{1}{nk}\sum m_i$ — несмещённая, состоятельная и эффективная оценка $p$.</p>
+      <details><summary>Подсказка</summary><div><p>Наблюдений здесь $k$, а не $n$: каждое $m_i$ — одно наблюдение. $P(m)=C_n^m p^m(1-p)^{n-m}$.</p></div></details>
+      <details><summary>Решение</summary><div>
+        <p>1) $M(\tilde w)=\frac{1}{nk}\cdot k\cdot np=p$. 2) $D(\tilde w)=\frac{k\cdot npq}{(nk)^2}=\frac{pq}{nk}\to0$.</p>
+        <p>3) $\ln P=\ln C+m\ln p+(n-m)\ln(1-p)$; $\;\frac{\partial}{\partial p}=\frac mp-\frac{n-m}{1-p}=\frac{m-np}{pq}$.</p>
+        <p>4) $I(p)=\frac{D(m)}{(pq)^2}=\frac{n}{pq}$. 5) Граница $\frac1{k\,I}=\frac{pq}{nk}=D(\tilde w)$: <span class="answer">эффективна</span>.</p></div></details>
+      <button class="done-btn" type="button" id="done-5a">Отметить: решил сам</button>
+    </article>
+    <article class="card task" data-id="5b">
+      <div class="card-head"><span class="chip self">Сам</span><span class="card-title">Показательное: эффективна «в классе»</span><span class="from">Сем 7–8, №1</span></div>
+      <p class="cond">$f=\frac1\alpha e^{-x/\alpha}$, $x\ge0$. Оценка $\alpha^*=\frac{n-1}{n}\bar X$. Проверь регулярность и найди, в каком классе она эффективна.</p>
+      <details><summary>Подсказка</summary><div><p>Оценка смещённая. Найди $B(\alpha)$ и $B'(\alpha)$, потом используй границу $\frac{(1+B')^2}{nI}$.</p></div></details>
+      <details><summary>Решение</summary><div>
+        <p>Регулярность: область $x\ge0$ не зависит от $\alpha$, $f$ гладкая по $\alpha$, $I=\frac1{\alpha^2}$ конечна, условия выполнены.</p>
+        <p>$M(\alpha^*)=\frac{n-1}{n}\alpha$, поэтому $B=-\frac\alpha n$, $B'=-\frac1n$. $D(\alpha^*)=\big(\frac{n-1}{n}\big)^2\frac{\alpha^2}{n}$.</p>
+        <p>$\ln f=-\ln\alpha-\frac x\alpha$; $\;\frac{\partial}{\partial\alpha}=\frac{x-\alpha}{\alpha^2}$; $\;I=\frac{D(X)}{\alpha^4}=\frac1{\alpha^2}$.</p>
+        <p>Граница $\frac{(1-\frac1n)^2}{n/\alpha^2}=\big(\frac{n-1}{n}\big)^2\frac{\alpha^2}{n}=D(\alpha^*)$. Ответ: <span class="answer">эффективна в классе оценок со смещением $B(\alpha)=-\frac{\alpha}{n}$</span>.</p></div></details>
+      <button class="done-btn" type="button" id="done-5b">Отметить: решил сам</button>
+    </article>
+  </div>
+</section>
+
+<!-- ============ 6 ============ -->
+<section class="topic" id="t6">
+  <div class="topic-head"><span class="num">6</span><div><h2>Метод моментов</h2><p class="src">Сем 7–8, №3–5 · ДЗ №5, №1, №8б</p></div></div>
+  <div class="plain"><span class="label">По-человечески</span>
+    <p>Теоретическое среднее зависит от параметра, а выборочное среднее ты можешь посчитать. Приравниваешь их и выражаешь параметр. Если параметров два, добавляешь второе уравнение для дисперсии.</p>
+  </div>
+  <div class="recipe-box"><span class="label">Рецепт</span>
+    <ol class="recipe">
+      <li><div>Найди $M(X)$ через параметр: из таблицы или как $\int x f(x)\,dx$</div></li>
+      <li><div>Составь уравнение $M(X)=\bar X$</div></li>
+      <li><div>Вырази параметр: это и есть $\theta^*$. При двух параметрах добавь $D(X)=S^2$</div></li>
+    </ol>
+  </div>
+
+  <article class="card ex">
+    <div class="card-head"><span class="chip ex">Разбор</span><span class="card-title">Три быстрых примера</span><span class="from">Сем 7–8, №3–5</span></div>
+    <ol class="steps">
+      <li class="step"><b>Пуассон</b><p>$M(X)=\lambda=\bar X$, поэтому $\lambda^*=\bar X$.</p></li>
+      <li class="step"><b>Показательное</b><p>$M(X)=\frac1\lambda=\bar X$, поэтому $\lambda^*=\dfrac1{\bar X}$.</p></li>
+      <li class="step"><b>$f=kx$ на $[0;\sqrt{2/k}]$: среднее</b><p>Обозначим $a=\sqrt{2/k}$ (проверка: $\int_0^a kx\,dx=\frac{ka^2}2=1$). $M(X)=\int_0^a kx^2dx=\dfrac{ka^3}{3}=\dfrac k3\Big(\dfrac2k\Big)^{3/2}=\dfrac{2\sqrt2}{3\sqrt k}$.</p></li>
+      <li class="step"><b>$f=kx$: выражаем k</b><p>$\dfrac{2\sqrt2}{3\sqrt k}=\bar X\Rightarrow\sqrt k=\dfrac{2\sqrt2}{3\bar X}\Rightarrow k^*=\dfrac{8}{9\bar X^2}$.</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Следующий шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+  </article>
+
+  <div class="grid2">
+    <article class="card task" data-id="6a">
+      <div class="card-head"><span class="chip self">Сам</span><span class="card-title">Биатлонисты</span><span class="from">ДЗ №5, №1 (ММ)</span></div>
+      <p class="cond">Число промахов до 3-го попадания — отрицательное биномиальное с $r=3$. Наборы дали $m_1,\dots,m_k$. Найди $p^*$ методом моментов.</p>
+      <details><summary>Подсказка</summary><div><p>$M(X)=\frac{rq}{p}=\frac{3(1-p)}{p}$.</p></div></details>
+      <details><summary>Ответ</summary><div><p>$\frac{3(1-p)}{p}=\bar m\Rightarrow\frac3p=3+\bar m\Rightarrow$ <span class="answer">$p^*=\dfrac{3}{3+\bar m}$</span>.</p></div></details>
+      <button class="done-btn" type="button" id="done-6a">Отметить: решил сам</button>
+    </article>
+    <article class="card task" data-id="6b">
+      <div class="card-head"><span class="chip self">Сам</span><span class="card-title">Два параметра: $U[a;b]$</span></div>
+      <p class="cond">Найди $a^*$ и $b^*$ методом моментов.</p>
+      <details><summary>Подсказка</summary><div><p>$\frac{a+b}2=\bar X$ и $\frac{(b-a)^2}{12}=S^2$. Из второго уравнения $b-a=2\sqrt3\,S$.</p></div></details>
+      <details><summary>Ответ</summary><div><p><span class="answer">$a^*=\bar X-\sqrt3\,S$, $\;b^*=\bar X+\sqrt3\,S$</span>.</p></div></details>
+      <button class="done-btn" type="button" id="done-6b">Отметить: решил сам</button>
+    </article>
+  </div>
+</section>
+
+<!-- ============ 7 ============ -->
+<section class="topic" id="t7">
+  <div class="topic-head"><span class="num">7</span><div><h2>Метод максимального правдоподобия</h2><p class="src">Сем 7–8, №3–7 · ДЗ №5, №1–3, №6, №8в</p></div></div>
+  <div class="plain"><span class="label">По-человечески</span>
+    <p>Подбираем такое $\theta$, при котором именно твои данные выглядят самыми вероятными. Технически: перемножаешь $f(x_i;\theta)$ по всем наблюдениям, берёшь логарифм, дифференцируешь по $\theta$ и приравниваешь к нулю.</p>
+  </div>
+  <div class="grid2">
+    <div class="recipe-box"><span class="label">Рецепт A: обычный случай</span>
+      <ol class="recipe">
+        <li><div>$L=\prod_{i=1}^n f(x_i;\theta)$</div></li>
+        <li><div>$\ln L=\sum\ln f(x_i;\theta)$. Появятся куски вида $n\ln\theta$ и $\sum x_i$</div></li>
+        <li><div>$\dfrac{d\ln L}{d\theta}=0$, решаешь уравнение относительно $\theta$</div></li>
+        <li><div>Проверка: вторая производная меньше нуля, значит это максимум</div></li>
+      </ol>
+    </div>
+    <div class="recipe-box"><span class="label">Рецепт B: границы зависят от θ</span>
+      <ol class="recipe">
+        <li><div>Запиши $L(\theta)$ с условием «все $x_i$ попали в допустимую область»</div></li>
+        <li><div>Переведи условие в неравенства на $\theta$ через $X_{(1)}=\min$ и $X_{(n)}=\max$</div></li>
+        <li><div>Посмотри, растёт $L$ по $\theta$ или убывает, и возьми соответствующую границу</div></li>
+        <li><div>Если $L$ постоянна, подходит любое $\theta$ из отрезка: ОМП не единственна</div></li>
+      </ol>
+    </div>
+  </div>
+  <p class="trap">Для равномерных и похожих распределений ничего не дифференцируй: производная не обращается в ноль. Смотри на min и max.</p>
+
+  <article class="card ex">
+    <div class="card-head"><span class="chip ex">Разбор</span><span class="card-title">Пуассон (рецепт A)</span><span class="from">Сем 7–8, №3</span></div>
+    <ol class="steps">
+      <li class="step"><b>Шаг 1</b><p>$L=\prod\dfrac{\lambda^{x_i}e^{-\lambda}}{x_i!}=\dfrac{\lambda^{\sum x_i}e^{-n\lambda}}{\prod x_i!}$.</p></li>
+      <li class="step"><b>Шаг 2</b><p>$\ln L=\sum x_i\cdot\ln\lambda-n\lambda-\sum\ln x_i!$.</p></li>
+      <li class="step"><b>Шаг 3</b><p>$\dfrac{\sum x_i}{\lambda}-n=0\Rightarrow\hat\lambda=\bar X$.</p></li>
+      <li class="step"><b>Шаг 4</b><p>Вторая производная $-\dfrac{\sum x_i}{\lambda^2}\lt0$, это максимум. ММ и ММП здесь совпали.</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Следующий шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+  </article>
+
+  <article class="card ex">
+    <div class="card-head"><span class="chip ex">Разбор</span><span class="card-title">$f=kx$ на $[0;\sqrt{2/k}]$ (рецепт B)</span><span class="from">Сем 7–8, №5</span></div>
+    <ol class="steps">
+      <li class="step"><b>Шаг 1</b><p>$L(k)=\prod kx_i=k^n\prod x_i$, но только если все $x_i\le\sqrt{2/k}$.</p></li>
+      <li class="step"><b>Шаг 2</b><p>$x_i\le\sqrt{2/k}\iff k\le\dfrac2{x_i^2}$. Для всех $i$ сразу: $k\le\dfrac2{X_{(n)}^2}$.</p></li>
+      <li class="step"><b>Шаг 3</b><p>$k^n$ растёт с ростом $k$, значит берём самое большое допустимое: $\hat k=\dfrac{2}{X_{(n)}^2}$.</p></li>
+      <li class="step"><b>Сравни</b><p>Метод моментов дал $k^*=\frac{8}{9\bar X^2}$. Оценки разные, и это нормально: совпадают они только у простых распределений.</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Следующий шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+  </article>
+
+  <article class="card ex">
+    <div class="card-head"><span class="chip ex">Разбор</span><span class="card-title">Равномерное на $[0;3\theta]$</span><span class="from">Сем 7–8, №7а</span></div>
+    <ol class="steps">
+      <li class="step"><b>Шаг 1</b><p>$L=\Big(\dfrac1{3\theta}\Big)^n$, если все $x_i\le3\theta$, то есть $\theta\ge\dfrac{X_{(n)}}{3}$. Иначе $L=0$.</p></li>
+      <li class="step"><b>Шаг 2</b><p>$\big(\frac1{3\theta}\big)^n$ убывает по $\theta$, значит берём наименьшее допустимое: $\hat\theta=\dfrac{X_{(n)}}{3}$.</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Следующий шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+  </article>
+
+  <div class="grid2">
+    <article class="card task" data-id="7a">
+      <div class="card-head"><span class="chip self">Сам</span><span class="card-title">Показательное</span><span class="from">Сем 7–8, №4</span></div>
+      <p class="cond">$f=\lambda e^{-\lambda x}$. Найди $\hat\lambda$ методом максимального правдоподобия.</p>
+      <details><summary>Ответ</summary><div><p>$\ln L=n\ln\lambda-\lambda\sum x_i$; $\;\frac n\lambda-\sum x_i=0\Rightarrow$ <span class="answer">$\hat\lambda=1/\bar X$</span>, как и у ММ.</p></div></details>
+      <button class="done-btn" type="button" id="done-7a">Отметить: решил сам</button>
+    </article>
+    <article class="card task" data-id="7b">
+      <div class="card-head"><span class="chip self">Сам</span><span class="card-title">Биномиальное с разными $n_i$</span><span class="from">Сем 7–8, №6</span></div>
+      <p class="cond">$m_i\sim B(n_i,p)$, $i=1..k$. Найди $\hat p$.</p>
+      <details><summary>Ответ</summary><div><p>$\ln L=\sum m_i\ln p+\sum(n_i-m_i)\ln(1-p)+\text{const}$; $\;\frac{\sum m_i}{p}=\frac{\sum(n_i-m_i)}{1-p}\Rightarrow$ <span class="answer">$\hat p=\dfrac{\sum m_i}{\sum n_i}$</span>: все успехи делить на все испытания.</p></div></details>
+      <button class="done-btn" type="button" id="done-7b">Отметить: решил сам</button>
+    </article>
+    <article class="card task" data-id="7c">
+      <div class="card-head"><span class="chip self">Сам</span><span class="card-title">Ещё три равномерных</span><span class="from">Сем 7–8, №7 б–г</span></div>
+      <p class="cond">б) $[-\theta;\theta]$; в) $[\theta;\theta+3]$; г) $[\theta;3\theta]$, $\theta\gt0$.</p>
+      <details><summary>Подсказка</summary><div><p>Для каждого случая выпиши условия «все точки внутри» через $X_{(1)}$ и $X_{(n)}$.</p></div></details>
+      <details><summary>Ответ</summary><div>
+        <p>б) $L=(2\theta)^{-n}$ при $\theta\ge\max|X_i|$, убывает, поэтому $\hat\theta=\max|X_i|=\max(-X_{(1)},X_{(n)})$.</p>
+        <p>в) $L=3^{-n}$ при $X_{(n)}-3\le\theta\le X_{(1)}$. $L$ постоянна, подходит любое $\theta$ из этого отрезка, например середина $\frac{X_{(1)}+X_{(n)}-3}{2}$. ОМП не единственна.</p>
+        <p>г) $L=(2\theta)^{-n}$ при $\frac{X_{(n)}}3\le\theta\le X_{(1)}$, убывает, поэтому $\hat\theta=\dfrac{X_{(n)}}{3}$.</p></div></details>
+      <button class="done-btn" type="button" id="done-7c">Отметить: решил сам</button>
+    </article>
+    <article class="card task" data-id="7d">
+      <div class="card-head"><span class="chip self">Сам</span><span class="card-title">Страшная плотность</span><span class="from">ДЗ №5, №2</span></div>
+      <p class="cond">$f(x)=\dfrac{\theta e^{-\theta^2/(2x)}}{\sqrt{2\pi x^3}}$, $x\ge0$. Найди $\hat\theta$.</p>
+      <details><summary>Подсказка</summary><div><p>Не пугайся: всё, что не содержит $\theta$, уходит в константу. Остаётся $n\ln\theta-\frac{\theta^2}{2}\sum\frac1{x_i}$.</p></div></details>
+      <details><summary>Ответ</summary><div><p>$\frac n\theta-\theta\sum\frac1{x_i}=0\Rightarrow$ <span class="answer">$\hat\theta=\sqrt{\dfrac{n}{\sum 1/x_i}}$</span>. Вторая производная $-\frac n{\theta^2}-\sum\frac1{x_i}\lt0$, это максимум.</p></div></details>
+      <button class="done-btn" type="button" id="done-7d">Отметить: решил сам</button>
+    </article>
+    <article class="card task" data-id="7e">
+      <div class="card-head"><span class="chip self">Сам</span><span class="card-title">Exp(θ) и Exp(1/θ): кто смещён</span><span class="from">ДЗ №5, №3</span></div>
+      <p class="cond">а) $f=\theta e^{-\theta x}$; б) $f=\frac1\theta e^{-x/\theta}$. Найди ОМП и проверь несмещённость.</p>
+      <details><summary>Подсказка</summary><div><p>Сумма $n$ показательных — это гамма $\Gamma(n,\theta)$. Для неё $M\big(\frac1{\sum X_i}\big)=\frac{\theta}{n-1}$: это интеграл $\int\frac1y\cdot\frac{\theta^n y^{n-1}e^{-\theta y}}{(n-1)!}dy$.</p></div></details>
+      <details><summary>Ответ</summary><div>
+        <p>а) $\hat\theta=\frac1{\bar X}=\frac{n}{\sum X_i}$; $M(\hat\theta)=\frac{n\theta}{n-1}$: <span class="answer">смещённая</span>, $B=\frac{\theta}{n-1}\to0$, асимптотически несмещённая. Исправленная: $\frac{n-1}{\sum X_i}$.</p>
+        <p>б) $\hat\theta=\bar X$, $M=\theta$: <span class="answer">несмещённая</span>.</p></div></details>
+      <button class="done-btn" type="button" id="done-7e">Отметить: решил сам</button>
+    </article>
+    <article class="card task" data-id="7f">
+      <div class="card-head"><span class="chip self">Сам</span><span class="card-title">Очень богатые (Парето)</span><span class="from">ДЗ №5, №6</span></div>
+      <p class="cond">$F(x)=1-(2/x)^\theta$ при $x\gt2$; доля людей с доходом &gt; 2 равна 2,5%; по 40 наблюдениям среднее геометрическое $g=3{,}7795$. Найди $\hat\theta$ и долю людей с доходом &gt; 5.</p>
+      <details><summary>Подсказка</summary><div><p>$f=F'=\theta\,2^\theta x^{-\theta-1}$. Учти, что $\frac1n\sum\ln x_i=\ln g$.</p></div></details>
+      <details><summary>Решение</summary><div>
+        <p>$\ln L=n\ln\theta+n\theta\ln2-(\theta+1)\sum\ln x_i$; $\;\frac n\theta+n\ln2-\sum\ln x_i=0$, поэтому $\hat\theta=\dfrac{1}{\ln g-\ln2}=\dfrac1{\ln(g/2)}$.</p>
+        <p>Число: $\hat\theta=1/\ln1{,}88975=1/0{,}6364=$ <span class="answer">1,571</span>.</p>
+        <p>б) $P(\xi\gt5)=(2/5)^{1{,}571}=0{,}237$ внутри категории, а среди всего населения $0{,}025\cdot0{,}237=$ <span class="answer">0,0059 ≈ 0,59%</span>.</p></div></details>
+      <button class="done-btn" type="button" id="done-7f">Отметить: решил сам</button>
+    </article>
+    <article class="card task" data-id="7g">
+      <div class="card-head"><span class="chip self">Сам</span><span class="card-title">Биатлонисты, ММП</span><span class="from">ДЗ №5, №1</span></div>
+      <p class="cond">То же, что в теме 6, но методом максимального правдоподобия: $P(m)=C_{m+2}^{m}p^3(1-p)^m$.</p>
+      <details><summary>Ответ</summary><div><p>$\ln L=3k\ln p+\sum m_i\ln(1-p)+\text{const}$; $\;\frac{3k}{p}=\frac{\sum m_i}{1-p}\Rightarrow$ <span class="answer">$\hat p=\dfrac{3k}{3k+\sum m_i}=\dfrac{3}{3+\bar m}$</span>. Совпало с ММ.</p></div></details>
+      <button class="done-btn" type="button" id="done-7g">Отметить: решил сам</button>
+    </article>
+  </div>
+</section>
+
+<!-- ============ 8 ============ -->
+<section class="topic" id="t8">
+  <div class="topic-head"><span class="num">8</span><div><h2>Какая оценка лучше</h2><p class="src">ДЗ №5, №4–5</p></div></div>
+  <div class="plain"><span class="label">По-человечески</span>
+    <p>Из несмещённых оценок лучше та, у которой меньше дисперсия. Если есть смещение, сравнивай среднеквадратичную ошибку $MSE=M(\theta^*-\theta)^2=D(\theta^*)+B^2$.</p>
+  </div>
+  <div class="recipe-box"><span class="label">Рецепт</span>
+    <ol class="recipe">
+      <li><div>Дисперсия комбинации: $D(aT_1+bT_2)=a^2D_1+b^2D_2+2ab\,\mathrm{cov}(T_1,T_2)$, где $\mathrm{cov}=\rho\sqrt{D_1D_2}$</div></li>
+      <li><div>Несмещённость комбинации двух несмещённых требует $a+b=1$</div></li>
+      <li><div>Лучшие веса для независимых оценок обратно пропорциональны их дисперсиям</div></li>
+    </ol>
+  </div>
+  <article class="card ex">
+    <div class="card-head"><span class="chip ex">Разбор</span><span class="card-title">$T_1$, $S$ или $R$</span><span class="from">ДЗ №5, №4</span></div>
+    <p class="cond">$T_1,T_2$ несмещённые, $D(T_1)=D(T_2)=\sigma^2$, $\rho=0{,}5$. $S=\frac{T_1+T_2}2$, $R=\frac{2T_1+T_2}3$.</p>
+    <ol class="steps">
+      <li class="step"><b>Шаг 1</b><p>Все три несмещённые: $\frac12+\frac12=1$, $\frac23+\frac13=1$. Значит $MSE=D$. $\mathrm{cov}=0{,}5\sigma^2$.</p></li>
+      <li class="step"><b>Шаг 2</b><p>$D(S)=\frac14\big(\sigma^2+\sigma^2+2\cdot0{,}5\sigma^2\big)=0{,}75\sigma^2$.</p></li>
+      <li class="step"><b>Шаг 3</b><p>$D(R)=\frac19\big(4\sigma^2+\sigma^2+2\cdot2\cdot0{,}5\sigma^2\big)=\frac79\sigma^2\approx0{,}778\sigma^2$.</p></li>
+      <li class="step"><b>Ответ</b><p>Лучшая $S$ (0,75), потом $R$ (0,778), худшая $T_1$ (1).</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Следующий шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+  </article>
+  <article class="card task" data-id="8a">
+    <div class="card-head"><span class="chip self">Сам</span><span class="card-title">Два ассистента</span><span class="from">ДЗ №5, №5</span></div>
+    <p class="cond">$\bar X$ по 20 наблюдениям, $\bar Y$ по 30, $\sigma_X^2=\frac14\sigma_Y^2$. Найди $c_1,c_2$, чтобы $\hat\mu=c_1\bar X+c_2\bar Y$ была несмещённой и самой эффективной.</p>
+    <details><summary>Подсказка</summary><div><p>$D(\bar X)=\frac{\sigma_X^2}{20}=\frac{\sigma_Y^2}{80}$, $\;D(\bar Y)=\frac{\sigma_Y^2}{30}$. Подставь $c_2=1-c_1$ и минимизируй.</p></div></details>
+    <details><summary>Решение</summary><div><p>$D(\hat\mu)=\sigma_Y^2\big(\frac{c_1^2}{80}+\frac{(1-c_1)^2}{30}\big)$. Производная по $c_1$: $\frac{c_1}{40}-\frac{1-c_1}{15}=0\Rightarrow15c_1=40-40c_1\Rightarrow$ <span class="answer">$c_1=\frac8{11}$, $c_2=\frac3{11}$</span>. Аккуратный ассистент получает больший вес.</p></div></details>
+    <button class="done-btn" type="button" id="done-8a">Отметить: решил сам</button>
+  </article>
+</section>
+
+<!-- ============ 9 ============ -->
+<section class="topic" id="t9">
+  <div class="topic-head"><span class="num">9</span><div><h2>Теоретические частоты</h2><p class="src">ДЗ №5, №7 (Excel)</p></div></div>
+  <div class="plain"><span class="label">По-человечески</span>
+    <p>Предполагаем, что данные биномиальные. Оцениваем $p$ по выборке и считаем, сколько раз каждое значение <i>должно было бы</i> выпасть при таком $p$. Потом сравниваем с тем, что выпало на самом деле.</p>
+  </div>
+  <div class="recipe-box"><span class="label">Рецепт</span>
+    <ol class="recipe">
+      <li><div>Вариационный ряд: сколько раз встретилось 0, 1, 2, … (в Excel функция ЧАСТОТА)</div></li>
+      <li><div>$\bar x=\sum k\,m_k/N$, затем $p^*=\bar x/n$ (метод моментов: $M=np$)</div></li>
+      <li><div>$P(k)=C_n^k p^k q^{n-k}$, в Excel <span class="mono">=БИНОМ.РАСП(k;20;p;ЛОЖЬ)</span></div></li>
+      <li><div>Теоретическая частота $m_k^T=N\cdot P(k)$</div></li>
+      <li><div>Гистограмма дискретной величины рисуется отдельно стоящими столбиками</div></li>
+    </ol>
+  </div>
+  <article class="card ex">
+    <div class="card-head"><span class="chip ex">Разбор</span><span class="card-title">Брак в 50 выборках по 20 изделий</span><span class="from">ДЗ №5, №7</span></div>
+    <ol class="steps">
+      <li class="step"><b>Шаг 1 · оценка p</b><p>$\bar x=\frac{0\cdot1+1\cdot15+2\cdot18+3\cdot10+4\cdot4+5\cdot1+8\cdot1}{50}=\frac{110}{50}=2{,}2$, $\;p^*=\frac{2{,}2}{20}=0{,}11$.</p></li>
+      <li class="step"><b>Шаг 2 · таблица</b>
+        <div class="scroll"><table class="tbl">
+          <thead><tr><th>$k$</th><th>$m_k$ (факт)</th><th>$P(k)$</th><th>$m_k^T=50P(k)$</th></tr></thead>
+          <tbody>
+            <tr><td>0</td><td>1</td><td>0,0972</td><td>4,86</td></tr>
+            <tr><td>1</td><td>15</td><td>0,2403</td><td>12,02</td></tr>
+            <tr><td>2</td><td>18</td><td>0,2822</td><td>14,11</td></tr>
+            <tr><td>3</td><td>10</td><td>0,2093</td><td>10,46</td></tr>
+            <tr><td>4</td><td>4</td><td>0,1099</td><td>5,50</td></tr>
+            <tr><td>5</td><td>1</td><td>0,0435</td><td>2,17</td></tr>
+            <tr><td>6</td><td>0</td><td>0,0134</td><td>0,67</td></tr>
+            <tr><td>7</td><td>0</td><td>0,0033</td><td>0,17</td></tr>
+            <tr><td>8</td><td>1</td><td>0,0007</td><td>0,03</td></tr>
+            <tr class="sum"><td>Σ</td><td>50</td><td>≈1</td><td>≈50</td></tr>
+          </tbody>
+        </table></div></li>
+      <li class="step"><b>Шаг 3 · вывод</b><p>Форма похожа, пик на 2 в обоих рядах. Но фактических нулей меньше (1 против 4,9), а значение 8 выглядит выбросом. Проверять согласие формально будете позже, критерием $\chi^2$.</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Следующий шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+  </article>
+</section>
+
+<!-- ============ 10 ============ -->
+<section class="topic" id="t10">
+  <div class="topic-head"><span class="num">10</span><div><h2>Генеральная репетиция: ИКР</h2><p class="src">ДЗ №5, №8 — задача из ИКР 2023, 3,2 балла</p></div></div>
+  <p class="hand">Реши её целиком на бумаге с таймером на 25 минут и только потом открывай шаги. Здесь собраны темы 2, 6 и 7 сразу.</p>
+  <article class="card ex">
+    <div class="card-head"><span class="chip ex">Разбор</span><span class="card-title">$F(x)=a\theta\ln\frac x\theta$ на $[\theta;2\theta]$</span></div>
+    <p class="cond">а) найти $a$; б) оценка $\theta$ методом моментов и её несмещённость; в) ОМП, обосновать вывод и существование; г) посчитать обе оценки по выборке 1,2 1,3 1,8 1,0 1,1 1,4 1,5 1,6 1,2 1,9 и $P(X\gt1{,}5)$.</p>
+    <ol class="steps">
+      <li class="step"><b>а) константа</b><p>Функция распределения непрерывна, поэтому $F(2\theta)=1$: $a\theta\ln2=1\Rightarrow a=\dfrac{1}{\theta\ln2}$. Отсюда $F(x)=\dfrac{\ln(x/\theta)}{\ln2}$, $\;f(x)=F'(x)=\dfrac{1}{x\ln2}$ на $[\theta;2\theta]$.</p></li>
+      <li class="step"><b>б) метод моментов</b><p>$M(X)=\displaystyle\int_\theta^{2\theta}x\cdot\frac{1}{x\ln2}dx=\frac{2\theta-\theta}{\ln2}=\frac{\theta}{\ln2}$. Приравниваем к $\bar X$: $\theta^*=\bar X\ln2$.</p></li>
+      <li class="step"><b>б) несмещённость</b><p>$M(\theta^*)=\ln2\cdot M(\bar X)=\ln2\cdot\dfrac{\theta}{\ln2}=\theta$, оценка несмещённая.</p></li>
+      <li class="step"><b>в) функция правдоподобия</b><p>$L(\theta)=\prod\dfrac{1}{x_i\ln2}$, если все $x_i\in[\theta;2\theta]$, иначе $0$. Условие: $\theta\le X_{(1)}$ и $2\theta\ge X_{(n)}$, то есть $\dfrac{X_{(n)}}{2}\le\theta\le X_{(1)}$.</p></li>
+      <li class="step"><b>в) вывод и существование</b><p>Внутри этого отрезка $L$ от $\theta$ не зависит, поэтому любое $\hat\theta\in\big[\frac{X_{(n)}}2;X_{(1)}\big]$ — ОМП. Она не единственна. Отрезок никогда не пустой: истинное $\theta$ всегда в нём лежит, ведь $\theta\le X_i\le2\theta$ для всех $i$. Дифференцировать нельзя, это нерегулярный случай.</p></li>
+      <li class="step"><b>г) числа</b><p>$\sum=14{,}0$, $\bar x=1{,}4$, $\theta^*=1{,}4\cdot0{,}6931=0{,}970$. $X_{(1)}=1{,}0$, $X_{(n)}=1{,}9$, поэтому $\hat\theta\in[0{,}95;1{,}0]$; например, середина $0{,}975$.</p></li>
+      <li class="step"><b>г) вероятность</b><p>$P(X\gt1{,}5)=1-\dfrac{\ln(1{,}5/\theta)}{\ln2}$.</p><p>По ММ ($\theta=0{,}970$): $1-\frac{0{,}4355}{0{,}6931}=$ <b>0,372</b>. По ММП: от 0,341 (при $\theta=0{,}95$) до 0,415 (при $\theta=1$), для середины $0{,}975$ получается <b>0,379</b>.</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Следующий шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+  </article>
+  <article class="card task" data-id="10a">
+    <div class="card-head"><span class="chip self">Сам</span><span class="card-title">Отметь, когда решишь ИКР без подсказок</span></div>
+    <p class="cond">Критерий: все четыре пункта решены без открытия шагов, а числа совпали до второго знака.</p>
+    <button class="done-btn" type="button" id="done-10a">Отметить: решил сам</button>
+  </article>
+</section>
+
+<!-- ============ 11 ============ -->
+<section class="topic" id="t11">
+  <div class="topic-head"><span class="num">11</span><div><h2>Шпаргалка: увидел в условии — делаю</h2><p class="src">Прочитай за 10 минут до экзамена</p></div></div>
+  <div class="scroll">
+  <table class="tbl text">
+    <thead><tr><th class="l">В условии написано</th><th class="l">Что делаешь</th></tr></thead>
+    <tbody>
+      <tr><td>«проверить несмещённость»</td><td>Считаешь $M(\theta^*)$ и сравниваешь с $\theta$</td></tr>
+      <tr><td>«найти смещение»</td><td>$B=M(\theta^*)-\theta$</td></tr>
+      <tr><td>«асимптотически несмещённая»</td><td>Проверяешь, что $B\to0$ при $n\to\infty$</td></tr>
+      <tr><td>«состоятельность»</td><td>$D(\theta^*)\to0$ и несмещённость (или $B\to0$)</td></tr>
+      <tr><td>«эффективность», «Рао–Крамер»</td><td>6 шагов из темы 5: $\ln f$ → производная → $I(\theta)$ → $\frac1{nI}$ → сравнить с $D$</td></tr>
+      <tr><td>«в каком классе эффективна»</td><td>Оценка смещённая: граница $\frac{(1+B')^2}{nI}$, ответ «в классе со смещением $B(\theta)$»</td></tr>
+      <tr><td>«методом моментов»</td><td>$M(X)=\bar X$ и выразить параметр</td></tr>
+      <tr><td>«максимального правдоподобия»</td><td>$\ln L$ → производная = 0. Если границы $x$ зависят от $\theta$, смотри на min и max выборки</td></tr>
+      <tr><td>«распределение максимума / минимума»</td><td>$F^n$ и $1-(1-F)^n$</td></tr>
+      <tr><td>«как распределена $\frac{(n-1)\hat S^2}{\sigma^2}$»</td><td>$\chi^2(n-1)$, теорема Фишера</td></tr>
+      <tr><td>«дисперсия оценки дисперсии»</td><td>Через $\chi^2$: $D(\chi^2_k)=2k$</td></tr>
+      <tr><td>«какая оценка лучше»</td><td>Меньше $MSE=D+B^2$</td></tr>
+      <tr><td>«теоретические частоты»</td><td>Оценить $p$, затем $N\cdot P(k)$</td></tr>
+      <tr><td>«найти константу $a$»</td><td>$\int f=1$ или $F(\text{правый край})=1$</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <h3>Красная ручка: где теряют баллы</h3>
+  <div class="body">
+    <p class="trap">$D(X-Y)=D(X)+D(Y)$, а $D(cX)=c^2D(X)$.</p>
+    <p class="trap">$M(\bar X^2)=\frac{\sigma^2}{n}+\mu^2$, а не $\mu^2$.</p>
+    <p class="trap">$S^2$ (делим на $n$) смещённая, $\hat S^2$ (делим на $n-1$) несмещённая.</p>
+    <p class="trap">В Рао–Крамере $n$ стоит в знаменателе: $\frac{1}{n\,I(\theta)}$, а $I$ считается по одному наблюдению.</p>
+    <p class="trap">Равномерное и ММП: не дифференцируй, смотри на $X_{(1)}$ и $X_{(n)}$.</p>
+    <p class="trap">Несмещённая оценка ещё не обязательно состоятельная: вспомни $-2X_n+X_1$.</p>
+  </div>
+</section>
+
+<p class="foot">Задачи взяты из материалов курса (семинары 1–8, ДЗ №5, методички по ММ и ММП). Числовые ответы пересчитаны программой, а формулы для дисперсий и смещений проверены симуляцией.</p>
+</div>
+
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  svg: { fontCache: 'global' },
+  startup: { pageReady: function(){ return MathJax.startup.defaultPageReady().then(function(){ if (window.fixWideMath) window.fixWideMath(document); }); } }
+};
+(function(){
+  var s = document.createElement('script');
+  s.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.js';
+  s.async = true;
+  s.onerror = function(){
+    var f = document.createElement('script');
+    f.src = 'https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js';
+    f.async = true;
+    document.head.appendChild(f);
+  };
+  document.head.appendChild(s);
+})();
+</script>
+<script>
+(function(){
+  /* Long inline formulas: let them scroll inside the column instead of widening the page */
+  window.fixWideMath = function(root){
+    root.querySelectorAll('mjx-container:not([display="true"])').forEach(function(m){
+      if (m.offsetParent === null) return;
+      m.classList.remove('wide-math');
+      if (m.getBoundingClientRect().width > m.parentElement.clientWidth + 1) m.classList.add('wide-math');
+    });
+  };
+  var rt;
+  window.addEventListener('resize', function(){ clearTimeout(rt); rt = setTimeout(function(){ window.fixWideMath(document); }, 150); });
+  document.addEventListener('toggle', function(e){ window.fixWideMath(e.target); }, true);
+
+  /* Step-by-step reveal */
+  document.querySelectorAll('.card.ex').forEach(function(card){
+    var steps = Array.prototype.slice.call(card.querySelectorAll('.step'));
+    var next = card.querySelector('[data-act="next"]');
+    var all = card.querySelector('[data-act="all"]');
+    var reset = card.querySelector('[data-act="reset"]');
+    var counter = card.querySelector('.counter');
+    var shown = 0;
+    function update(){
+      steps.forEach(function(s, i){ s.hidden = i >= shown; });
+      counter.textContent = shown === 0 ? 'Шагов в разборе: ' + steps.length : 'Показано ' + shown + ' из ' + steps.length;
+      next.disabled = shown >= steps.length;
+      next.textContent = shown === 0 ? 'Показать первый шаг' : (shown >= steps.length ? 'Разбор окончен' : 'Следующий шаг');
+      reset.hidden = shown === 0;
+    }
+    next.addEventListener('click', function(){
+      if (shown < steps.length){
+        var s = steps[shown]; shown++; update();
+        s.classList.remove('fresh'); void s.offsetWidth; s.classList.add('fresh');
+        window.fixWideMath(card);
+      }
+    });
+    all.addEventListener('click', function(){ shown = steps.length; update(); window.fixWideMath(card); });
+    reset.addEventListener('click', function(){ shown = 0; update(); });
+    update();
+  });
+
+  /* Solved-task tracking, kept in this browser only */
+  var KEY = 'matstat-practice-solved-v1';
+  var solved = {};
+  try { solved = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { solved = {}; }
+  var tasks = Array.prototype.slice.call(document.querySelectorAll('.task[data-id]'));
+  var doneEl = document.getElementById('done-count');
+  var totalEl = document.getElementById('total-count');
+  var fill = document.getElementById('fill');
+  function save(){ try { localStorage.setItem(KEY, JSON.stringify(solved)); } catch (e) {} }
+  function render(){
+    var n = 0;
+    tasks.forEach(function(t){
+      var on = !!solved[t.dataset.id];
+      if (on) n++;
+      t.classList.toggle('is-done', on);
+      var b = t.querySelector('.done-btn');
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      b.textContent = on ? 'Решено ✓' : 'Отметить: решил сам';
+    });
+    doneEl.textContent = n;
+    totalEl.textContent = tasks.length;
+    fill.style.width = (tasks.length ? (n / tasks.length * 100) : 0) + '%';
+  }
+  tasks.forEach(function(t){
+    t.querySelector('.done-btn').addEventListener('click', function(){
+      var id = t.dataset.id;
+      if (solved[id]) delete solved[id]; else solved[id] = true;
+      save(); render();
+    });
+  });
+  render();
+})();
+</script>
