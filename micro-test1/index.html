@@ -1,0 +1,1140 @@
+<title>Микро-2, тест 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Golos+Text:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Unbounded:wght@500;700&display=swap">
+<style>
+/* Layout: одна колонка-«тетрадь в клетку», как в конспектах по матстату; синяя ручка для действий, красная для ловушек, зелёная для ответов */
+:root{
+  --paper:#f8fafd; --grid:#e4ebf4; --ink:#17213b; --muted:#56617a; --line:#d2dae7; --card:#ffffff;
+  --pen:#2346c0; --pen-soft:#e9eefc; --red:#c22f2a; --red-soft:#fcecea; --ok:#1c7a4b; --ok-soft:#e3f3ea;
+  --f-display:"Unbounded","Golos Text",system-ui,sans-serif;
+  --f-body:"Golos Text",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-hand:"Caveat","Segoe Print","Comic Sans MS",cursive;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+  --s-1:.8125rem; --s0:1rem; --s1:1.125rem; --s2:1.375rem; --s3:1.75rem; --s4:2.5rem;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0f141e; --grid:#182030; --ink:#e3e8f3; --muted:#9ba6be; --line:#29334a; --card:#151c2a;
+    --pen:#93abff; --pen-soft:#1b2544; --red:#ff7d72; --red-soft:#3a1c1d; --ok:#55c992; --ok-soft:#12301f;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0f141e; --grid:#182030; --ink:#e3e8f3; --muted:#9ba6be; --line:#29334a; --card:#151c2a;
+  --pen:#93abff; --pen-soft:#1b2544; --red:#ff7d72; --red-soft:#3a1c1d; --ok:#55c992; --ok-soft:#12301f;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+body{
+  background-color:var(--paper);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:22px 22px;
+  color:var(--ink); font-family:var(--f-body); font-size:var(--s0); line-height:1.6;
+  -webkit-text-size-adjust:100%;
+}
+.page{max-width:880px;margin:0 auto;padding-inline:16px;padding-block:28px 80px}
+h1,h2,h3{text-wrap:balance;line-height:1.2;margin:0}
+h1{font-family:var(--f-display);font-weight:700;font-size:clamp(2rem,6vw,var(--s4));letter-spacing:-.01em}
+h2{font-family:var(--f-display);font-weight:500;font-size:var(--s3)}
+h3{font-size:var(--s1);font-weight:600;margin-top:8px}
+p{margin:0}
+a{color:var(--pen)}
+.mono,.tbl{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+
+/* hero */
+.hero{display:grid;gap:14px;padding-block:8px 20px}
+.eyebrow{font-size:var(--s-1);text-transform:uppercase;letter-spacing:.09em;color:var(--muted);font-weight:600}
+.lead{font-size:var(--s1);max-width:62ch}
+.howto{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:6px}
+.howto div{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;min-width:0}
+.howto b{display:block;font-family:var(--f-display);font-weight:500;font-size:var(--s-1);color:var(--pen);letter-spacing:.04em;margin-bottom:4px}
+.hand{font-family:var(--f-hand);font-size:1.45rem;line-height:1.25;color:var(--red);font-weight:600}
+
+/* sticky bar */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);border-bottom:1px solid var(--line);margin-inline:-16px;padding:10px 16px;display:grid;gap:8px}
+.progress{display:flex;align-items:center;gap:12px;font-size:var(--s-1);color:var(--muted)}
+.progress .track{flex:1;height:6px;border-radius:3px;background:var(--line);overflow:hidden}
+.progress .fill{height:100%;width:0;background:var(--ok);transition:width .3s}
+.progress strong{color:var(--ink);font-variant-numeric:tabular-nums}
+.nav{display:flex;gap:6px;overflow-x:auto;scrollbar-width:thin;padding-bottom:2px}
+.nav a{flex:none;text-decoration:none;color:var(--ink);font-size:var(--s-1);border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 11px;white-space:nowrap}
+.nav a:hover,.nav a:focus-visible{border-color:var(--pen);color:var(--pen)}
+.nav a span{font-family:var(--f-mono);color:var(--muted);margin-right:4px}
+
+/* topics */
+.topic{display:grid;gap:16px;padding-block:44px 8px;scroll-margin-top:96px}
+.topic-head{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center;border-top:2px solid var(--ink);padding-top:18px}
+.num{font-family:var(--f-display);font-weight:700;font-size:2.4rem;line-height:1;color:var(--pen);min-width:1.4em}
+.src{font-size:var(--s-1);color:var(--muted);margin-top:4px}
+.plain{background:var(--pen-soft);border-radius:var(--r);padding:14px 18px;display:grid;gap:6px}
+.label{font-size:var(--s-1);text-transform:uppercase;letter-spacing:.08em;font-weight:700;color:var(--pen)}
+.plain p,.body p{max-width:68ch}
+.body{display:grid;gap:10px}
+
+ol.recipe{counter-reset:r;list-style:none;margin:0;padding:0;display:grid;gap:8px}
+ol.recipe>li{counter-increment:r;display:grid;grid-template-columns:2rem 1fr;gap:10px;align-items:start}
+ol.recipe>li::before{content:counter(r);font-family:var(--f-display);font-weight:500;font-size:var(--s-1);color:var(--paper);background:var(--pen);width:1.7rem;height:1.7rem;border-radius:50%;display:grid;place-items:center;margin-top:1px}
+ol.recipe>li>div{min-width:0}
+.recipe-box{border:1.5px solid var(--pen);border-radius:var(--r);padding:16px 18px;display:grid;gap:12px;background:var(--card)}
+.recipe-box>.label{color:var(--pen)}
+.recipe-box h3{margin-top:4px}
+
+.trap{font-family:var(--f-hand);font-size:1.4rem;line-height:1.25;color:var(--red);font-weight:600;padding:4px 2px 6px;border-bottom:2px dashed var(--red);justify-self:start;max-width:100%}
+.trap::before{content:"Ловушка: ";font-weight:700}
+.tip{border-left:3px solid var(--ok);background:var(--ok-soft);border-radius:0 var(--r) var(--r) 0;padding:10px 14px;display:grid;gap:4px}
+.tip .label{color:var(--ok)}
+
+/* cards */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;display:grid;gap:12px;min-width:0}
+.card-head{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:baseline}
+.chip{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;font-weight:700;border-radius:4px;padding:2px 7px}
+.chip.ex{background:var(--pen);color:var(--card)}
+.chip.self{background:var(--ink);color:var(--card)}
+.card-title{font-weight:600}
+.from{font-size:var(--s-1);color:var(--muted)}
+.cond{max-width:70ch}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.step{border-left:2px solid var(--line);padding:2px 0 2px 14px;display:grid;gap:6px;min-width:0}
+.step>b{font-size:var(--s-1);color:var(--pen);text-transform:uppercase;letter-spacing:.06em}
+.step.fresh{animation:pop .35s ease-out}
+@keyframes pop{from{opacity:.25;transform:translateY(4px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){.step.fresh{animation:none}}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{font:inherit;font-size:var(--s-1);font-weight:600;border-radius:8px;padding:7px 13px;border:1.5px solid var(--pen);background:var(--pen);color:var(--card);cursor:pointer}
+.btn.ghost{background:transparent;color:var(--pen)}
+.btn:disabled{opacity:.45;cursor:default}
+.btn:focus-visible,.nav a:focus-visible,summary:focus-visible,.done-btn:focus-visible{outline:3px solid var(--pen);outline-offset:2px}
+.counter{font-size:var(--s-1);color:var(--muted);font-variant-numeric:tabular-nums}
+details{border-top:1px dashed var(--line);padding-top:8px}
+summary{cursor:pointer;font-weight:600;color:var(--pen);font-size:.95rem;width:max-content;max-width:100%}
+details[open]>summary{margin-bottom:8px}
+details>div{display:grid;gap:8px;min-width:0}
+.task.is-done{border-color:var(--ok);background:linear-gradient(var(--ok-soft),var(--ok-soft)) top/100% 4px no-repeat,var(--card)}
+.done-btn{font:inherit;font-size:var(--s-1);font-weight:600;border-radius:8px;padding:6px 12px;border:1.5px solid var(--line);background:transparent;color:var(--muted);cursor:pointer;justify-self:start}
+.done-btn[aria-pressed="true"]{border-color:var(--ok);color:var(--ok);background:var(--ok-soft)}
+.answer{font-weight:600;color:var(--ok)}
+
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:14px}
+.scroll{overflow-x:auto;max-width:100%}
+.tbl{border-collapse:collapse;font-size:.86rem;min-width:100%}
+.tbl th,.tbl td{border:1px solid var(--line);padding:5px 9px;text-align:right;white-space:nowrap}
+.tbl th{font-family:var(--f-body);font-weight:600;background:var(--pen-soft);text-align:center}
+.tbl td.l,.tbl th.l{text-align:left;white-space:normal}
+.tbl tr.best td{font-weight:700;color:var(--ok);background:var(--ok-soft)}
+.tbl.text td{font-family:var(--f-body);white-space:normal;text-align:left;vertical-align:top}
+.tbl.map td a{font-family:var(--f-mono);font-weight:600;text-decoration:none;white-space:nowrap}
+.tbl.map td:first-child{font-family:var(--f-mono);font-weight:600}
+ul.dense{margin:0;padding-left:1.2em;display:grid;gap:4px}
+
+/* plan */
+ol.plan{list-style:none;margin:0;padding:0;display:grid;gap:10px;counter-reset:pl}
+ol.plan>li{counter-increment:pl;display:grid;grid-template-columns:2.4rem 1fr auto;gap:10px 12px;align-items:baseline;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px}
+ol.plan>li::before{content:counter(pl);font-family:var(--f-display);font-weight:700;font-size:1.4rem;color:var(--pen);line-height:1}
+ol.plan>li>div{min-width:0}
+ol.plan .time{font-family:var(--f-mono);font-size:var(--s-1);color:var(--muted);white-space:nowrap}
+ol.plan .cover{display:block;font-size:var(--s-1);color:var(--ok);font-weight:600;margin-top:2px}
+
+/* formulas */
+.fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:12px}
+.fgrid>div{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;display:grid;gap:6px;min-width:0;align-content:start}
+.fgrid b{font-size:var(--s-1);text-transform:uppercase;letter-spacing:.06em;color:var(--pen)}
+
+mjx-container[display="true"]{overflow-x:auto;overflow-y:hidden;max-width:100%;padding-block:2px}
+mjx-container{color:inherit}
+mjx-container.wide-math{display:block!important;overflow-x:auto;overflow-y:hidden;max-width:100%;padding-block:2px}
+.card p,.plain p,.recipe li,.tbl.text td{overflow-wrap:anywhere}
+.foot{margin-top:56px;font-size:var(--s-1);color:var(--muted);border-top:1px solid var(--line);padding-top:14px}
+@media (max-width:520px){
+  .num{font-size:1.8rem}
+  .card,.recipe-box{padding:14px}
+  .trap{font-size:1.3rem}
+  ol.plan>li{grid-template-columns:2rem 1fr}
+  ol.plan .time{grid-column:2}
+}
+</style>
+
+<div class="page">
+
+<header class="hero">
+  <p class="eyebrow">Микроэкономика 2 · Баранов · Offline Test 1</p>
+  <h1>Тест 1 по микре за один вечер</h1>
+  <p class="lead">На тесте будет одна задача из части A и одна из части B: 35 минут, без шпаргалок. В банке 20 типов задач, а приёмов решения всего девять. Каждый приём ниже разобран на задачах банка, и к каждой задаче есть вариант с другими числами для самопроверки.</p>
+  <div class="howto">
+    <div><b>Если времени мало</b>Иди по <a href="#plan">плану</a> сверху вниз. Первые четыре шага закрывают 6 из 10 задач части B и 3 из 10 задач части A.</div>
+    <div><b>Как читать разбор</b>Сначала реши пункт сам, потом открой шаг. Один шаг разбора равен одному пункту (a), (b) или (c).</div>
+    <div><b>За что дают баллы</b>«Show your work»: условие оптимума, проверка второго порядка и закрытия, проверка, что точка лежит на нужном куске спроса. Каждая проверка занимает одну строку.</div>
+  </div>
+  <p class="hand">Цель на тест: найти тип задачи по карте за минуту и сделать (a) и (b) по рецепту.</p>
+</header>
+
+<div class="bar">
+  <div class="progress"><span>Разобрано задач банка: <strong id="done-count">0</strong> из <strong id="total-count">20</strong></span><div class="track"><div class="fill" id="fill"></div></div></div>
+  <nav class="nav" aria-label="Разделы">
+    <a href="#plan">План</a>
+    <a href="#map">Карта банка</a>
+    <a href="#formulas">Формулы</a>
+    <a href="#a1"><span>A·1</span>Монополия</a>
+    <a href="#a2"><span>A·2</span>Несколько потребителей</a>
+    <a href="#a3"><span>A·3</span>Двухчастный тариф</a>
+    <a href="#a4"><span>A·4</span>Мировой рынок</a>
+    <a href="#a5"><span>A·5</span>Монопсония</a>
+    <a href="#b1"><span>B·1</span>Штучный спрос</a>
+    <a href="#b2"><span>B·2</span>Бандлинг</a>
+    <a href="#b3"><span>B·3</span>Две версии товара</a>
+    <a href="#b4"><span>B·4</span>Выбор качества</a>
+  </nav>
+</div>
+
+<!-- ============ PLAN ============ -->
+<section class="topic" id="plan">
+  <div class="topic-head"><div class="num">↓</div><div><h2>План подготовки</h2><p class="src">Порядок выбран по отдаче: сначала приёмы, которые закрывают сразу несколько задач и требуют только арифметики</p></div></div>
+  <ol class="plan">
+    <li><div><a href="#formulas">Формулы-минимум</a> и <a href="#map">карта банка</a>. Выучи формулы, чтобы на тесте не выводить их заново.<span class="cover">Нужно для всего остального</span></div><span class="time">15 мин</span></li>
+    <li><div><a href="#b1">B·1 Штучный спрос</a>: таблица «сколько продать».<span class="cover">B.1, B.2, B.3 · 3 из 10 задач части B</span></div><span class="time">20 мин</span></li>
+    <li><div><a href="#b4">B·4 Выбор качества</a>: один шаблон на три задачи.<span class="cover">B.8, B.9, B.10 · итого 6 из 10 в части B</span></div><span class="time">25 мин</span></li>
+    <li><div><a href="#a2">A·2 Несколько потребителей</a>: агрегирование спроса, единая цена, 1-я и 3-я степень.<span class="cover">A.3, A.5, A.8 и пункт (a) задачи A.4</span></div><span class="time">25 мин</span></li>
+    <li><div><a href="#a4">A·4 Мировой рынок</a> и <a href="#a5">A·5 Монопсония</a>: одно правило «MR = pw = MC» и его зеркало.<span class="cover">A.6, A.7, A.9, A.10 · итого 7 из 10 в части A</span></div><span class="time">25 мин</span></li>
+    <li><div><a href="#b3">B·3 Две версии товара</a> и <a href="#b2">B·2 Бандлинг</a>: перебор вариантов цен.<span class="cover">B.4, B.5, B.6, B.7 · итого 10 из 10 в части B</span></div><span class="time">25 мин</span></li>
+    <li><div><a href="#a1">A·1 Монополия</a> и <a href="#a3">A·3 Двухчастный тариф</a>.<span class="cover">A.1, A.2, A.4 · итого 10 из 10 в части A</span></div><span class="time">20 мин</span></li>
+  </ol>
+  <div class="tip">
+    <span class="label">На самом тесте (35 минут)</span>
+    <ul class="dense">
+      <li>Первая минута: найди тип по карте и вспомни рецепт.</li>
+      <li>Примерно 15 минут на задачу. Начинай с (a): обычно это самый механический пункт (агрегирование спроса, функция предложения, таблица, раздельная продажа).</li>
+      <li>Застрял: запиши условие, которое определяет ответ (например, \(MV=MBC\) или \(MR_i=MC\)), и переходи дальше. За постановку дают часть баллов.</li>
+      <li>В конце проверь, что выписаны все величины из вопроса: цена, количество, прибыль и, если просят, \(q_i\) каждого потребителя.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ MAP ============ -->
+<section class="topic" id="map">
+  <div class="topic-head"><div class="num">⌕</div><div><h2>Карта банка</h2><p class="src">На тесте будут другие числа и функции, но тип задачи тот же. Найди строку и открой раздел</p></div></div>
+  <div class="scroll">
+    <table class="tbl text map">
+      <thead><tr><th>№</th><th class="l">Название в банке</th><th class="l">Что спрашивают</th><th>Раздел</th></tr></thead>
+      <tbody>
+        <tr><td>A.1</td><td>Supply Curve and Monopoly Outcome</td><td>функция предложения, монополия, CS / PS / прибыль</td><td><a href="#a1">A·1</a></td></tr>
+        <tr><td>A.2</td><td>Monopoly Outcome and Deadweight Loss</td><td>монополия при \(D=4/p^2\), CS / PS / SW, DWL</td><td><a href="#a1">A·1</a></td></tr>
+        <tr><td>A.3</td><td>Monopoly Problem with 1st-degree PD</td><td>рыночный спрос, единая цена, 1-я степень</td><td><a href="#a2">A·2</a></td></tr>
+        <tr><td>A.4</td><td>Monopoly Problem with 2nd-degree PD</td><td>рыночный спрос, тариф \(F+pq\): одному или обоим</td><td><a href="#a3">A·3</a></td></tr>
+        <tr><td>A.5</td><td>Monopoly Problem with 3rd-degree PD</td><td>рыночный спрос, единая цена, 3-я степень</td><td><a href="#a2">A·2</a></td></tr>
+        <tr><td>A.6</td><td>Domestic Monopoly and Trade I</td><td>исход при \(p_w=10\), пороги \(p_w\)</td><td><a href="#a4">A·4</a></td></tr>
+        <tr><td>A.7</td><td>Domestic Monopoly and Trade II</td><td>пороги \(p_w\), 60% продаж за рубежом</td><td><a href="#a4">A·4</a></td></tr>
+        <tr><td>A.8</td><td>Third-degree Price Discrimination</td><td>\(q_2-q_1\), \(p_2-p_1\), максимальный выпуск</td><td><a href="#a2">A·2</a></td></tr>
+        <tr><td>A.9</td><td>Monopsony</td><td>предложение, \(MV=MBC\), SW, DWL</td><td><a href="#a5">A·5</a></td></tr>
+        <tr><td>A.10</td><td>Domestic Monopsony and Trade I</td><td>исход при \(p_w=3\), пороги \(p_w\)</td><td><a href="#a5">A·5</a></td></tr>
+        <tr><td>B.1</td><td>Monopoly and Unit Demand Customers</td><td>эффективный объём, единая цена, DWL</td><td><a href="#b1">B·1</a></td></tr>
+        <tr><td>B.2</td><td>Price Discrimination under Unit Demands</td><td>эффективный объём, единая цена, 1-я степень</td><td><a href="#b1">B·1</a></td></tr>
+        <tr><td>B.3</td><td>Monopsony and Labor Supply</td><td>эффективный найм, единая зарплата, DWL</td><td><a href="#b1">B·1</a></td></tr>
+        <tr><td>B.4</td><td>Bundling Problem I</td><td>раздельно или набором, параметр \(x\) в ценности</td><td><a href="#b2">B·2</a></td></tr>
+        <tr><td>B.5</td><td>Bundling Problem II</td><td>то же, \(x\) = число покупателей типа I, издержки 1</td><td><a href="#b2">B·2</a></td></tr>
+        <tr><td>B.6</td><td>Vertical Differentiation Problem I</td><td>только Fancy или Fancy + Basic, доля \(x\)</td><td><a href="#b3">B·3</a></td></tr>
+        <tr><td>B.7</td><td>Vertical Differentiation Problem II</td><td>только Top или Top + Xlam, параметр \(y\)</td><td><a href="#b3">B·3</a></td></tr>
+        <tr><td>B.8</td><td>Vertical Differentiation with Quality Choice I</td><td>мощность машин Газ / Тормоз, параметр \(\alpha\)</td><td><a href="#b4">B·4</a></td></tr>
+        <tr><td>B.9</td><td>Vertical Differentiation with Quality Choice II</td><td>площадь домов Том / Джерри, параметр \(\alpha\)</td><td><a href="#b4">B·4</a></td></tr>
+        <tr><td>B.10</td><td>Vertical Differentiation with Quality Choice III</td><td>доли типов \(x\), \(1-x\)</td><td><a href="#b4">B·4</a></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============ FORMULAS ============ -->
+<section class="topic" id="formulas">
+  <div class="topic-head"><div class="num">Σ</div><div><h2>Формулы-минимум</h2><p class="src">Тест closed-book, поэтому это нужно знать наизусть</p></div></div>
+  <div class="fgrid">
+    <div><b>Линейный спрос</b><p>\(p=a-bq\;\Rightarrow\; D(p)=\frac{a-p}{b}\), \(MR=a-2bq\)</p><p>\(CS=\tfrac12(a-p)\,q\)</p></div>
+    <div><b>Монополия</b><p>\(MR=p(q)+p'(q)\,q=MC\), затем \(p^m=p(q^m)\)</p><p>Лернер: \(\frac{p-MC}{p}=-\frac1\varepsilon\), \(\varepsilon=\frac{p\,D'(p)}{D(p)}\)</p></div>
+    <div><b>Излишки</b><p>\(CS=\int_0^q p(x)\,dx-pq\)</p><p>\(PS=pq-VC(q)\), прибыль \(=PS-F\)</p><p>\(DWL=SW^*-SW\), где \(q^*\): \(p(q^*)=MC(q^*)\)</p></div>
+    <div><b>Предложение фирмы</b><p>\(p=MC(q)\) выше порога \(p_s=\min AC\) (если \(C(0)=0\)) или \(\min AVC\) (если \(C(0)=F\))</p></div>
+    <div><b>Монопсония</b><p>\(MBC=p(q)+p'(q)\,q\), \(MV=V'(q)\)</p><p>\(MV=MBC\), цена \(p^m=p(q^m)\) по кривой предложения</p></div>
+    <div><b>Дискриминация</b><p>1-я: цена \(=MC\), взнос \(F_i=CS_i\)</p><p>3-я: \(MR_i(q_i)=MC(Q)\) для каждого рынка</p><p>Тариф на обоих: \(F=CS_2(p)\), \((p-c)\,|D'(p)|=D_1(p)-D_2(p)\)</p></div>
+    <div><b>Мировой рынок</b><p>\(MC(Q)=p_w=MR(q_d)\), \(q_w=Q-q_d\)</p><p>Всё дома: \(p_w\le MR(q^m)\). Всё за рубеж: \(p_w\ge MR(0)\)</p></div>
+    <div><b>Штучный спрос</b><p>Единая цена: прибыль \(k\,\omega_k-C(k)\)</p><p>1-я степень: \(\sum_{i\le k}\omega_i-C(k)\), \(q^m=q^*\)</p></div>
+    <div><b>Две версии / качество</b><p>Низкий тип платит всю свою ценность: \(p_L=v_L(q_L)\)</p><p>Высокий: \(p_H=v_H(q_H)-\big[v_H(q_L)-v_L(q_L)\big]\)</p><p>\(q_H\) эффективно, \(q_L\) занижено</p></div>
+  </div>
+</section>
+
+<!-- ============ A1 ============ -->
+<section class="topic" id="a1">
+  <div class="topic-head"><div class="num">A·1</div><div><h2>Монополия и предложение фирмы</h2><p class="src">Задачи банка A.1, A.2 · лекция 1a, семинар 2</p></div></div>
+  <div class="plain"><span class="label">Как узнать</span><p>Один продавец, даны спрос \(D(p)\) и издержки \(C(q)\). Просят функцию предложения price-taker, монопольный исход \((q^m,p^m)\), CS, PS, DWL.</p></div>
+  <div class="recipe-box">
+    <span class="label">Рецепт</span>
+    <h3>Функция предложения (price-taker)</h3>
+    <ol class="recipe">
+      <li><div>Раздели издержки: \(C(q)=F+VC(q)\), \(MC=C'(q)\). Если \(C(0)=0\), фиксированные издержки избегаемые, порог считаем по \(\min AC\). Если \(C(0)=F\), они утоплены, порог по \(\min AVC\).</div></li>
+      <li><div>Порог закрытия: реши \(MC(q_s)=AC(q_s)\) (или \(=AVC\)), цена \(p_s=MC(q_s)\).</div></li>
+      <li><div>Выше порога фирма идёт по MC: \(p=MC(q)\Rightarrow q=MC^{-1}(p)\).</div></li>
+      <li><div>Ответ кусочно: \(s(p)=0\) при \(p\lt p_s\); \(\{0;\,q_s\}\) при \(p=p_s\); \(MC^{-1}(p)\) при \(p\gt p_s\).</div></li>
+    </ol>
+    <h3>Монополия</h3>
+    <ol class="recipe">
+      <li><div>Обратный спрос \(p(q)\), \(MR=p(q)+p'(q)\,q\). Для \(p=a-bq\): \(MR=a-2bq\).</div></li>
+      <li><div>\(MR(q^m)=MC(q^m)\), затем \(p^m=p(q^m)\).</div></li>
+      <li><div>Проверки: \(MR'-MC'\lt 0\) (SOC) и \(\pi(q^m)\ge\pi(0)\) (при \(C(0)=0\) это \(\pi\ge0\)).</div></li>
+      <li><div>\(CS=\int_0^{q}p(x)dx-pq\), \(PS=pq-VC\), прибыль \(=PS-F\). Для DWL найди \(q^*\) из \(p(q)=MC(q)\).</div></li>
+    </ol>
+    <p>Спрос вида \(D=A\,p^{-k}\): эластичность постоянна, \(\varepsilon=-k\), и сразу \(p^m=\frac{k}{k-1}\,MC\).</p>
+  </div>
+  <p class="trap">PS и прибыль различаются на фиксированные издержки: PS = π + F.</p>
+
+  <article class="card ex task" data-id="A1">
+    <div class="card-head"><span class="chip ex">Банк A.1</span><span class="card-title">Supply Curve and Monopoly Outcome</span></div>
+    <p class="cond">\(D(p)=8-\frac p2\); \(C(q)=0\) при \(q=0\), \(C(q)=\frac43+\frac{2q^3}{3}\) при \(q\gt0\). (a) Предложение price-taker. (b) Монопольный исход. (c) CS, PS и прибыль монополии.</p>
+    <ol class="steps">
+      <li class="step"><b>(a) Предложение</b>
+        <p>\(MC=2q^2\), \(AC=\frac{4}{3q}+\frac{2q^2}{3}\). \(C(0)=0\), значит \(F=\frac43\) избегаемые и порог по \(\min AC\): \(2q^2=\frac{4}{3q}+\frac{2q^2}{3}\Rightarrow \frac43q^2=\frac4{3q}\Rightarrow q_s=1\), \(p_s=MC(1)=2\).</p>
+        <p>Выше порога \(p=2q^2\Rightarrow q=\sqrt{p/2}\).</p>
+        <p class="answer">\(s(p)=0\) при \(p\lt2\); \(\{0;1\}\) при \(p=2\); \(\sqrt{p/2}\) при \(p\gt2\).</p></li>
+      <li class="step"><b>(b) Монополия</b>
+        <p>\(p(q)=16-2q\), \(MR=16-4q\). \(16-4q=2q^2\Rightarrow q^2+2q-8=0\Rightarrow q=2\) (корень \(-4\) отбрасываем).</p>
+        <p>SOC: \(MR'=-4\lt MC'=4q=8\). Прибыль \(24-\left(\frac43+\frac{16}3\right)=\frac{52}3\gt0\), закрываться невыгодно.</p>
+        <p class="answer">\(q^m=2\), \(p^m=12\).</p></li>
+      <li class="step"><b>(c) Излишки</b>
+        <p>\(CS=\tfrac12(16-12)\cdot2=4\). \(PS=pq-VC=24-\frac{2\cdot8}{3}=\frac{56}3\approx18{,}67\). Прибыль \(=PS-F=\frac{56}3-\frac43=\frac{52}3\approx17{,}33\).</p>
+        <p class="answer">CS = 4, PS = 56/3, π = 52/3.</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Показать первый шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+    <button class="done-btn" type="button">Отметить: решил сам</button>
+  </article>
+
+  <article class="card ex task" data-id="A2">
+    <div class="card-head"><span class="chip ex">Банк A.2</span><span class="card-title">Monopoly Outcome and Deadweight Loss</span></div>
+    <p class="cond">\(D(p)=\frac4{p^2}\), \(C(q)=\frac q4\). (a) Монопольный исход. (b) CS, PS, SW. (c) DWL.</p>
+    <ol class="steps">
+      <li class="step"><b>(a) Монополия</b>
+        <p>\(\varepsilon=\frac{p\,D'(p)}{D}=\frac{p\cdot(-8/p^3)}{4/p^2}=-2\). Лернер: \(\frac{p-MC}{p}=\frac12\Rightarrow p=2MC=\frac12\). Тот же ответ через MR: \(p(q)=\frac2{\sqrt q}\), \(MR=\frac1{\sqrt q}=\frac14\Rightarrow q=16\).</p>
+        <p class="answer">\(q^m=16\), \(p^m=\frac12\).</p></li>
+      <li class="step"><b>(b) Излишки</b>
+        <p>\(CS=\int_0^{16}\frac{2}{\sqrt x}dx-\frac12\cdot16=4\sqrt{16}-8=8\). \(PS=8-\frac{16}4=4\).</p>
+        <p class="answer">CS = 8, PS = 4, SW = 12.</p></li>
+      <li class="step"><b>(c) DWL</b>
+        <p>Эффективно: \(p=MC=\frac14\Rightarrow q^*=\frac{4}{1/16}=64\). \(DWL=\int_{16}^{64}\left(\frac2{\sqrt x}-\frac14\right)dx=\big[4\sqrt x\big]_{16}^{64}-\frac{48}4=16-12\).</p>
+        <p class="answer">DWL = 4.</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Показать первый шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+    <button class="done-btn" type="button">Отметить: решил сам</button>
+  </article>
+
+  <div class="grid2">
+    <article class="card">
+      <div class="card-head"><span class="chip self">Тренировка</span><span class="card-title">Как A.1, другие числа</span></div>
+      <p class="cond">\(D(p)=12-\frac p2\); \(C(0)=0\), \(C(q)=9+q^2\) при \(q\gt0\). Найди \(s(p)\), монопольный исход, CS, PS, прибыль.</p>
+      <details><summary>Ответ</summary><div>
+        <p>\(MC=2q\), \(AC=\frac9q+q\), \(\min AC\) при \(q_s=3\), \(p_s=6\). \(s(p)=0\) при \(p\lt6\); \(\{0;3\}\) при \(p=6\); \(p/2\) при \(p\gt6\).</p>
+        <p>\(MR=24-4q=2q\Rightarrow q^m=4\), \(p^m=16\). CS = 16, PS = 48, π = 39.</p>
+      </div></details>
+    </article>
+    <article class="card">
+      <div class="card-head"><span class="chip self">Тренировка</span><span class="card-title">Как A.2, другие числа</span></div>
+      <p class="cond">\(D(p)=\frac9{p^2}\), \(C(q)=q\). Найди исход, CS, PS, SW, DWL.</p>
+      <details><summary>Ответ</summary><div>
+        <p>\(\varepsilon=-2\Rightarrow p^m=2MC=2\), \(q^m=\frac94\). \(p(q)=\frac3{\sqrt q}\), \(CS=6\sqrt q-pq=9-4{,}5=4{,}5\), \(PS=4{,}5-2{,}25=2{,}25\), SW = 6,75.</p>
+        <p>\(q^*=9\) (при \(p=1\)), \(SW^*=6\cdot3-9=9\), DWL = 2,25.</p>
+      </div></details>
+    </article>
+  </div>
+</section>
+
+<!-- ============ A2 ============ -->
+<section class="topic" id="a2">
+  <div class="topic-head"><div class="num">A·2</div><div><h2>Несколько потребителей</h2><p class="src">Задачи банка A.3, A.5, A.8 и пункт (a) задачи A.4 · лекция 1b, семинар 4</p></div></div>
+  <div class="plain"><span class="label">Как узнать</span><p>Даны два обратных спроса \(p_1(q)\), \(p_2(q)\). Просят рыночный спрос, монополию с единой ценой (linear pricing), 1-ю или 3-ю степень дискриминации.</p></div>
+  <div class="recipe-box">
+    <span class="label">Рецепт</span>
+    <h3>(a) Рыночный спрос</h3>
+    <ol class="recipe">
+      <li><div>Переверни каждый: \(p_i=a_i-b_iq\Rightarrow D_i(p)=\frac{a_i-p}{b_i}\) при \(p\lt a_i\), иначе 0.</div></li>
+      <li><div>Складывай по количеству при одной цене, по диапазонам: \(D=D_1\) при \(a_2\le p\lt a_1\); \(D=D_1+D_2\) при \(p\lt a_2\).</div></li>
+      <li><div>Точка излома \(q_k=D_1(a_2)\). Обратный: \(p(q)=p_1(q)\) при \(q\le q_k\); при \(q\gt q_k\) обращаешь \(D_1+D_2\).</div></li>
+    </ol>
+    <h3>(b) Единая цена при изломе</h3>
+    <ol class="recipe">
+      <li><div>На каждом куске реши \(MR=MC\). Проверь, что \(q\) лежит в своём куске; если нет, кандидат на этом куске — точка излома.</div></li>
+      <li><div>Посчитай прибыль каждого кандидата и выбери большую. Индивидуальные объёмы \(q_i=D_i(p^m)\).</div></li>
+    </ol>
+    <h3>1-я степень</h3>
+    <ol class="recipe">
+      <li><div>Цена за единицу равна MC: при \(C=cq\) получаем \(q_i^*=D_i(c)\).</div></li>
+      <li><div>Личный двухчастный тариф \(T_i(q)=F_i+c\,q\), \(F_i=CS_i(c)=\tfrac12(a_i-c)\,q_i^*\). Прибыль \(=\sum F_i=SW^*\), DWL = 0.</div></li>
+    </ol>
+    <h3>3-я степень</h3>
+    <ol class="recipe">
+      <li><div>\(MR_i(q_i)=MC(Q)\) на каждом обслуживаемом рынке. При \(C=cq\): \(q_i=\frac{a_i-c}{2b_i}\), если \(a_i\gt c\).</div></li>
+      <li><div>\(p_i=p_i(q_i)\), прибыль \(\sum(p_i-c)\,q_i\). Даже без знания \(C\) верно \(MR_1(q_1)=MR_2(q_2)\), и это решает A.8.</div></li>
+    </ol>
+  </div>
+  <p class="trap">обратные спросы НЕ складывают: p₁ + p₂ ничего не значит.</p>
+  <p class="trap">в (b) обязательно сравни прибыль на обоих кусках, иногда выгоднее не обслуживать второго.</p>
+
+  <article class="card ex task" data-id="A3">
+    <div class="card-head"><span class="chip ex">Банк A.3</span><span class="card-title">Monopoly Problem with 1st-degree PD</span></div>
+    <p class="cond">\(p_1=12-q\), \(p_2=8-q\), \(C=2q\). (a) Рыночный и обратный рыночный спрос. (b) Единая цена: исход и прибыль. (c) 1-я степень: исход и прибыль.</p>
+    <ol class="steps">
+      <li class="step"><b>(a) Рыночный спрос</b>
+        <p>\(D_1=12-p\) (\(p\le12\)), \(D_2=8-p\) (\(p\le8\)).</p>
+        \[D(p)=\begin{cases}0, &amp; p\ge12\\ 12-p, &amp; 8\le p\lt12\\ 20-2p, &amp; 0\le p\lt8\end{cases}\qquad p(q)=\begin{cases}12-q, &amp; 0\le q\le4\\ 10-\frac q2, &amp; 4\lt q\le20\end{cases}\]
+        <p>Излом в \(q=D(8)=4\).</p></li>
+      <li class="step"><b>(b) Единая цена</b>
+        <p>Кусок \(q\gt4\): \(MR=10-q=2\Rightarrow q=8\), лежит в куске; \(p=6\), \(\pi=4\cdot8=32\).</p>
+        <p>Кусок \(q\le4\): \(MR=12-2q=2\Rightarrow q=5\notin[0;4]\), лучший кандидат — излом: \(q=4\), \(p=8\), \(\pi=24\).</p>
+        <p class="answer">\(p^m=6\), \(Q=8\) (\(q_1=6\), \(q_2=2\)), \(\pi=32\).</p></li>
+      <li class="step"><b>(c) 1-я степень</b>
+        <p>Цена за единицу \(=MC=2\): \(q_1=10\), \(q_2=6\). Взносы \(F_1=\tfrac12\cdot10\cdot10=50\), \(F_2=\tfrac12\cdot6\cdot6=18\). Тарифы \(T_1=50+2q\), \(T_2=18+2q\).</p>
+        <p class="answer">\(Q=16\), \(\pi=68=SW^*\), CS = 0, DWL = 0.</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Показать первый шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+    <button class="done-btn" type="button">Отметить: решил сам</button>
+  </article>
+
+  <article class="card ex task" data-id="A5">
+    <div class="card-head"><span class="chip ex">Банк A.5</span><span class="card-title">Monopoly Problem with 3rd-degree PD</span><span class="from">то же, что семинар 4, Q1</span></div>
+    <p class="cond">\(p_1=8-q\), \(p_2=4-q\), \(C=2q\). (a) Рыночный спрос. (b) Единая цена. (c) 3-я степень.</p>
+    <ol class="steps">
+      <li class="step"><b>(a) Рыночный спрос</b>
+        \[D(p)=\begin{cases}0, &amp; p\ge8\\ 8-p, &amp; 4\le p\lt8\\ 12-2p, &amp; 0\le p\lt4\end{cases}\qquad p(q)=\begin{cases}8-q, &amp; 0\le q\le4\\ 6-\frac q2, &amp; 4\lt q\le12\end{cases}\]</li>
+      <li class="step"><b>(b) Единая цена</b>
+        <p>Кусок \(q\le4\): \(8-2q=2\Rightarrow q=3\), лежит в куске; \(p=5\), \(\pi=3\cdot3=9\).</p>
+        <p>Кусок \(q\gt4\): \(6-q=2\Rightarrow q=4\), это граница, то есть излом: \(p=4\), \(\pi=2\cdot4=8\lt9\).</p>
+        <p class="answer">\(p^m=5\), \(q_1=3\), \(q_2=0\) (второй не обслуживается), \(\pi=9\).</p></li>
+      <li class="step"><b>(c) 3-я степень</b>
+        <p>\(MR_1=8-2q_1=2\Rightarrow q_1=3\), \(p_1=5\). \(MR_2=4-2q_2=2\Rightarrow q_2=1\), \(p_2=3\).</p>
+        <p class="answer">\(\pi=3\cdot3+1\cdot1=10\gt9\): дискриминация позволяет обслужить второго.</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Показать первый шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+    <button class="done-btn" type="button">Отметить: решил сам</button>
+  </article>
+
+  <article class="card ex task" data-id="A8">
+    <div class="card-head"><span class="chip ex">Банк A.8</span><span class="card-title">Third-degree Price Discrimination</span></div>
+    <p class="cond">\(D_1=10-p\), \(D_2=15-p\), 3-я степень, \(C\) неизвестна (\(C'\ge0\), \(C''\ge0\)), продаёт на обоих рынках. (a) \(q_2^m-q_1^m\). (b) \(p_2^m-p_1^m\). (c) Максимально возможный выпуск без субсидий.</p>
+    <ol class="steps">
+      <li class="step"><b>(a) Разница объёмов</b>
+        <p>\(MR_1=10-2q_1\), \(MR_2=15-2q_2\). В оптимуме оба равны \(MC(Q)\), значит равны друг другу: \(10-2q_1=15-2q_2\).</p>
+        <p class="answer">\(q_2-q_1=2{,}5\) при любой функции издержек.</p></li>
+      <li class="step"><b>(b) Разница цен</b>
+        <p>\(p_2-p_1=(15-q_2)-(10-q_1)=5-(q_2-q_1)\).</p>
+        <p class="answer">\(p_2-p_1=2{,}5\).</p></li>
+      <li class="step"><b>(c) Максимальный выпуск</b>
+        <p>Без субсидии \(MC\ge0\), значит \(MR_i=MC\ge0\): \(q_1\le5\), \(q_2\le7{,}5\). Граница достигается при \(MC=0\) (например, \(C(q)=0\)).</p>
+        <p class="answer">\(Q_{\max}=12{,}5\).</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Показать первый шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+    <button class="done-btn" type="button">Отметить: решил сам</button>
+  </article>
+
+  <div class="grid2">
+    <article class="card">
+      <div class="card-head"><span class="chip self">Тренировка</span><span class="card-title">Как A.3</span></div>
+      <p class="cond">\(p_1=10-q\), \(p_2=6-q\), \(C=2q\). Рыночный спрос, единая цена, 1-я степень.</p>
+      <details><summary>Ответ</summary><div>
+        <p>\(D=10-p\) при \(6\le p\lt10\); \(16-2p\) при \(p\lt6\). \(p(q)=10-q\) при \(q\le4\); \(8-\frac q2\) при \(q\gt4\).</p>
+        <p>Единая цена: кусок 2 даёт \(q=6\), \(p=5\), \(\pi=18\); излом даёт 16. Ответ \(p=5\), \(q_1=5\), \(q_2=1\), \(\pi=18\).</p>
+        <p>1-я степень: \(q_1=8\), \(q_2=4\), \(F_1=32\), \(F_2=8\), \(\pi=40\).</p>
+      </div></details>
+    </article>
+    <article class="card">
+      <div class="card-head"><span class="chip self">Тренировка</span><span class="card-title">Как A.5</span></div>
+      <p class="cond">\(p_1=12-q\), \(p_2=6-q\), \(C=2q\). Рыночный спрос, единая цена, 3-я степень.</p>
+      <details><summary>Ответ</summary><div>
+        <p>\(D=12-p\) при \(6\le p\lt12\); \(18-2p\) при \(p\lt6\). \(p(q)=12-q\) при \(q\le6\); \(9-\frac q2\) при \(q\gt6\).</p>
+        <p>Единая цена: кусок 1 даёт \(q=5\), \(p=7\), \(\pi=25\); кусок 2 даёт \(q=7\), \(p=5{,}5\), \(\pi=24{,}5\). Оба кандидата допустимы, выбираем \(p=7\), \(\pi=25\).</p>
+        <p>3-я степень: \(p_1=7\), \(q_1=5\); \(p_2=4\), \(q_2=2\); \(\pi=29\).</p>
+      </div></details>
+    </article>
+    <article class="card">
+      <div class="card-head"><span class="chip self">Тренировка</span><span class="card-title">Как A.8</span></div>
+      <p class="cond">\(D_1=12-p\), \(D_2=20-p\), 3-я степень, \(C\) неизвестна.</p>
+      <details><summary>Ответ</summary><div>
+        <p>\(q_2-q_1=4\), \(p_2-p_1=4\), \(Q_{\max}=6+10=16\).</p>
+      </div></details>
+    </article>
+  </div>
+</section>
+
+<!-- ============ A3 ============ -->
+<section class="topic" id="a3">
+  <div class="topic-head"><div class="num">A·3</div><div><h2>Двухчастный тариф</h2><p class="src">Задача банка A.4 · лекция 1b, семинар 4 Q1(e)</p></div></div>
+  <div class="plain"><span class="label">Как узнать</span><p>Один тариф \(T(q)=F+pq\) для всех («limited 2nd-degree PD»). При цене \(p\) потребитель \(i\) покупает \(D_i(p)\), если \(F\le CS_i(p)\).</p></div>
+  <div class="recipe-box">
+    <span class="label">Рецепт</span>
+    <ol class="recipe">
+      <li><div>Пункт (a) — рыночный спрос, как в <a href="#a2">A·2</a>.</div></li>
+      <li><div><b>Только сильный (потребитель 1):</b> \(p=MC=c\), \(F=CS_1(c)\). Прибыль \(=CS_1(c)\). Обслуживать только слабого всегда хуже.</div></li>
+      <li><div><b>Оба:</b> \(F=CS_2(p)\), прибыль \(\pi(p)=(p-c)\,(D_1+D_2)+2\,CS_2(p)\). Так как \(CS_2'(p)=-D_2(p)\), условие первого порядка сводится к \((p-c)\,|D'(p)|=D_1(p)-D_2(p)\).</div></li>
+      <li><div>Сравни прибыли двух вариантов. Обоих выгодно обслуживать, когда спросы близки.</div></li>
+    </ol>
+  </div>
+  <p class="trap">взнос F один на всех, поэтому при обслуживании обоих он равен излишку СЛАБОГО потребителя.</p>
+
+  <article class="card ex task" data-id="A4">
+    <div class="card-head"><span class="chip ex">Банк A.4</span><span class="card-title">Monopoly Problem with 2nd-degree PD</span></div>
+    <p class="cond">\(p_1=10-\frac q2\), \(p_2=8-\frac q2\), \(C=5q\). (a) Рыночный спрос. (b) Тариф \(F+pq\), обслуживается только один потребитель. (c) Обслуживаются оба; сравни с (b).</p>
+    <ol class="steps">
+      <li class="step"><b>(a) Рыночный спрос</b>
+        <p>\(D_1=20-2p\) (\(p\le10\)), \(D_2=16-2p\) (\(p\le8\)).</p>
+        \[D(p)=\begin{cases}0, &amp; p\ge10\\ 20-2p, &amp; 8\le p\lt10\\ 36-4p, &amp; 0\le p\lt8\end{cases}\qquad p(q)=\begin{cases}10-\frac q2, &amp; 0\le q\le4\\ 9-\frac q4, &amp; 4\lt q\le36\end{cases}\]</li>
+      <li class="step"><b>(b) Один потребитель</b>
+        <p>\(p=MC=5\). Потребитель 1: \(q_1=10\), \(F=CS_1(5)=\tfrac12\cdot5\cdot10=25\). Потребитель 2: \(q_2=6\), \(F=\tfrac12\cdot3\cdot6=9\). Выбираем первого; второй при \(F=25\) не покупает (\(CS_2=9\lt25\)).</p>
+        <p class="answer">\(F=25\), \(p=5\), \(q=10\), \(\pi=25\).</p></li>
+      <li class="step"><b>(c) Оба потребителя</b>
+        <p>\(F=CS_2(p)=\tfrac12(8-p)(16-2p)=(8-p)^2\). \(\pi=(p-5)(36-4p)+2(8-p)^2\).</p>
+        <p>\(\pi'(p)=36-4p-4(p-5)-4(8-p)=24-4p=0\Rightarrow p=6\). Проверка по короткой формуле: \((p-5)\cdot4=D_1-D_2=4\Rightarrow p=6\).</p>
+        <p>\(F=4\), \(q_1=8\), \(q_2=4\), \(Q=12\), \(\pi=1\cdot12+2\cdot4=20\).</p>
+        <p class="answer">\(\pi=20\lt25\): монополии выгоднее обслуживать только первого, как в (b).</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Показать первый шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+    <button class="done-btn" type="button">Отметить: решил сам</button>
+  </article>
+
+  <article class="card">
+    <div class="card-head"><span class="chip self">Тренировка</span><span class="card-title">Как A.4, ответ получается обратный</span></div>
+    <p class="cond">\(p_1=10-q\), \(p_2=8-q\), \(C=2q\). Рыночный спрос; тариф для одного; тариф для обоих.</p>
+    <details><summary>Ответ</summary><div>
+      <p>\(D=10-p\) при \(8\le p\lt10\); \(18-2p\) при \(p\lt8\). \(p(q)=10-q\) при \(q\le2\); \(9-\frac q2\) при \(q\gt2\).</p>
+      <p>Один: \(p=2\), \(F=CS_1(2)=32\), \(q=8\), \(\pi=32\).</p>
+      <p>Оба: \((p-2)\cdot2=2\Rightarrow p=3\), \(F=CS_2(3)=12{,}5\), \(q_1=7\), \(q_2=5\), \(\pi=12+25=37\gt32\). Здесь выгоднее обслуживать обоих.</p>
+    </div></details>
+  </article>
+</section>
+
+<!-- ============ A4 ============ -->
+<section class="topic" id="a4">
+  <div class="topic-head"><div class="num">A·4</div><div><h2>Монополист и мировой рынок</h2><p class="src">Задачи банка A.6, A.7 · семинар 3 Q3</p></div></div>
+  <div class="plain"><span class="label">Как узнать</span><p>Дома монополист с единой ценой, за рубежом можно продать сколько угодно по цене \(p_w\). Мировая цена играет роль постоянного предельного дохода от экспорта.</p></div>
+  <div class="recipe-box">
+    <span class="label">Рецепт</span>
+    <ol class="recipe">
+      <li><div>Если экспорт положителен: весь выпуск \(Q\) из \(MC(Q)=p_w\); домашний объём \(q_d\) из \(MR(q_d)=p_w\); экспорт \(q_w=Q-q_d\); домашняя цена \(p_d=p(q_d)\).</div></li>
+      <li><div>Прибыль \(=p_d\,q_d+p_w\,q_w-C(Q)\).</div></li>
+      <li><div><b>Наибольшая \(p_w\), при которой всё продаётся дома:</b> реши обычную монополию \(MR=MC\), порог \(p_w=MR(q^m)=MC(q^m)\).</div></li>
+      <li><div><b>Наименьшая \(p_w\), при которой всё уходит за рубеж:</b> \(q_d=0\), когда \(MR(0)\le p_w\), порог \(p_w=MR(0)=p(0)\).</div></li>
+      <li><div><b>Доля \(s\) за рубежом:</b> \(q_d=(1-s)Q\), реши \(MR\big((1-s)Q\big)=MC(Q)\), затем \(p_w=MC(Q)\).</div></li>
+    </ol>
+  </div>
+  <p class="trap">домашняя цена выше мировой: p_d &gt; p_w, равны только MR и p_w.</p>
+
+  <article class="card ex task" data-id="A6">
+    <div class="card-head"><span class="chip ex">Банк A.6</span><span class="card-title">Domestic Monopoly and Trade I</span></div>
+    <p class="cond">\(C=\frac{q^2}2+4q\), \(D(p)=24-2p\). (a) \(p_w=10\): исход. (b) Наибольшая \(p_w\), при которой всё продаётся дома. (c) Наименьшая \(p_w\), при которой всё уходит за рубеж.</p>
+    <ol class="steps">
+      <li class="step"><b>(a) Исход при \(p_w=10\)</b>
+        <p>\(p(q)=12-\frac q2\), \(MR=12-q\), \(MC=q+4\).</p>
+        <p>\(MC(Q)=10\Rightarrow Q=6\). \(MR(q_d)=10\Rightarrow q_d=2\), \(p_d=11\). \(q_w=4\).</p>
+        <p>\(\pi=11\cdot2+10\cdot4-(18+24)=20\).</p>
+        <p class="answer">\(q_d=2\), \(p_d=11\), \(q_w=4\), \(\pi=20\).</p></li>
+      <li class="step"><b>(b) Всё дома</b>
+        <p>Без мирового рынка: \(12-q=q+4\Rightarrow q=4\), \(MR=MC=8\). Если \(p_w\le8\), последняя единица дома приносит \(MR\ge p_w\), а лишняя единица на экспорт стоит \(MC\gt8\ge p_w\). Экспортировать невыгодно.</p>
+        <p class="answer">\(p_w^{\max}=8\).</p></li>
+      <li class="step"><b>(c) Всё за рубеж</b>
+        <p>\(MR(0)=12\). Если \(p_w\ge12\), даже первая единица дома приносит меньше \(p_w\). Тогда \(Q=8\) (из \(MC=12\)) и всё уходит на экспорт.</p>
+        <p class="answer">\(p_w^{\min}=12\).</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Показать первый шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+    <button class="done-btn" type="button">Отметить: решил сам</button>
+  </article>
+
+  <article class="card ex task" data-id="A7">
+    <div class="card-head"><span class="chip ex">Банк A.7</span><span class="card-title">Domestic Monopoly and Trade II</span></div>
+    <p class="cond">\(C=q^2\), \(D(p)=9-0{,}5p\). (a) Наибольшая \(p_w\) «всё дома». (b) Наименьшая \(p_w\) «всё за рубеж». (c) За рубежом продаётся ровно 60% выпуска: исход.</p>
+    <ol class="steps">
+      <li class="step"><b>(a) Всё дома</b>
+        <p>\(p(q)=18-2q\), \(MR=18-4q\), \(MC=2q\). \(18-4q=2q\Rightarrow q=3\), \(MR=MC=6\).</p>
+        <p class="answer">\(p_w^{\max}=6\).</p></li>
+      <li class="step"><b>(b) Всё за рубеж</b>
+        <p>\(MR(0)=18\).</p>
+        <p class="answer">\(p_w^{\min}=18\).</p></li>
+      <li class="step"><b>(c) 60% за рубежом</b>
+        <p>\(q_d=0{,}4Q\): \(MR(0{,}4Q)=MC(Q)\Rightarrow 18-1{,}6Q=2Q\Rightarrow Q=5\). \(q_d=2\), \(q_w=3\), \(p_w=MC(5)=10\), \(p_d=18-4=14\).</p>
+        <p>\(\pi=14\cdot2+10\cdot3-25=33\).</p>
+        <p class="answer">\(q_d=2\), \(p_d=14\), \(q_w=3\), \(p_w=10\), \(\pi=33\).</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Показать первый шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+    <button class="done-btn" type="button">Отметить: решил сам</button>
+  </article>
+
+  <div class="grid2">
+    <article class="card">
+      <div class="card-head"><span class="chip self">Тренировка</span><span class="card-title">Как A.6</span></div>
+      <p class="cond">\(C=\frac{q^2}2+2q\), \(D(p)=20-p\). Исход при \(p_w=10\) и оба порога.</p>
+      <details><summary>Ответ</summary><div>
+        <p>\(Q=8\), \(q_d=5\), \(p_d=15\), \(q_w=3\), \(\pi=75+30-48=57\).</p>
+        <p>Всё дома при \(p_w\le8\) (монополия: \(q=6\), \(MR=8\)). Всё за рубеж при \(p_w\ge20\).</p>
+      </div></details>
+    </article>
+    <article class="card">
+      <div class="card-head"><span class="chip self">Тренировка</span><span class="card-title">Как A.7</span></div>
+      <p class="cond">\(C=q^2\), \(D(p)=12-0{,}5p\). Оба порога; затем за рубежом продаётся 75% выпуска.</p>
+      <details><summary>Ответ</summary><div>
+        <p>Пороги: 8 и 24.</p>
+        <p>\(24-4\cdot0{,}25Q=2Q\Rightarrow Q=8\), \(q_d=2\), \(p_d=20\), \(q_w=6\), \(p_w=16\), \(\pi=40+96-64=72\).</p>
+      </div></details>
+    </article>
+  </div>
+</section>
+
+<!-- ============ A5 ============ -->
+<section class="topic" id="a5">
+  <div class="topic-head"><div class="num">A·5</div><div><h2>Монопсония</h2><p class="src">Задачи банка A.9, A.10 · лекция 1a, семинар 3 Q1</p></div></div>
+  <div class="plain"><span class="label">Как узнать</span><p>Один покупатель с ценностью \(V(q)\) и конкурентные поставщики. Это зеркало монополии: вместо MR и MC здесь MV и MBC.</p></div>
+  <div class="recipe-box">
+    <span class="label">Рецепт</span>
+    <ol class="recipe">
+      <li><div>Предложение поставщика: \(p=MC_i(q)\Rightarrow s_i(p)\). Рыночное \(S=\sum s_i\), обратное \(p(q)\).</div></li>
+      <li><div>Расходы на закупку \(BC=p(q)\,q\), \(MBC=p(q)+p'(q)\,q\) (для \(p=a+bq\): \(MBC=a+2bq\)). \(MV=V'(q)\).</div></li>
+      <li><div>\(MV(q^m)=MBC(q^m)\), цена \(p^m=p(q^m)\) по кривой предложения. \(q_i=s_i(p^m)\).</div></li>
+      <li><div>Прибыль \(=V(q^m)-p^m q^m\); \(PS=\int_0^{q}(p^m-p(x))\,dx\); SW = прибыль + PS.</div></li>
+      <li><div>Эффективно: \(MV(q^*)=p(q^*)\), \(SW^*=V(q^*)-\int_0^{q^*}p(x)dx\), \(DWL=SW^*-SW\).</div></li>
+    </ol>
+    <h3>С мировым рынком (A.10)</h3>
+    <ol class="recipe">
+      <li><div>Покупает за рубежом: весь объём \(Q\) из \(MV(Q)=p_w\); дома \(q_d\) из \(MBC(q_d)=p_w\); импорт \(q_w=Q-q_d\); домашняя цена \(p(q_d)\).</div></li>
+      <li><div>Наименьшая \(p_w\) «всё дома»: \(p_w=MBC(q^m)\) из обычной монопсонии. Наибольшая \(p_w\) «всё за рубежом»: \(p_w=MBC(0)=p(0)\).</div></li>
+    </ol>
+  </div>
+  <p class="trap">платят поставщикам цену с кривой предложения p(q), а не MBC.</p>
+
+  <article class="card ex task" data-id="A9">
+    <div class="card-head"><span class="chip ex">Банк A.9</span><span class="card-title">Monopsony</span></div>
+    <p class="cond">\(C_1=\frac{q^2}2\), \(C_2=\frac{q^2}4\), \(V(q)=12q-\frac{q^2}3\). (a) Предложения и рыночное предложение. (b) Цена и объём монопсонии, её прибыль, PS, SW. (c) Эффективный объём, цена, DWL.</p>
+    <ol class="steps">
+      <li class="step"><b>(a) Предложение</b>
+        <p>\(MC_1=q\Rightarrow s_1=p\); \(MC_2=\frac q2\Rightarrow s_2=2p\).</p>
+        <p class="answer">\(S(p)=3p\), \(p(q)=\frac q3\).</p></li>
+      <li class="step"><b>(b) Монопсония</b>
+        <p>\(MV=12-\frac{2q}3\), \(BC=\frac{q^2}3\), \(MBC=\frac{2q}3\). \(12-\frac{2q}3=\frac{2q}3\Rightarrow q=9\), \(p=3\), \(q_1=3\), \(q_2=6\).</p>
+        <p>\(V(9)=108-27=81\), прибыль \(=81-27=54\). \(PS=27-(4{,}5+9)=13{,}5\).</p>
+        <p class="answer">\(q^m=9\), \(p^m=3\), π = 54, PS = 13,5, SW = 67,5.</p></li>
+      <li class="step"><b>(c) Эффективность</b>
+        <p>\(12-\frac{2q}3=\frac q3\Rightarrow q^*=12\), \(p^*=4\). \(SW^*=V(12)-\int_0^{12}\frac x3dx=96-24=72\).</p>
+        <p class="answer">DWL = 72 − 67,5 = 4,5.</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Показать первый шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+    <button class="done-btn" type="button">Отметить: решил сам</button>
+  </article>
+
+  <article class="card ex task" data-id="A10">
+    <div class="card-head"><span class="chip ex">Банк A.10</span><span class="card-title">Domestic Monopsony and Trade I</span></div>
+    <p class="cond">\(V=13q-q^2\), \(S(p)=\max(2p-2,0)\), мировая цена \(p_w\). (a) \(p_w=3\): исход. (b) Наименьшая \(p_w\), при которой всё покупается дома. (c) Наибольшая \(p_w\), при которой всё покупается за рубежом.</p>
+    <ol class="steps">
+      <li class="step"><b>(a) Исход при \(p_w=3\)</b>
+        <p>\(MV=13-2q\); \(p(q)=1+\frac q2\), \(MBC=1+q\).</p>
+        <p>\(MV(Q)=3\Rightarrow Q=5\). \(MBC(q_d)=3\Rightarrow q_d=2\), \(p_d=2\). \(q_w=3\).</p>
+        <p>Прибыль \(=V(5)-2\cdot2-3\cdot3=40-13=27\).</p>
+        <p class="answer">\(q_d=2\), \(p_d=2\), \(q_w=3\), π = 27.</p></li>
+      <li class="step"><b>(b) Всё дома</b>
+        <p>Без мирового рынка: \(13-2q=1+q\Rightarrow q=4\), \(MBC=5\) (домашняя цена 3). При \(p_w\ge5\) импорт на краю не дешевле.</p>
+        <p class="answer">\(p_w^{\min}=5\).</p></li>
+      <li class="step"><b>(c) Всё за рубежом</b>
+        <p>\(MBC(0)=1\). При \(p_w\le1\) даже первая домашняя единица не дешевле импорта, тогда \(Q=6\) (из \(MV=1\)).</p>
+        <p class="answer">\(p_w^{\max}=1\).</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Показать первый шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+    <button class="done-btn" type="button">Отметить: решил сам</button>
+  </article>
+
+  <div class="grid2">
+    <article class="card">
+      <div class="card-head"><span class="chip self">Тренировка</span><span class="card-title">Как A.9</span></div>
+      <p class="cond">\(C_1=C_2=\frac{q^2}2\), \(V=12q-\frac{q^2}2\). Предложение, исход, SW, DWL.</p>
+      <details><summary>Ответ</summary><div>
+        <p>\(S=2p\), \(p(q)=\frac q2\), \(MBC=q\), \(MV=12-q\Rightarrow q=6\), \(p=3\), \(q_1=q_2=3\).</p>
+        <p>π = 54 − 18 = 36, PS = 9, SW = 45. \(q^*=8\), \(p^*=4\), \(SW^*=48\), DWL = 3.</p>
+      </div></details>
+    </article>
+    <article class="card">
+      <div class="card-head"><span class="chip self">Тренировка</span><span class="card-title">Как A.10</span></div>
+      <p class="cond">\(V=10q-q^2\), \(S(p)=\max(p-1,0)\). Исход при \(p_w=4\) и оба порога.</p>
+      <details><summary>Ответ</summary><div>
+        <p>\(p(q)=1+q\), \(MBC=1+2q\). \(Q=3\), \(q_d=1{,}5\), \(p_d=2{,}5\), \(q_w=1{,}5\), π = 21 − 3,75 − 6 = 11,25.</p>
+        <p>Всё дома при \(p_w\ge5{,}5\) (монопсония: \(q=2{,}25\)). Всё за рубежом при \(p_w\le1\).</p>
+      </div></details>
+    </article>
+  </div>
+</section>
+
+<!-- ============ B1 ============ -->
+<section class="topic" id="b1">
+  <div class="topic-head"><div class="num">B·1</div><div><h2>Штучный спрос: таблица</h2><p class="src">Задачи банка B.1, B.2, B.3 · лекция 1b, семинар 3 Q2</p></div></div>
+  <div class="plain"><span class="label">Как узнать</span><p>Каждый покупатель берёт не больше одной единицы и готов платить \(\omega_i\) (willingness to pay). Даны таблица или формула \(\omega_i\) и кусочные издержки. В B.3 то же самое для работников с издержками \(c_i\).</p></div>
+  <div class="recipe-box">
+    <span class="label">Рецепт</span>
+    <ol class="recipe">
+      <li><div>Упорядочь \(\omega\) по убыванию. Таблица: \(k\), \(\omega_k\), \(\sum\omega\), \(C(k)\).</div></li>
+      <li><div><b>Эффективный объём:</b> максимум \(\sum_{i\le k}\omega_i-C(k)\). Если MC не убывает, просто продавай, пока \(\omega_k\ge MC_k\). Если MC падает (B.2), считай всю колонку.</div></li>
+      <li><div><b>Единая цена:</b> чтобы продать \(k\) штук, цена \(=\omega_k\); прибыль \(k\,\omega_k-C(k)\). При группах одинаковых покупателей проверяй только концы групп.</div></li>
+      <li><div><b>1-я степень</b> (и 3-я, при штучном спросе они совпадают): каждому цена \(\omega_i\), \(q^m=q^*\), прибыль \(=SW^*\), CS = 0. 2-я степень при штучном спросе ничего не добавляет к единой цене.</div></li>
+      <li><div>SW при единой цене \(=\sum\omega\) (обслуженных) \(-\,C(q^m)\); \(DWL=SW^*-SW\).</div></li>
+    </ol>
+    <p><b>Монопсония (B.3):</b> работники по возрастанию \(c_i\); чтобы нанять \(k\), зарплата \(w=c_k\) всем; прибыль \(R(k)-k\,c_k\); излишек работников \(\sum(w-c_i)\).</p>
+  </div>
+  <p class="trap">аккуратно считай кусочные издержки: в B.1 C(40) = 8·10 + 180 = 260, а не 6·40.</p>
+
+  <article class="card ex task" data-id="B1">
+    <div class="card-head"><span class="chip ex">Банк B.1</span><span class="card-title">Monopoly and Unit Demand Customers</span></div>
+    <p class="cond">\(\omega\): 11 (10 чел.), 10 (20), 9 (10), 7 (20). \(C(q)=6q\) при \(q\le30\); \(8(q-30)+180\) при \(q\ge31\). (a) Эффективный объём и SW. (b) Единая цена: объём и цена. (c) SW и DWL для (b).</p>
+    <ol class="steps">
+      <li class="step"><b>(a) Эффективно</b>
+        <p>MC = 6 для первых 30 машин, 8 дальше. Покупатели с 11 и 10 (машины 1–30) больше 6: да. С 9 (машины 31–40) больше 8: да. С 7 меньше 8: нет.</p>
+        <p>\(SW=110+200+90-C(40)=400-260\).</p>
+        <p class="answer">\(q^*=40\), SW* = 140.</p></li>
+      <li class="step"><b>(b) Единая цена</b>
+        <div class="scroll"><table class="tbl">
+          <thead><tr><th>цена</th><th>q</th><th>выручка</th><th>C(q)</th><th>прибыль</th></tr></thead>
+          <tbody>
+            <tr><td>11</td><td>10</td><td>110</td><td>60</td><td>50</td></tr>
+            <tr class="best"><td>10</td><td>30</td><td>300</td><td>180</td><td>120</td></tr>
+            <tr><td>9</td><td>40</td><td>360</td><td>260</td><td>100</td></tr>
+            <tr><td>7</td><td>60</td><td>420</td><td>420</td><td>0</td></tr>
+          </tbody></table></div>
+        <p class="answer">\(p^m=10\), \(q^m=30\), π = 120.</p></li>
+      <li class="step"><b>(c) SW и DWL</b>
+        <p>\(SW=110+200-180=130\) (CS = 10·1 = 10, PS = 120). Потеряны 10 покупателей с 9 при MC 8.</p>
+        <p class="answer">SW = 130, DWL = 10.</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Показать первый шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+    <button class="done-btn" type="button">Отметить: решил сам</button>
+  </article>
+
+  <article class="card ex task" data-id="B2">
+    <div class="card-head"><span class="chip ex">Банк B.2</span><span class="card-title">Price Discrimination under Unit Demands</span></div>
+    <p class="cond">\(\omega_i=12-2(i-1)\): 12, 10, 8, 6, 4, 2. \(C(q)=5q\) при \(q\le3\); \(3q+6\) при \(q\gt3\). (a) Эффективно. (b) Единая цена. (c) 1-я степень.</p>
+    <ol class="steps">
+      <li class="step"><b>Таблица</b>
+        <p>MC = 5 для первых трёх единиц, потом 3: предельные издержки падают, поэтому считаем всю таблицу.</p>
+        <div class="scroll"><table class="tbl">
+          <thead><tr><th>k</th><th>ω_k</th><th>Σω</th><th>C(k)</th><th>Σω − C</th><th>k·ω_k − C</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>12</td><td>12</td><td>5</td><td>7</td><td>7</td></tr>
+            <tr><td>2</td><td>10</td><td>22</td><td>10</td><td>12</td><td><b>10</b></td></tr>
+            <tr><td>3</td><td>8</td><td>30</td><td>15</td><td>15</td><td>9</td></tr>
+            <tr><td>4</td><td>6</td><td>36</td><td>18</td><td>18</td><td>6</td></tr>
+            <tr><td>5</td><td>4</td><td>40</td><td>21</td><td><b>19</b></td><td>−1</td></tr>
+            <tr><td>6</td><td>2</td><td>42</td><td>24</td><td>18</td><td>−12</td></tr>
+          </tbody></table></div></li>
+      <li class="step"><b>(a) Эффективно</b>
+        <p class="answer">\(q^*=5\), SW* = 19.</p></li>
+      <li class="step"><b>(b) Единая цена</b>
+        <p>Максимум последней колонки при \(k=2\): цена 10, прибыль 10. SW = 22 − 10 = 12 (CS = 2).</p>
+        <p class="answer">\(q^m=2\), \(p^m=10\), SW = 12.</p></li>
+      <li class="step"><b>(c) 1-я степень</b>
+        <p>Цены 12, 10, 8, 6, 4 для первых пяти, объём эффективный.</p>
+        <p class="answer">\(q^m=5\), π = SW = 19, CS = 0.</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Показать первый шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+    <button class="done-btn" type="button">Отметить: решил сам</button>
+  </article>
+
+  <article class="card ex task" data-id="B3">
+    <div class="card-head"><span class="chip ex">Банк B.3</span><span class="card-title">Monopsony and Labor Supply</span></div>
+    <p class="cond">Работники \(c_i\): 5 (20 чел.), 6 (20), 7 (10), 9 (20); каждый делает 1 машину. \(R(q)=10q\) при \(q\le40\); \(8(q-40)+400\) при \(q\ge41\). (a) Эффективно. (b) Единая зарплата. (c) Прибыль, излишек работников, SW, DWL.</p>
+    <ol class="steps">
+      <li class="step"><b>(a) Эффективно</b>
+        <p>Предельная выручка 10 для первых 40 машин, 8 дальше. \(c=5,6\) (1–40) меньше 10: да; \(c=7\) (41–50) меньше 8: да; \(c=9\) больше 8: нет.</p>
+        <p>\(SW=R(50)-(100+120+70)=480-290\).</p>
+        <p class="answer">\(q^*=50\), SW* = 190.</p></li>
+      <li class="step"><b>(b) Единая зарплата</b>
+        <div class="scroll"><table class="tbl">
+          <thead><tr><th>w</th><th>q</th><th>R(q)</th><th>w·q</th><th>прибыль</th></tr></thead>
+          <tbody>
+            <tr><td>5</td><td>20</td><td>200</td><td>100</td><td>100</td></tr>
+            <tr class="best"><td>6</td><td>40</td><td>400</td><td>240</td><td>160</td></tr>
+            <tr><td>7</td><td>50</td><td>480</td><td>350</td><td>130</td></tr>
+            <tr><td>9</td><td>70</td><td>640</td><td>630</td><td>10</td></tr>
+          </tbody></table></div>
+        <p class="answer">\(w^m=6\), \(q^m=40\).</p></li>
+      <li class="step"><b>(c) Излишки</b>
+        <p>Прибыль 160; излишек работников \(20\cdot(6-5)=20\); SW = 180.</p>
+        <p class="answer">DWL = 190 − 180 = 10.</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Показать первый шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+    <button class="done-btn" type="button">Отметить: решил сам</button>
+  </article>
+
+  <div class="grid2">
+    <article class="card">
+      <div class="card-head"><span class="chip self">Тренировка</span><span class="card-title">Как B.1</span></div>
+      <p class="cond">\(\omega\): 12 (10 чел.), 9 (10), 8 (15), 5 (10). \(C=4q\) при \(q\le20\); \(7(q-20)+80\) при \(q\gt20\).</p>
+      <details><summary>Ответ</summary><div>
+        <p>\(q^*=35\), SW* = 330 − 185 = 145.</p>
+        <p>Цены 12 / 9 / 8 / 5 дают прибыль 80 / 100 / 95 / −30. Ответ: \(p=9\), \(q=20\), π = 100, SW = 130, DWL = 15.</p>
+      </div></details>
+    </article>
+    <article class="card">
+      <div class="card-head"><span class="chip self">Тренировка</span><span class="card-title">Как B.2</span></div>
+      <p class="cond">\(\omega\) = 10, 8, 6, 4, 2; \(C(q)=q^2\).</p>
+      <details><summary>Ответ</summary><div>
+        <p>\(\sum\omega-C\): 9, 14, 15, 12, 5, значит \(q^*=3\), SW* = 15.</p>
+        <p>\(k\omega_k-C\): 9, 12, 9, 0, −15, значит \(p=8\), \(q=2\), π = 12, SW = 14. 1-я степень: \(q=3\), π = 15.</p>
+      </div></details>
+    </article>
+    <article class="card">
+      <div class="card-head"><span class="chip self">Тренировка</span><span class="card-title">Как B.3</span></div>
+      <p class="cond">\(c_i\): 4 (10 чел.), 5 (20), 8 (10), 10 (10). \(R=12q\) при \(q\le30\); \(9(q-30)+360\) при \(q\gt30\).</p>
+      <details><summary>Ответ</summary><div>
+        <p>\(q^*=40\), SW* = 450 − 220 = 230.</p>
+        <p>Зарплаты 4 / 5 / 8 / 10 дают прибыль 80 / 210 / 130 / 40. Ответ: \(w=5\), \(q=30\), π = 210, излишек работников 10, SW = 220, DWL = 10.</p>
+      </div></details>
+    </article>
+  </div>
+</section>
+
+<!-- ============ B2 ============ -->
+<section class="topic" id="b2">
+  <div class="topic-head"><div class="num">B·2</div><div><h2>Бандлинг</h2><p class="src">Задачи банка B.4, B.5 · лекция 1c, семинар 4 Q2</p></div></div>
+  <div class="plain"><span class="label">Как узнать</span><p>Два товара A и B, каждому покупателю нужно не больше одной штуки каждого. Сравнивают продажу по отдельности и продажу набором (pure bundling) в зависимости от параметра.</p></div>
+  <div class="recipe-box">
+    <span class="label">Рецепт</span>
+    <ol class="recipe">
+      <li><div><b>Раздельно:</b> для каждого товара два кандидата цены: низкая (покупают все) и высокая (покупает только тот, кто ценит больше). Прибыль товара \(=\max\). С издержками считай \((p-c)\cdot\) число покупателей.</div></li>
+      <li><div>С параметром найди, где два кандидата равны: это точка переключения. Запиши прибыль кусочно.</div></li>
+      <li><div><b>Набором:</b> ценность набора у каждого \(=\omega_A+\omega_B\), издержки \(c_A+c_B\), те же два кандидата.</div></li>
+      <li><div>Разбей ось параметра всеми точками переключения и сравни на каждом интервале. Следи за строгостью неравенства на концах.</div></li>
+    </ol>
+  </div>
+  <p class="trap">если параметр сидит в ценности (B.4), порядок покупателей меняется, когда x переходит через чужую ценность. Это тоже точка разбиения.</p>
+
+  <article class="card ex task" data-id="B4">
+    <div class="card-head"><span class="chip ex">Банк B.4</span><span class="card-title">Bundling Problem I</span></div>
+    <p class="cond">Потребитель 1: A = 1, B = 4. Потребитель 2: A = 3, B = x, \(x\in(0;8)\). Издержек нет. (a) Прибыль при раздельной продаже. (b) Прибыль набором. (c) При каких x набор строго лучше.</p>
+    <ol class="steps">
+      <li class="step"><b>(a) Раздельно</b>
+        <p>A: цена 1 даёт 2, цена 3 даёт 3, итого \(\pi_A=3\).</p>
+        <p>B при \(x\lt4\): цена \(x\) даёт \(2x\), цена 4 даёт 4, то есть 4 при \(x\le2\) и \(2x\) при \(2\le x\le4\). При \(x\ge4\): цена 4 даёт 8, цена \(x\) даёт \(x\lt8\), итого 8.</p>
+        \[\pi_S=\begin{cases}7, &amp; 0\lt x\le2\\ 3+2x, &amp; 2\le x\le4\\ 11, &amp; 4\le x\lt8\end{cases}\]</li>
+      <li class="step"><b>(b) Набором</b>
+        <p>Ценности набора: 5 и \(3+x\). При \(x\lt2\): цена \(3+x\) даёт \(6+2x\) (больше 5). При \(x\ge2\): цена 5 даёт 10, цена \(3+x\) даёт \(3+x\).</p>
+        \[\pi_B=\begin{cases}6+2x, &amp; 0\lt x\le2\\ 10, &amp; 2\le x\le7\\ 3+x, &amp; 7\le x\lt8\end{cases}\]</li>
+      <li class="step"><b>(c) Сравнение</b>
+        <p>\((0;2]\): \(6+2x\gt7\iff x\gt0{,}5\). \([2;4]\): \(10\gt3+2x\iff x\lt3{,}5\). \([4;7]\): \(10\lt11\). \([7;8)\): \(3+x\lt11\).</p>
+        <p class="answer">Набор строго лучше при \(x\in(0{,}5;\,3{,}5)\).</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Показать первый шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+    <button class="done-btn" type="button">Отметить: решил сам</button>
+  </article>
+
+  <article class="card ex task" data-id="B5">
+    <div class="card-head"><span class="chip ex">Банк B.5</span><span class="card-title">Bundling Problem II</span></div>
+    <p class="cond">100 покупателей: x типа I (A = 3, B = 11), 100 − x типа II (A = 5, B = 7). \(c_A=c_B=1\). (a) Раздельно. (b) Набором. (c) При каких x раздельная продажа строго лучше.</p>
+    <ol class="steps">
+      <li class="step"><b>(a) Раздельно</b>
+        <p>A: цена 3 даёт \(2\cdot100=200\); цена 5 даёт \(4(100-x)\), это больше 200 при \(x\le50\).</p>
+        <p>B: цена 7 даёт \(6\cdot100=600\); цена 11 даёт \(10x\), это больше 600 при \(x\ge60\).</p>
+        \[\pi_S=\begin{cases}1000-4x, &amp; 0\le x\le50\\ 800, &amp; 50\le x\le60\\ 200+10x, &amp; 60\le x\le100\end{cases}\]</li>
+      <li class="step"><b>(b) Набором</b>
+        <p>Ценности: I = 14, II = 12, издержки 2. Цена 12 даёт \(10\cdot100=1000\); цена 14 даёт \(12x\), это больше при \(x\ge\frac{250}3\approx83{,}3\).</p>
+        \[\pi_B=\begin{cases}1000, &amp; x\le 83{,}3\\ 12x, &amp; x\ge83{,}3\end{cases}\]</li>
+      <li class="step"><b>(c) Сравнение</b>
+        <p>\([0;50]\): \(1000-4x\gt1000\) нигде (при \(x=0\) равенство). \([50;60]\): 800 &lt; 1000. \([60;83{,}3]\): \(200+10x\gt1000\iff x\gt80\). \([83{,}3;100]\): \(200+10x\gt12x\iff x\lt100\).</p>
+        <p class="answer">Раздельно строго лучше при \(x\in(80;\,100)\), то есть x = 81, …, 99.</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Показать первый шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+    <button class="done-btn" type="button">Отметить: решил сам</button>
+  </article>
+
+  <div class="grid2">
+    <article class="card">
+      <div class="card-head"><span class="chip self">Тренировка</span><span class="card-title">Как B.4</span></div>
+      <p class="cond">Потребитель 1: A = 1, B = 5. Потребитель 2: A = 4, B = x, \(x\in(0;10)\). Издержек нет.</p>
+      <details><summary>Ответ</summary><div>
+        <p>\(\pi_S\) = 9 (x ≤ 2,5); 4 + 2x (2,5 ≤ x ≤ 5); 14 (x ≥ 5).</p>
+        <p>\(\pi_B\) = 8 + 2x (x ≤ 2); 12 (2 ≤ x ≤ 8); 4 + x (x ≥ 8).</p>
+        <p>Набор строго лучше при \(x\in(0{,}5;\,4)\).</p>
+      </div></details>
+    </article>
+    <article class="card">
+      <div class="card-head"><span class="chip self">Тренировка</span><span class="card-title">Как B.5 (семинар 4, Q2)</span></div>
+      <p class="cond">x типа I (A = 2, B = 9), 100 − x типа II (A = 5, B = 7), издержки по 1.</p>
+      <details><summary>Ответ</summary><div>
+        <p>\(\pi_S\) = 1000 − 4x (x ≤ 75); 100 + 8x (x ≥ 75).</p>
+        <p>\(\pi_B\) = 1000 − 10x (x ≤ 10); 900 (x ≥ 10).</p>
+        <p>Раздельно строго лучше при \(x\in(0;\,25)\).</p>
+      </div></details>
+    </article>
+  </div>
+</section>
+
+<!-- ============ B3 ============ -->
+<section class="topic" id="b3">
+  <div class="topic-head"><div class="num">B·3</div><div><h2>Две версии товара</h2><p class="src">Задачи банка B.6, B.7 · лекция 1c, семинар 4 Q3</p></div></div>
+  <div class="plain"><span class="label">Как узнать</span><p>Товар в двух готовых версиях (Fancy / Basic, Top / Xlam), два типа покупателей со штучным спросом. Цену по покупателю назначать нельзя, только по версии.</p></div>
+  <div class="recipe-box">
+    <span class="label">Рецепт</span>
+    <ol class="recipe">
+      <li><div><b>Только дорогая версия H:</b> как штучный спрос: низкая цена (покупают все) или высокая (только сильный тип). Прибыль \(=\max\).</div></li>
+      <li><div><b>H сильному, L слабому:</b> слабый платит всю свою ценность L: \(p_L=\omega_L^{\text{слаб}}\).</div></li>
+      <li><div>Сильный безразличен между H и L: \(\omega_H^{\text{сил}}-p_H=\omega_L^{\text{сил}}-p_L\Rightarrow p_H=\omega_H^{\text{сил}}-(\omega_L^{\text{сил}}-p_L)\).</div></li>
+      <li><div>Проверь, что слабый не хочет H: \(\omega_L^{\text{слаб}}-p_L\ge\omega_H^{\text{слаб}}-p_H\). Прибыль \(=\) доли \(\times(p-c)\).</div></li>
+      <li><div>Сравни варианты и найди интервал параметра.</div></li>
+    </ol>
+    <p>Продавать только L невыгодно: при тех же покупателях H приносит больше.</p>
+  </div>
+  <p class="trap">если у версии есть предельные издержки (Top в B.7), вычитай их из цены каждой проданной штуки.</p>
+
+  <article class="card ex task" data-id="B6">
+    <div class="card-head"><span class="chip ex">Банк B.6</span><span class="card-title">Vertical Differentiation Problem I</span></div>
+    <p class="cond">Доля x типа I (Fancy 13, Basic 8), доля 1 − x типа II (Fancy 6, Basic 4). Издержки 0. (a) Только Fancy. (b) Fancy типу I, Basic типу II. (c) При каких x выгоднее предлагать обе версии.</p>
+    <ol class="steps">
+      <li class="step"><b>(a) Только Fancy</b>
+        <p>Цена 6 (покупают все) даёт 6; цена 13 (только тип I) даёт \(13x\).</p>
+        <p class="answer">\(\pi_F=6\) при \(x\le\frac6{13}\); \(13x\) при \(x\ge\frac6{13}\).</p></li>
+      <li class="step"><b>(b) Обе версии</b>
+        <p>\(p_B=4\). Тип I безразличен: \(13-p_F=8-4\Rightarrow p_F=9\). Проверка типа II: \(4-4=0\ge6-9=-3\).</p>
+        <p class="answer">\(\pi=9x+4(1-x)=4+5x\).</p></li>
+      <li class="step"><b>(c) Когда обе лучше</b>
+        <p>\(4+5x\gt6\iff x\gt0{,}4\) и \(4+5x\gt13x\iff x\lt0{,}5\).</p>
+        <p class="answer">\(x\in(0{,}4;\,0{,}5)\).</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Показать первый шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+    <button class="done-btn" type="button">Отметить: решил сам</button>
+  </article>
+
+  <article class="card ex task" data-id="B7">
+    <div class="card-head"><span class="chip ex">Банк B.7</span><span class="card-title">Vertical Differentiation Problem II</span></div>
+    <p class="cond">Потребитель 1: Top \(8+y\), Xlam 5,5. Потребитель 2: Top 5, Xlam 3. MC Top = 1, MC Xlam = 0, \(y\ge0\). (a) Только Top. (b) Top одному, Xlam другому. (c) При каких y лучше только Top.</p>
+    <ol class="steps">
+      <li class="step"><b>(a) Только Top</b>
+        <p>Цена 5 даёт \(2\cdot(5-1)=8\); цена \(8+y\) даёт \(7+y\).</p>
+        <p class="answer">\(\pi_T=8\) при \(y\le1\); \(7+y\) при \(y\ge1\).</p></li>
+      <li class="step"><b>(b) Top первому, Xlam второму</b>
+        <p>\(p_X=3\). Первый безразличен: \(8+y-p_T=5{,}5-3\Rightarrow p_T=5{,}5+y\). Второй: \(0\ge5-5{,}5-y\), выполнено.</p>
+        <p>Наоборот (Top второму) нельзя: нужно одновременно \(p_T-p_X\le2\) и \(p_T-p_X\ge2{,}5+y\).</p>
+        <p class="answer">\(\pi=(5{,}5+y-1)+3=7{,}5+y\).</p></li>
+      <li class="step"><b>(c) Когда только Top</b>
+        <p>\(y\le1\): \(8\gt7{,}5+y\iff y\lt0{,}5\). \(y\ge1\): \(7+y\lt7{,}5+y\) всегда.</p>
+        <p class="answer">\(y\in[0;\,0{,}5)\).</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Показать первый шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+    <button class="done-btn" type="button">Отметить: решил сам</button>
+  </article>
+
+  <div class="grid2">
+    <article class="card">
+      <div class="card-head"><span class="chip self">Тренировка</span><span class="card-title">Как B.6 (семинар 4, Q3)</span></div>
+      <p class="cond">Тип I: Fancy 12, Basic 6. Тип II: Fancy 5, Basic 3. Издержки 0.</p>
+      <details><summary>Ответ</summary><div>
+        <p>Только Fancy: \(\max(5,\,12x)\). Обе: \(p_B=3\), \(p_F=12-(6-3)=9\), \(\pi=3+6x\).</p>
+        <p>Обе лучше при \(x\in(\frac13;\,\frac12)\).</p>
+      </div></details>
+    </article>
+    <article class="card">
+      <div class="card-head"><span class="chip self">Тренировка</span><span class="card-title">Как B.7</span></div>
+      <p class="cond">Потребитель 1: Top \(9+y\), Xlam 6. Потребитель 2: Top 6, Xlam 3,5. MC Top = 1, MC Xlam = 0.</p>
+      <details><summary>Ответ</summary><div>
+        <p>Только Top: \(\max(10,\,8+y)\). Обе: \(p_X=3{,}5\), \(p_T=6{,}5+y\), \(\pi=9+y\).</p>
+        <p>Только Top лучше при \(y\in[0;\,1)\).</p>
+      </div></details>
+    </article>
+  </div>
+</section>
+
+<!-- ============ B4 ============ -->
+<section class="topic" id="b4">
+  <div class="topic-head"><div class="num">B·4</div><div><h2>Выбор качества</h2><p class="src">Задачи банка B.8, B.9, B.10 · лекция 1c (iPhone для внука и бабушки)</p></div></div>
+  <div class="plain"><span class="label">Как узнать</span><p>Фирма сама выбирает качество \(q\) (мощность, площадь). Ценности линейные \(v_H=a\,q\), \(v_L=b\,q\) с \(a\gt b\), издержки \(c(q)=q^2\) за каждую штуку.</p></div>
+  <div class="recipe-box">
+    <span class="label">Рецепт</span>
+    <ol class="recipe">
+      <li><div>Определи сильный тип: у кого коэффициент больше. В B.9 это зависит от \(\alpha\), проверь по диапазону.</div></li>
+      <li><div><b>(a) Цены по покупателю:</b> каждому эффективное качество: \(\max\,aq-q^2\Rightarrow q_H=\frac a2\), \(p_H=a\,q_H\), прибыль \(\frac{a^2}4\). Так же \(q_L=\frac b2\), прибыль \(\frac{b^2}4\).</div></li>
+      <li><div><b>(b) Без дискриминации:</b> \(p_L=b\,q_L\), \(p_H=a\,q_H-(a-b)\,q_L\). Последнее слагаемое — информационная рента сильного типа.</div></li>
+      <li><div>Подставь цены в прибыль: \(x\,[a q_H-(a-b)q_L-q_H^2]+(1-x)\,[b q_L-q_L^2]\). Отсюда \(q_H=\frac a2\) (сверху без искажений) и \(q_L=\frac12\big[b-\frac{x}{1-x}(a-b)\big]\). Для двух покупателей (\(x=\frac12\)): \(q_L=b-\frac a2\).</div></li>
+      <li><div>Две разные машины с положительным качеством ⇔ \(q_L\gt0\). Иначе угловое решение: \(q_L=0\), продаётся только H по \(p_H=a\,q_H\).</div></li>
+      <li><div><b>(c)</b> Подставь числа: \(q\), \(p\), прибыль \(\sum(p-c)\), \(SW=\sum(v-c)\), \(SW^*\) из (a), \(DWL=SW^*-SW\). \(CS_H=(a-b)\,q_L\), \(CS_L=0\).</div></li>
+    </ol>
+  </div>
+  <p class="trap">цена качественной версии не равна a·q_H: из неё вычитается рента (a − b)·q_L.</p>
+  <p class="trap">если издержки другие, например q²/2, формулы q_H и q_L меняются. Выводи условие первого порядка каждый раз.</p>
+
+  <article class="card ex task" data-id="B8">
+    <div class="card-head"><span class="chip ex">Банк B.8</span><span class="card-title">Quality Choice I</span></div>
+    <p class="cond">\(v_G=10q\), \(v_T=2\alpha q\), \(\alpha\in(0;4)\), \(c=q^2\). (a) Цены по покупателю. (b) Без дискриминации: мощности и диапазон α для двух разных машин. (c) \(\alpha=3\): спецификации, прибыль, DWL.</p>
+    <ol class="steps">
+      <li class="step"><b>(a) Дискриминация</b>
+        <p>\(2\alpha\lt8\lt10\), значит Газ сильный. \(q_G=5\), \(p_G=50\); \(q_T=\alpha\), \(p_T=2\alpha^2\).</p>
+        <p class="answer">\(\pi=(50-25)+(2\alpha^2-\alpha^2)=25+\alpha^2\).</p></li>
+      <li class="step"><b>(b) Без дискриминации</b>
+        <p>\(p_T=2\alpha q_T\), \(p_G=10q_G-(10-2\alpha)q_T\). \(\pi=[10q_G-q_G^2]+[(4\alpha-10)q_T-q_T^2]\).</p>
+        <p>\(q_G=5\), \(q_T=2\alpha-5\gt0\iff\alpha\gt2{,}5\). При \(\alpha\le2{,}5\) только машина Газа по цене 50.</p>
+        <p class="answer">\(q_G=5\), \(q_T=2\alpha-5\), две машины при \(\alpha\in(2{,}5;\,4)\).</p></li>
+      <li class="step"><b>(c) \(\alpha=3\)</b>
+        <p>\(q_G=5\), \(q_T=1\), \(p_T=6\), \(p_G=50-4\cdot1=46\). \(\pi=(46-25)+(6-1)=26\).</p>
+        <p>\(SW=(50-25)+(6-1)=30\), \(SW^*=25+9=34\).</p>
+        <p class="answer">π = 26, DWL = 4.</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Показать первый шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+    <button class="done-btn" type="button">Отметить: решил сам</button>
+  </article>
+
+  <article class="card ex task" data-id="B9">
+    <div class="card-head"><span class="chip ex">Банк B.9</span><span class="card-title">Quality Choice II</span></div>
+    <p class="cond">\(v_T=2\alpha q\) (Том), \(v_J=6q\) (Джерри), \(\alpha\in(3;8)\), \(c=q^2\). (a) Цены по покупателю. (b) Без дискриминации: площади и диапазон α. (c) \(\alpha=4\).</p>
+    <ol class="steps">
+      <li class="step"><b>(a) Дискриминация</b>
+        <p>\(2\alpha\gt6\), значит Том сильный. \(q_T=\alpha\), \(p_T=2\alpha^2\); \(q_J=3\), \(p_J=18\).</p>
+        <p class="answer">\(\pi=\alpha^2+9\).</p></li>
+      <li class="step"><b>(b) Без дискриминации</b>
+        <p>\(p_J=6q_J\), \(p_T=2\alpha q_T-(2\alpha-6)q_J\). \(\pi=[2\alpha q_T-q_T^2]+[(12-2\alpha)q_J-q_J^2]\).</p>
+        <p class="answer">\(q_T=\alpha\), \(q_J=6-\alpha\), два дома при \(\alpha\in(3;\,6)\).</p></li>
+      <li class="step"><b>(c) \(\alpha=4\)</b>
+        <p>\(q_T=4\), \(q_J=2\), \(p_J=12\), \(p_T=32-2\cdot2=28\). \(\pi=(28-16)+(12-4)=20\).</p>
+        <p>\(SW=16+8=24\), \(SW^*=16+9=25\).</p>
+        <p class="answer">π = 20, DWL = 1.</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Показать первый шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+    <button class="done-btn" type="button">Отметить: решил сам</button>
+  </article>
+
+  <article class="card ex task" data-id="B10">
+    <div class="card-head"><span class="chip ex">Банк B.10</span><span class="card-title">Quality Choice III</span></div>
+    <p class="cond">Доля x типа G (\(v_G=10q\)), доля \(1-x\) типа T (\(v_T=6q\)), \(c=q^2\). (a) Цены по типу. (b) Без дискриминации: мощности и диапазон x. (c) \(x=0{,}5\).</p>
+    <ol class="steps">
+      <li class="step"><b>(a) Дискриминация</b>
+        <p>\(q_G=5\), \(p_G=50\); \(q_T=3\), \(p_T=18\).</p>
+        <p class="answer">\(\pi=25x+9(1-x)=9+16x\).</p></li>
+      <li class="step"><b>(b) Без дискриминации</b>
+        <p>\(p_T=6q_T\), \(p_G=10q_G-4q_T\). \(\pi=x(10q_G-4q_T-q_G^2)+(1-x)(6q_T-q_T^2)\).</p>
+        <p>\(q_G=5\). По \(q_T\): \(-4x+(1-x)(6-2q_T)=0\Rightarrow q_T=3-\frac{2x}{1-x}=\frac{3-5x}{1-x}\).</p>
+        <p class="answer">\(q_T\gt0\iff x\lt0{,}6\): две машины при \(x\in(0;\,0{,}6)\).</p></li>
+      <li class="step"><b>(c) \(x=0{,}5\)</b>
+        <p>\(q_T=1\), \(q_G=5\), \(p_T=6\), \(p_G=46\). \(\pi=0{,}5\cdot21+0{,}5\cdot5=13\).</p>
+        <p>\(SW=0{,}5\cdot25+0{,}5\cdot5=15\), \(SW^*=9+8=17\).</p>
+        <p class="answer">π = 13, DWL = 2.</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Показать первый шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+    <button class="done-btn" type="button">Отметить: решил сам</button>
+  </article>
+
+  <div class="grid2">
+    <article class="card">
+      <div class="card-head"><span class="chip self">Тренировка</span><span class="card-title">Как B.8</span></div>
+      <p class="cond">\(v_G=12q\), \(v_T=2\alpha q\), \(\alpha\in(0;6)\), \(c=q^2\); в (c) \(\alpha=4\).</p>
+      <details><summary>Ответ</summary><div>
+        <p>(a) \(q_G=6\), \(p_G=72\), \(q_T=\alpha\), \(p_T=2\alpha^2\), \(\pi=36+\alpha^2\).</p>
+        <p>(b) \(q_G=6\), \(q_T=2\alpha-6\), диапазон \(\alpha\in(3;6)\).</p>
+        <p>(c) \(q_T=2\), \(p_T=16\), \(p_G=64\), π = 40, SW = 48, SW* = 52, DWL = 4.</p>
+      </div></details>
+    </article>
+    <article class="card">
+      <div class="card-head"><span class="chip self">Тренировка</span><span class="card-title">Как B.9</span></div>
+      <p class="cond">\(v_T=2\alpha q\), \(v_J=4q\), \(\alpha\in(2;6)\), \(c=q^2\); в (c) \(\alpha=3\).</p>
+      <details><summary>Ответ</summary><div>
+        <p>(a) \(\pi=\alpha^2+4\). (b) \(q_T=\alpha\), \(q_J=4-\alpha\), диапазон \(\alpha\in(2;4)\).</p>
+        <p>(c) \(q_T=3\), \(q_J=1\), \(p_J=4\), \(p_T=16\), π = 10, SW = 12, SW* = 13, DWL = 1.</p>
+      </div></details>
+    </article>
+    <article class="card">
+      <div class="card-head"><span class="chip self">Тренировка</span><span class="card-title">Как B.10</span></div>
+      <p class="cond">Доля x типа G (\(v_G=8q\)), доля \(1-x\) типа T (\(v_T=6q\)), \(c=q^2\); в (c) \(x=0{,}5\).</p>
+      <details><summary>Ответ</summary><div>
+        <p>(a) \(q_G=4\), \(p_G=32\), \(q_T=3\), \(p_T=18\), \(\pi=9+7x\).</p>
+        <p>(b) \(q_G=4\), \(q_T=\frac{3-4x}{1-x}\), диапазон \(x\in(0;\,0{,}75)\).</p>
+        <p>(c) \(q_T=2\), \(p_T=12\), \(p_G=28\), π = 10, SW = 12, SW* = 12,5, DWL = 0,5.</p>
+      </div></details>
+    </article>
+  </div>
+</section>
+
+<p class="foot">Источники: Question Bank I (2026), лекции 1a–1c и семинары 1–4 курса «Микроэкономика 2» (О. Баранов). Ответы задач банка и тренировочных вариантов проверены численным перебором. Отметки «решил сам» хранятся только в этом браузере.</p>
+
+</div>
+
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] },
+  svg: { fontCache: 'global' },
+  startup: { pageReady: function(){ return MathJax.startup.defaultPageReady().then(function(){ if (window.fixWideMath) window.fixWideMath(document); }); } }
+};
+(function(){
+  var s = document.createElement('script');
+  s.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.js';
+  s.async = true;
+  s.onerror = function(){
+    var f = document.createElement('script');
+    f.src = 'https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js';
+    f.async = true;
+    document.head.appendChild(f);
+  };
+  document.head.appendChild(s);
+})();
+</script>
+<script>
+(function(){
+  /* Long inline formulas: let them scroll inside the column instead of widening the page */
+  window.fixWideMath = function(root){
+    root.querySelectorAll('mjx-container:not([display="true"])').forEach(function(m){
+      if (m.offsetParent === null) return;
+      m.classList.remove('wide-math');
+      if (m.getBoundingClientRect().width > m.parentElement.clientWidth + 1) m.classList.add('wide-math');
+    });
+  };
+  var rt;
+  window.addEventListener('resize', function(){ clearTimeout(rt); rt = setTimeout(function(){ window.fixWideMath(document); }, 150); });
+  document.addEventListener('toggle', function(e){ window.fixWideMath(e.target); }, true);
+
+  /* Step-by-step reveal */
+  document.querySelectorAll('.card.ex').forEach(function(card){
+    var steps = Array.prototype.slice.call(card.querySelectorAll('.step'));
+    var next = card.querySelector('[data-act="next"]');
+    var all = card.querySelector('[data-act="all"]');
+    var reset = card.querySelector('[data-act="reset"]');
+    var counter = card.querySelector('.counter');
+    var shown = 0;
+    function update(){
+      steps.forEach(function(s, i){ s.hidden = i >= shown; });
+      counter.textContent = shown === 0 ? 'Шагов в разборе: ' + steps.length : 'Показано ' + shown + ' из ' + steps.length;
+      next.disabled = shown >= steps.length;
+      next.textContent = shown === 0 ? 'Показать первый шаг' : (shown >= steps.length ? 'Разбор окончен' : 'Следующий шаг');
+      reset.hidden = shown === 0;
+    }
+    next.addEventListener('click', function(){
+      if (shown < steps.length){
+        var s = steps[shown]; shown++; update();
+        s.classList.remove('fresh'); void s.offsetWidth; s.classList.add('fresh');
+        window.fixWideMath(card);
+      }
+    });
+    all.addEventListener('click', function(){ shown = steps.length; update(); window.fixWideMath(card); });
+    reset.addEventListener('click', function(){ shown = 0; update(); });
+    update();
+  });
+
+  /* Solved-task tracking, kept in this browser only */
+  var KEY = 'micro2-test1-solved-v1';
+  var solved = {};
+  try { solved = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { solved = {}; }
+  var tasks = Array.prototype.slice.call(document.querySelectorAll('.task[data-id]'));
+  var doneEl = document.getElementById('done-count');
+  var totalEl = document.getElementById('total-count');
+  var fill = document.getElementById('fill');
+  function save(){ try { localStorage.setItem(KEY, JSON.stringify(solved)); } catch (e) {} }
+  function render(){
+    var n = 0;
+    tasks.forEach(function(t){
+      var on = !!solved[t.dataset.id];
+      if (on) n++;
+      t.classList.toggle('is-done', on);
+      var b = t.querySelector('.done-btn');
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      b.textContent = on ? 'Решено ✓' : 'Отметить: решил сам';
+    });
+    doneEl.textContent = n;
+    totalEl.textContent = tasks.length;
+    fill.style.width = (tasks.length ? (n / tasks.length * 100) : 0) + '%';
+  }
+  tasks.forEach(function(t){
+    t.querySelector('.done-btn').addEventListener('click', function(){
+      var id = t.dataset.id;
+      if (solved[id]) delete solved[id]; else solved[id] = true;
+      save(); render();
+    });
+  });
+  render();
+})();
+</script>
