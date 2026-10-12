@@ -137,7 +137,7 @@ mjx-container.wide-math{display:block!important;overflow-x:auto;overflow-y:hidde
 }
 </style>
 <style>
-.sol{display:grid;gap:6px}
+.sol{display:grid;gap:7px}
 .sol p{margin:0}
 .ans{font-weight:700;border:1.5px solid var(--ink);border-radius:6px;padding:4px 10px;justify-self:start;max-width:100%}
 .topic{padding-block:28px 4px;gap:10px}
@@ -149,74 +149,102 @@ h2{font-size:var(--s2);overflow-wrap:anywhere}
 <header class="hero">
   <span class="eyebrow">Матстатистика · ДЗ №6 · 2026</span>
   <h1>Решение ДЗ №6</h1>
-  <p class="lead">Записано как в тетради: только выкладки и ответы. Все числа совпадают с ответами для Google-формы.</p>
 </header>
 
 <!-- 1 -->
 <section class="topic" id="z1">
-  <div class="topic-head"><span class="num">1</span><div><h2>$X_i\sim B(n;p)$, $i=1..k$</h2></div></div>
+  <div class="topic-head"><span class="num">1</span><div><h2>$X_i\sim B(n;p)$, $i=\overline{1,k}$</h2></div></div>
   <div class="card sol">
-    <p><b>ММ:</b> $M(X)=np=\bar X\;\Rightarrow\;p^*=\dfrac{\bar X}{n}$</p>
-    <p><b>ММП:</b> $L=\prod\limits_{i=1}^k C_n^{X_i}p^{X_i}(1-p)^{n-X_i}$, $\;\ln L=\text{const}+\sum X_i\ln p+(nk-\sum X_i)\ln(1-p)$</p>
-    <p>$\dfrac{\partial\ln L}{\partial p}=\dfrac{\sum X_i}{p}-\dfrac{nk-\sum X_i}{1-p}=0\;\Rightarrow\;\hat p=\dfrac{\sum X_i}{nk}=\dfrac{\bar X}{n}$; $\;\dfrac{\partial^2\ln L}{\partial p^2}\lt0$</p>
-    <p><b>Несмещ.:</b> $M(\hat p)=\dfrac{k\cdot np}{nk}=p$</p>
-    <p><b>Сост.:</b> $D(\hat p)=\dfrac{k\cdot npq}{(nk)^2}=\dfrac{p(1-p)}{nk}\xrightarrow[k\to\infty]{}0$</p>
-    <p><b>Эфф.:</b> $\dfrac{\partial\ln P}{\partial p}=\dfrac Xp-\dfrac{n-X}{1-p}=\dfrac{X-np}{pq}$, $\;I(p)=\dfrac{D(X)}{(pq)^2}=\dfrac{n}{pq}$, $\;\dfrac{1}{kI(p)}=\dfrac{pq}{nk}=D(\hat p)$ ⇒ эффективна</p>
-    <p><b>Дост.:</b> $L=\underbrace{\prod C_n^{X_i}}_{H(X_1..X_k)}\cdot\underbrace{p^{T}(1-p)^{nk-T}}_{g(T,p)}$, $\;T=\sum X_i$ ⇒ $T$ достаточна, $\hat p=\frac{T}{nk}$ достаточна</p>
-    <p class="ans">$p^*=\hat p=\frac{\bar X}{n}$; $D=\frac{p(1-p)}{nk}$; несмещ., сост., эфф., достаточна</p>
+    <p><b>ММ:</b> $M(X)=np$; $\;np=\bar X\;\Rightarrow\;p^*=\dfrac{\bar X}{n}=\dfrac{1}{nk}\sum\limits_{i=1}^kX_i$</p>
+    <p><b>ММП:</b> $L(p)=\prod\limits_{i=1}^k C_n^{X_i}p^{X_i}(1-p)^{n-X_i}=\prod\limits_{i=1}^k C_n^{X_i}\cdot p^{\sum X_i}(1-p)^{nk-\sum X_i}$</p>
+    <p>$\ln L=\sum\ln C_n^{X_i}+\sum X_i\ln p+\Big(nk-\sum X_i\Big)\ln(1-p)$</p>
+    <p>$\dfrac{\partial\ln L}{\partial p}=\dfrac{\sum X_i}{p}-\dfrac{nk-\sum X_i}{1-p}=0$</p>
+    <p>$(1-p)\sum X_i=p\Big(nk-\sum X_i\Big)\;\Rightarrow\;\sum X_i=pnk\;\Rightarrow\;\hat p=\dfrac{\sum X_i}{nk}=\dfrac{\bar X}{n}$</p>
+    <p>$\dfrac{\partial^2\ln L}{\partial p^2}=-\dfrac{\sum X_i}{p^2}-\dfrac{nk-\sum X_i}{(1-p)^2}\lt0\;\Rightarrow\;\max$</p>
+    <p>$M(\hat p)=\dfrac{1}{nk}\sum\limits_{i=1}^k M(X_i)=\dfrac{1}{nk}\cdot k\cdot np=p\;\Rightarrow\;$ несмещ.</p>
+    <p>$D(\hat p)=\dfrac{1}{n^2k^2}\sum\limits_{i=1}^k D(X_i)=\dfrac{1}{n^2k^2}\cdot k\cdot np(1-p)=\dfrac{p(1-p)}{nk}$; $\;\lim\limits_{k\to\infty}\dfrac{p(1-p)}{nk}=0\;\Rightarrow\;$ сост.</p>
+    <p><b>Р–К:</b> $\ln P(X;p)=\ln C_n^X+X\ln p+(n-X)\ln(1-p)$</p>
+    <p>$\dfrac{\partial\ln P}{\partial p}=\dfrac Xp-\dfrac{n-X}{1-p}=\dfrac{X(1-p)-p(n-X)}{p(1-p)}=\dfrac{X-np}{p(1-p)}$</p>
+    <p>$I(p)=M\Big[\dfrac{(X-np)^2}{p^2(1-p)^2}\Big]=\dfrac{D(X)}{p^2(1-p)^2}=\dfrac{np(1-p)}{p^2(1-p)^2}=\dfrac{n}{p(1-p)}$</p>
+    <p>$D_{\min}=\dfrac{1}{k\,I(p)}=\dfrac{p(1-p)}{nk}=D(\hat p)\;\Rightarrow\;$ эфф.</p>
+    <p><b>Факторизация:</b> $L=\underbrace{\prod\limits_{i=1}^k C_n^{X_i}}_{H(X_1,\dots,X_k)}\cdot\underbrace{p^{T}(1-p)^{nk-T}}_{g(T;\,p)},\quad T=\sum X_i\;\Rightarrow\;\hat p=\dfrac{T}{nk}$ — дост.</p>
+    <p class="ans">$p^*=\hat p=\frac{\bar X}{n}$; $\;D(\hat p)=\frac{p(1-p)}{nk}$; $\;H=\prod C_n^{X_i}$; несмещ., сост., эфф., дост.</p>
   </div>
 </section>
 
 <!-- 2 -->
 <section class="topic" id="z2">
-  <div class="topic-head"><span class="num">2</span><div><h2>$X\sim\Pi(\lambda)$, $\theta=e^{-\lambda}=P(X=0)$</h2></div></div>
+  <div class="topic-head"><span class="num">2</span><div><h2>$X\sim\Pi(\lambda)$, $\;\theta=e^{-\lambda}$</h2></div></div>
   <div class="card sol">
-    <p>$Y_i=\mathbb 1(X_i=0)\sim Bern(\theta)$, $\;L=\theta^{\sum Y_i}(1-\theta)^{n-\sum Y_i}\;\Rightarrow\;\hat\theta=\bar Y=\dfrac1n\sum\mathbb 1(X_i=0)$</p>
-    <p>$M(\hat\theta)=P(X=0)=e^{-\lambda}=\theta$ — несмещ.</p>
-    <p>$D(\hat\theta)=\dfrac{\theta(1-\theta)}{n}=\dfrac{e^{-\lambda}(1-e^{-\lambda})}{n}\to0$ — сост.</p>
-    <p>$P(x;\theta)=\dfrac{\theta(-\ln\theta)^x}{x!}$, $\;\ln P=\ln\theta+x\ln(-\ln\theta)-\ln x!$</p>
-    <p>$\dfrac{\partial\ln P}{\partial\theta}=\dfrac1\theta+\dfrac{x}{\theta\ln\theta}=-\dfrac{X-\lambda}{\lambda\theta}$</p>
-    <p>$I(\theta)=\dfrac{D(X)}{\lambda^2\theta^2}=\dfrac{1}{\lambda\theta^2}=\dfrac{e^{2\lambda}}{\lambda}$, $\quad D_{\min}=\dfrac{1}{nI(\theta)}=\dfrac{\lambda e^{-2\lambda}}{n}$</p>
-    <p>$\dfrac{D_{\min}}{D(\hat\theta)}=\dfrac{\lambda}{e^\lambda-1}\lt1$ ⇒ не эффективна</p>
-    <p class="ans">$M=e^{-\lambda}$; $D=\frac{e^{-\lambda}(1-e^{-\lambda})}{n}$; $I=\frac{1}{\lambda e^{-2\lambda}}$; $D_{\min}=\frac{\lambda e^{-2\lambda}}{n}$; несмещ., сост., неэфф.</p>
+    <p>$Y_i=\mathbb 1(X_i=0)$: $\;P(Y_i=1)=P(X_i=0)=\dfrac{\lambda^0e^{-\lambda}}{0!}=e^{-\lambda}=\theta$, $\;P(Y_i=0)=1-\theta$</p>
+    <p>$L(\theta)=\theta^{\sum Y_i}(1-\theta)^{n-\sum Y_i}$, $\;\ln L=\sum Y_i\ln\theta+\Big(n-\sum Y_i\Big)\ln(1-\theta)$</p>
+    <p>$\dfrac{\sum Y_i}{\theta}-\dfrac{n-\sum Y_i}{1-\theta}=0\;\Rightarrow\;\hat\theta=\dfrac1n\sum\limits_{i=1}^n\mathbb 1(X_i=0)=\bar Y$</p>
+    <p>$M(Y)=1\cdot\theta+0\cdot(1-\theta)=\theta$; $\;M(Y^2)=\theta$; $\;D(Y)=\theta-\theta^2=\theta(1-\theta)$</p>
+    <p>$M(\hat\theta)=M(Y)=e^{-\lambda}=\theta\;\Rightarrow\;$ несмещ.</p>
+    <p>$D(\hat\theta)=\dfrac{D(Y)}{n}=\dfrac{e^{-\lambda}(1-e^{-\lambda})}{n}\xrightarrow[n\to\infty]{}0\;\Rightarrow\;$ сост.</p>
+    <p><b>Р–К:</b> $\lambda=-\ln\theta$, $\;P(x;\theta)=\dfrac{(-\ln\theta)^x\,\theta}{x!}$</p>
+    <p>$\ln P=x\ln(-\ln\theta)+\ln\theta-\ln x!$</p>
+    <p>$\dfrac{\partial\ln P}{\partial\theta}=x\cdot\dfrac{1}{-\ln\theta}\cdot\Big(-\dfrac1\theta\Big)+\dfrac1\theta=\dfrac{x}{\theta\ln\theta}+\dfrac1\theta=\dfrac1\theta\Big(1-\dfrac x\lambda\Big)=-\dfrac{X-\lambda}{\lambda\theta}$</p>
+    <p>$I(\theta)=M\Big[\dfrac{(X-\lambda)^2}{\lambda^2\theta^2}\Big]=\dfrac{D(X)}{\lambda^2\theta^2}=\dfrac{\lambda}{\lambda^2\theta^2}=\dfrac{1}{\lambda\theta^2}=\dfrac{1}{\lambda e^{-2\lambda}}$</p>
+    <p>$D_{\min}=\dfrac{1}{nI(\theta)}=\dfrac{\lambda e^{-2\lambda}}{n}$</p>
+    <p>$\dfrac{D_{\min}}{D(\hat\theta)}=\dfrac{\lambda e^{-2\lambda}}{e^{-\lambda}(1-e^{-\lambda})}=\dfrac{\lambda e^{-\lambda}}{1-e^{-\lambda}}=\dfrac{\lambda}{e^{\lambda}-1}$; $\;e^\lambda=1+\lambda+\dfrac{\lambda^2}{2}+\ldots\gt1+\lambda\;\Rightarrow\;\dfrac{\lambda}{e^\lambda-1}\lt1\;\Rightarrow\;$ неэфф.</p>
+    <p class="ans">$M=e^{-\lambda}$; $\;D=\frac{e^{-\lambda}(1-e^{-\lambda})}{n}$; $\;I=\frac{1}{\lambda e^{-2\lambda}}$; $\;D_{\min}=\frac{\lambda e^{-2\lambda}}{n}$; несмещ., сост., неэфф.</p>
   </div>
 </section>
 
 <!-- 3 -->
 <section class="topic" id="z3">
-  <div class="topic-head"><span class="num">3</span><div><h2>$f(x)=ax^2,\;x\in[0;\theta]$</h2></div></div>
+  <div class="topic-head"><span class="num">3</span><div><h2>$f(x)=ax^2\cdot\mathbb 1(x\in[0;\theta])$</h2></div></div>
   <div class="card sol">
-    <p>$\int_0^\theta ax^2dx=\dfrac{a\theta^3}{3}=1\Rightarrow a=\dfrac{3}{\theta^3}$, $\;F(x)=\Big(\dfrac x\theta\Big)^3$</p>
-    <p><b>ММ:</b> $M(X)=\int_0^\theta\dfrac{3x^3}{\theta^3}dx=\dfrac{3\theta}{4}=\bar X\Rightarrow\theta^*=\dfrac43\bar X$</p>
-    <p><b>ММП:</b> $L=\dfrac{3^n}{\theta^{3n}}\prod x_i^2,\;\theta\ge X_{(n)}$; $L\downarrow$ по $\theta$ ⇒ $\hat\theta=X_{(n)}$</p>
-    <p>$M(\theta^*)=\frac43\cdot\frac{3\theta}4=\theta$; $\;M(X^2)=\frac{3\theta^2}{5}$, $D(X)=\frac{3\theta^2}{80}$, $\;D(\theta^*)=\frac{16}{9}\cdot\frac{3\theta^2}{80n}=\dfrac{\theta^2}{15n}\to0$ — несмещ., сост.</p>
-    <p>$F_{X_{(n)}}=\Big(\dfrac x\theta\Big)^{3n}$, $f=\dfrac{3nx^{3n-1}}{\theta^{3n}}$, $\;M(\hat\theta)=\dfrac{3n}{3n+1}\theta$, $\;B=-\dfrac{\theta}{3n+1}\to0$</p>
-    <p>$M(\hat\theta^2)=\dfrac{3n\theta^2}{3n+2}$, $\;D(\hat\theta)=\dfrac{3n\theta^2}{(3n+1)^2(3n+2)}\to0$ — смещ., асимпт. несмещ., сост.</p>
-    <p>Р–К неприменимо (носитель зависит от $\theta$). $MSE(\hat\theta)=\dfrac{2\theta^2}{(3n+1)(3n+2)}\lt\dfrac{\theta^2}{15n}$ при $n\ge3$ ⇒ ММП эффективнее</p>
-    <p><b>в)</b> $\bar x=\frac{1\cdot1+3\cdot3+5\cdot6}{10}=4$, $\;\theta^*=\frac{16}{3}=5{,}333$, $\;\hat\theta=x_{(10)}=6$</p>
-    <p>$m_i^T=10\big[F(b_i)-F(a_i)\big]$:</p>
+    <p>$\displaystyle\int_0^\theta ax^2dx=a\frac{x^3}{3}\Big|_0^\theta=\frac{a\theta^3}{3}=1\;\Rightarrow\;a=\frac{3}{\theta^3}$; $\quad F(x)=\int_0^x\frac{3t^2}{\theta^3}dt=\frac{x^3}{\theta^3}$</p>
+    <p><b>ММ:</b> $\displaystyle M(X)=\int_0^\theta x\cdot\frac{3x^2}{\theta^3}dx=\frac{3}{\theta^3}\cdot\frac{x^4}{4}\Big|_0^\theta=\frac{3\theta}{4}$; $\;\dfrac{3\theta}{4}=\bar X\Rightarrow\theta^*=\dfrac43\bar X$</p>
+    <p>$\displaystyle M(X^2)=\int_0^\theta\frac{3x^4}{\theta^3}dx=\frac{3\theta^2}{5}$; $\;D(X)=\dfrac{3\theta^2}{5}-\dfrac{9\theta^2}{16}=\dfrac{48\theta^2-45\theta^2}{80}=\dfrac{3\theta^2}{80}$</p>
+    <p>$M(\theta^*)=\dfrac43\cdot\dfrac{3\theta}{4}=\theta$; $\;D(\theta^*)=\dfrac{16}{9}\cdot\dfrac{D(X)}{n}=\dfrac{16}{9}\cdot\dfrac{3\theta^2}{80n}=\dfrac{\theta^2}{15n}\to0$ ⇒ несмещ., сост.</p>
+    <p><b>ММП:</b> $L(\theta)=\prod\limits_{i=1}^n\dfrac{3x_i^2}{\theta^3}=\dfrac{3^n\prod x_i^2}{\theta^{3n}}$ при $\theta\ge x_{(n)}$, иначе $0$</p>
+    <p>$\dfrac{dL}{d\theta}=-\dfrac{3n\cdot3^n\prod x_i^2}{\theta^{3n+1}}\lt0\;\Rightarrow\;L\downarrow\;\Rightarrow\;\hat\theta=X_{(n)}$</p>
+    <p>$F_{X_{(n)}}(x)=F(x)^n=\dfrac{x^{3n}}{\theta^{3n}}$, $\;f_{X_{(n)}}(x)=\dfrac{3n\,x^{3n-1}}{\theta^{3n}}$</p>
+    <p>$\displaystyle M(\hat\theta)=\int_0^\theta x\cdot\frac{3nx^{3n-1}}{\theta^{3n}}dx=\frac{3n}{\theta^{3n}}\cdot\frac{\theta^{3n+1}}{3n+1}=\frac{3n}{3n+1}\theta$; $\;B=\dfrac{3n\theta}{3n+1}-\theta=-\dfrac{\theta}{3n+1}\to0$</p>
+    <p>$\displaystyle M(\hat\theta^2)=\int_0^\theta\frac{3nx^{3n+1}}{\theta^{3n}}dx=\frac{3n}{3n+2}\theta^2$</p>
+    <p>$D(\hat\theta)=\dfrac{3n\theta^2}{3n+2}-\dfrac{9n^2\theta^2}{(3n+1)^2}=\dfrac{3n\theta^2\big[(3n+1)^2-3n(3n+2)\big]}{(3n+1)^2(3n+2)}=\dfrac{3n\theta^2}{(3n+1)^2(3n+2)}\to0$ ⇒ смещ., асимпт. несмещ., сост.</p>
+    <p>Носитель $[0;\theta]$ зависит от $\theta$ ⇒ Р–К неприменимо, сравниваем $MSE$:</p>
+    <p>$MSE(\hat\theta)=D+B^2=\dfrac{3n\theta^2+(3n+2)\theta^2}{(3n+1)^2(3n+2)}=\dfrac{2\theta^2}{(3n+1)(3n+2)}$</p>
+    <p>$\dfrac{2\theta^2}{(3n+1)(3n+2)}\lt\dfrac{\theta^2}{15n}\iff30n\lt9n^2+9n+2\iff9n^2-21n+2\gt0\iff n\ge3$ ⇒ ММП эффективнее</p>
+    <p><b>в)</b> $\bar x=\dfrac{1\cdot1+3\cdot3+5\cdot6}{10}=\dfrac{40}{10}=4$; $\;\theta^*=\dfrac43\cdot4=5{,}333$; $\;\hat\theta=x_{(10)}=6$</p>
+    <p>$\theta^*=5{,}333$: $\theta^3=151{,}70$; $\;F(2)=\frac{8}{151{,}70}=0{,}0527$, $F(4)=\frac{64}{151{,}70}=0{,}4219$, $F(6)=1$</p>
+    <p>$\hat\theta=6$: $\theta^3=216$; $\;F(2)=\frac{8}{216}=0{,}0370$, $F(4)=\frac{64}{216}=0{,}2963$, $F(6)=1$</p>
     <div class="scroll"><table class="tbl">
-      <thead><tr><th>Интервал</th><th>$m_i$</th><th>$m^T$ (ММ)</th><th>$m^T$ (ММП)</th></tr></thead>
+      <thead><tr><th>$[a_i;b_i)$</th><th>$m_i$</th><th>$p_i^*$</th><th>$10p_i^*$</th><th>$\hat p_i$</th><th>$10\hat p_i$</th></tr></thead>
       <tbody>
-        <tr><td>0–2</td><td>1</td><td>0,5</td><td>0,4</td></tr>
-        <tr><td>2–4</td><td>3</td><td>3,7</td><td>2,6</td></tr>
-        <tr><td>4–6</td><td>6</td><td>5,8</td><td>7,0</td></tr>
+        <tr><td>0–2</td><td>1</td><td>0,0527</td><td>0,5</td><td>0,0370</td><td>0,4</td></tr>
+        <tr><td>2–4</td><td>3</td><td>0,3691</td><td>3,7</td><td>0,2593</td><td>2,6</td></tr>
+        <tr><td>4–6</td><td>6</td><td>0,5781</td><td>5,8</td><td>0,7037</td><td>7,0</td></tr>
+        <tr class="sum"><td>Σ</td><td>10</td><td>1</td><td>10</td><td>1</td><td>10</td></tr>
       </tbody>
     </table></div>
-    <p class="ans">$a=\frac3{\theta^3}$; $\theta^*=\frac43\bar X$; $\hat\theta=X_{(n)}$; $\theta^*=5{,}333$, $\hat\theta=6$</p>
+    <p class="ans">$a=\frac3{\theta^3}$; $\theta^*=\frac43\bar X=5{,}333$; $\hat\theta=X_{(n)}=6$</p>
   </div>
 </section>
 
 <!-- 4 -->
 <section class="topic" id="z4">
-  <div class="topic-head"><span class="num">4</span><div><h2>$Geom_2(p)$: $P(X=k)=pq^k$, $k=0,1,\dots$</h2></div></div>
+  <div class="topic-head"><span class="num">4</span><div><h2>$Geom_2(p)$: $P(X=k)=pq^k$, $k=0,1,2,\dots$</h2></div></div>
   <div class="card sol">
-    <p>$M(X)=\dfrac qp=\bar x\Rightarrow p^*=\dfrac{1}{1+\bar x}$; $\;\bar x=\dfrac{58}{50}=1{,}16$, $\;p^*=\dfrac1{2{,}16}=0{,}4630$</p>
+    <p>$M(X)=\dfrac qp$; $\;\dfrac{1-p}{p}=\bar x\;\Rightarrow\;p^*=\dfrac1{1+\bar x}$</p>
+    <p>$\sum x=0\cdot21+1\cdot14+2\cdot7+3\cdot5+4\cdot0+5\cdot3=0+14+14+15+0+15=58$; $\;\bar x=\dfrac{58}{50}=1{,}16$</p>
+    <p>$p^*=\dfrac{1}{2{,}16}=0{,}4630$; $\;q=0{,}5370$; $\;m_k^T=50\cdot0{,}4630\cdot0{,}5370^k$</p>
     <div class="scroll"><table class="tbl">
-      <thead><tr><th>$k$</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th></tr></thead>
+      <thead><tr><th>$k$</th><th>$m_k$</th><th>$P(k)$</th><th>$m_k^T$</th></tr></thead>
       <tbody>
-        <tr><td>$m_k$</td><td>21</td><td>14</td><td>7</td><td>5</td><td>0</td><td>3</td><td>0</td><td>0</td><td>0</td></tr>
-        <tr><td>$m_k^T=50pq^k$</td><td>23,1</td><td>12,4</td><td>6,7</td><td>3,6</td><td>1,9</td><td>1,0</td><td>0,6</td><td>0,3</td><td>0,2</td></tr>
+        <tr><td>0</td><td>21</td><td>0,4630</td><td>23,1</td></tr>
+        <tr><td>1</td><td>14</td><td>0,2486</td><td>12,4</td></tr>
+        <tr><td>2</td><td>7</td><td>0,1335</td><td>6,7</td></tr>
+        <tr><td>3</td><td>5</td><td>0,0717</td><td>3,6</td></tr>
+        <tr><td>4</td><td>0</td><td>0,0385</td><td>1,9</td></tr>
+        <tr><td>5</td><td>3</td><td>0,0207</td><td>1,0</td></tr>
+        <tr><td>6</td><td>0</td><td>0,0111</td><td>0,6</td></tr>
+        <tr><td>7</td><td>0</td><td>0,0060</td><td>0,3</td></tr>
+        <tr><td>8</td><td>0</td><td>0,0032</td><td>0,2</td></tr>
+        <tr class="sum"><td>Σ</td><td>50</td><td></td><td></td></tr>
       </tbody>
     </table></div>
     <p class="ans">$p^*=0{,}4630$</p>
@@ -227,16 +255,26 @@ h2{font-size:var(--s2);overflow-wrap:anywhere}
 <section class="topic" id="z5">
   <div class="topic-head"><span class="num">5</span><div><h2>$P(0)=\frac\theta3,\;P(1)=\frac{2-5\theta}3,\;P(2)=\frac{1+4\theta}3$</h2></div></div>
   <div class="card sol">
-    <p><b>ММ:</b> $M(X)=\dfrac43+\theta=\bar X\Rightarrow\theta^*=\bar X-\dfrac43$</p>
-    <p><b>ММП:</b> $\dfrac{m_1}{\theta}-\dfrac{5m_2}{2-5\theta}+\dfrac{4m_3}{1+4\theta}=0\;\Rightarrow\;20n\theta^2-(3m_1-5m_2+8m_3)\theta-2m_1=0$</p>
-    <p>$\hat\theta=\dfrac{(3m_1-5m_2+8m_3)+\sqrt{(3m_1-5m_2+8m_3)^2+160nm_1}}{40n}$</p>
-    <p>$m_1=1,\;m_2=4,\;m_3=10,\;n=15$; $\;\bar x=1{,}6\Rightarrow\theta^*=0{,}267$; $\;\hat\theta=\dfrac{63+\sqrt{6369}}{600}=0{,}238$</p>
+    <p><b>ММ:</b> $M(X)=0\cdot\dfrac\theta3+1\cdot\dfrac{2-5\theta}{3}+2\cdot\dfrac{1+4\theta}{3}=\dfrac{4+3\theta}{3}=\dfrac43+\theta$; $\;\theta^*=\bar X-\dfrac43$</p>
+    <p><b>ММП:</b> $L=\Big(\dfrac\theta3\Big)^{m_1}\Big(\dfrac{2-5\theta}{3}\Big)^{m_2}\Big(\dfrac{1+4\theta}{3}\Big)^{m_3}$</p>
+    <p>$\ln L=m_1\ln\theta+m_2\ln(2-5\theta)+m_3\ln(1+4\theta)-n\ln3$</p>
+    <p>$\dfrac{m_1}{\theta}-\dfrac{5m_2}{2-5\theta}+\dfrac{4m_3}{1+4\theta}=0\quad\Big|\cdot\theta(2-5\theta)(1+4\theta)$</p>
+    <p>$m_1(2+3\theta-20\theta^2)-5m_2(\theta+4\theta^2)+4m_3(2\theta-5\theta^2)=0$</p>
+    <p>$20n\theta^2-(3m_1-5m_2+8m_3)\theta-2m_1=0$</p>
+    <p>$\hat\theta=\dfrac{(3m_1-5m_2+8m_3)+\sqrt{(3m_1-5m_2+8m_3)^2+160\,n\,m_1}}{40n}$</p>
+    <p>$m_1=1,\;m_2=4,\;m_3=10,\;n=15$</p>
+    <p>$\bar x=\dfrac{0\cdot1+1\cdot4+2\cdot10}{15}=\dfrac{24}{15}=1{,}6$; $\;\theta^*=1{,}6-1{,}3333=0{,}267$</p>
+    <p>$3\cdot1-5\cdot4+8\cdot10=63$; $\;63^2+160\cdot15\cdot1=3969+2400=6369$; $\;\sqrt{6369}=79{,}806$</p>
+    <p>$\hat\theta=\dfrac{63+79{,}806}{40\cdot15}=\dfrac{142{,}806}{600}=0{,}238$</p>
+    <p>$m^T=15P$: $\;15\cdot\frac\theta3=5\theta$, $\;15\cdot\frac{2-5\theta}{3}=5(2-5\theta)$, $\;15\cdot\frac{1+4\theta}3=5(1+4\theta)$</p>
+    <p>ММ: $5\cdot0{,}2667=1{,}333$; $\;5(2-1{,}3333)=3{,}333$; $\;5(1+1{,}0667)=10{,}333$</p>
+    <p>ММП ($\hat\theta=0{,}23801$): $5\cdot0{,}23801=1{,}1900$; $\;5(2-1{,}19005)=4{,}0498$; $\;5(1+0{,}95204)=9{,}7602$</p>
     <div class="scroll"><table class="tbl">
-      <thead><tr><th>$x$</th><th>0</th><th>1</th><th>2</th></tr></thead>
+      <thead><tr><th>$x$</th><th>0</th><th>1</th><th>2</th><th>Σ</th></tr></thead>
       <tbody>
-        <tr><td>$m$</td><td>1</td><td>4</td><td>10</td></tr>
-        <tr><td>$m^T$ (ММ)</td><td>1,3</td><td>3,3</td><td>10,3</td></tr>
-        <tr><td>$m^T$ (ММП)</td><td>1,2</td><td>4,0</td><td>9,8</td></tr>
+        <tr><td>$m$</td><td>1</td><td>4</td><td>10</td><td>15</td></tr>
+        <tr><td>$m^T$ (ММ)</td><td>1,3</td><td>3,3</td><td>10,3</td><td>15</td></tr>
+        <tr><td>$m^T$ (ММП)</td><td>1,2</td><td>4,0</td><td>9,8</td><td>15</td></tr>
       </tbody>
     </table></div>
     <p class="ans">$\theta^*=0{,}267$; $\hat\theta=0{,}238$</p>
@@ -247,58 +285,93 @@ h2{font-size:var(--s2);overflow-wrap:anywhere}
 <section class="topic" id="z6">
   <div class="topic-head"><span class="num">6</span><div><h2>$T=\frac{\bar X-\mu}{S}\sqrt{n-1}\sim St(n-1)$</h2></div></div>
   <div class="card sol">
-    <p>$Z=\dfrac{\bar X-\mu}{\sigma}\sqrt n\sim N(0,1)$; $\;V=\dfrac{nS^2}{\sigma^2}\sim\chi^2(n-1)$; $Z,V$ независ. (т. Фишера)</p>
-    <p>$\dfrac{Z}{\sqrt{V/(n-1)}}=\dfrac{(\bar X-\mu)\sqrt n/\sigma}{\sqrt{nS^2/(\sigma^2(n-1))}}=\dfrac{\bar X-\mu}{S}\sqrt{n-1}=T\sim St(n-1)$</p>
-    <p>$P(|T|\lt t_{\gamma;n-1})=\gamma\;\Rightarrow\;\bar X-t_{\gamma;n-1}\dfrac{S}{\sqrt{n-1}}\lt\mu\lt\bar X+t_{\gamma;n-1}\dfrac{S}{\sqrt{n-1}}$</p>
+    <p>$\bar X\sim N\Big(\mu;\dfrac{\sigma}{\sqrt n}\Big)\;\Rightarrow\;Z=\dfrac{\bar X-\mu}{\sigma}\sqrt n\sim N(0;1)$</p>
+    <p>$V=\dfrac{nS^2}{\sigma^2}\sim\chi^2(n-1)$; $\;Z,\,V$ независимы (т. Фишера)</p>
+    <p>$St(n-1)\ni\dfrac{Z}{\sqrt{\frac{V}{n-1}}}=\dfrac{\frac{\bar X-\mu}{\sigma}\sqrt n}{\sqrt{\frac{nS^2}{\sigma^2(n-1)}}}=\dfrac{\bar X-\mu}{\sigma}\sqrt n\cdot\dfrac{\sigma\sqrt{n-1}}{S\sqrt n}=\dfrac{\bar X-\mu}{S}\sqrt{n-1}=T$</p>
+    <p>$P\big(|T|\lt t_{\gamma;n-1}\big)=\gamma$: $\;-t_{\gamma;n-1}\lt\dfrac{\bar X-\mu}{S}\sqrt{n-1}\lt t_{\gamma;n-1}$</p>
+    <p>$\bar X-t_{\gamma;n-1}\dfrac{S}{\sqrt{n-1}}\lt\mu\lt\bar X+t_{\gamma;n-1}\dfrac{S}{\sqrt{n-1}}$</p>
   </div>
 </section>
 
 <!-- 7 -->
 <section class="topic" id="z7">
-  <div class="topic-head"><span class="num">7</span><div><h2>$\sigma=2,\;n=9,\;\bar x=51{,}8$ — нормальное</h2></div></div>
+  <div class="topic-head"><span class="num">7</span><div><h2>$\sigma=2,\;n=9,\;\bar x=51{,}8$; $\;\frac{\bar X-\mu}{\sigma}\sqrt n\sim N(0;1)$</h2></div></div>
   <div class="card sol">
-    <p><b>а)</b> $\Phi_0(z)=0{,}455\Rightarrow z=1{,}6954$; $\;\delta=1{,}6954\cdot\frac23=1{,}130$ ⇒ $\mu\in[50{,}670;\;52{,}930]$</p>
-    <p><b>б)</b> $\gamma=\Phi\big(\frac{2}{2/3}\big)-\Phi\big(-\frac{3}{2/3}\big)=\Phi(3)-\Phi(-4{,}5)=0{,}9986$</p>
-    <p><b>в)</b> $\delta=1$, $z_{0{,}99}=2{,}5758$: $\;n\ge\big(\frac{2{,}5758\cdot2}{1}\big)^2=26{,}54\Rightarrow n=27$</p>
+    <p>$\dfrac{\sigma}{\sqrt n}=\dfrac23=0{,}6667$</p>
+    <p><b>а)</b> $2\Phi_0(z)=0{,}91\Rightarrow\Phi_0(z)=0{,}455\Rightarrow z=1{,}6954$</p>
+    <p>$\delta=1{,}6954\cdot0{,}6667=1{,}1303$; $\;51{,}8-1{,}1303=50{,}670$; $\;51{,}8+1{,}1303=52{,}930$</p>
+    <p class="ans">$\mu\in[50{,}670;\;52{,}930]$</p>
+    <p><b>б)</b> $P(\bar x-2\lt\mu\lt\bar x+3)=P(-3\lt\bar X-\mu\lt2)=\Phi\Big(\dfrac{2}{0{,}6667}\Big)-\Phi\Big(\dfrac{-3}{0{,}6667}\Big)$</p>
+    <p>$=\Phi(3)-\Phi(-4{,}5)=0{,}99865-0{,}0000034=0{,}9986$</p>
+    <p class="ans">$\gamma=0{,}9986$</p>
+    <p><b>в)</b> $\delta=\dfrac22=1$; $\;\Phi_0(z)=0{,}495\Rightarrow z=2{,}5758$</p>
+    <p>$n\ge\Big(\dfrac{z\sigma}{\delta}\Big)^2=\Big(\dfrac{2{,}5758\cdot2}{1}\Big)^2=5{,}1517^2=26{,}54$</p>
+    <p class="ans">$n=27$</p>
   </div>
 </section>
 
 <!-- 8 -->
 <section class="topic" id="z8">
-  <div class="topic-head"><span class="num">8</span><div><h2>$n=14,\;\sum x=1232,\;\hat S^2=\frac{112}{65}$ — Стьюдент</h2></div></div>
+  <div class="topic-head"><span class="num">8</span><div><h2>$n=14,\;\sum x=1232,\;\hat S^2=\frac{112}{65}$; $\;T\sim St(13)$</h2></div></div>
   <div class="card sol">
-    <p>$\bar x=88{,}000$, $\;\hat S=\sqrt{112/65}=1{,}313$, $\;\frac{\hat S}{\sqrt{14}}=0{,}3508$</p>
-    <p><b>а)</b> $t_{0{,}95;13}=2{,}1604$, $\delta=0{,}758$ ⇒ $\mu\in[87{,}242;\;88{,}758]$</p>
-    <p><b>б)</b> $\delta=0{,}88$, $t=\frac{0{,}88}{0{,}3508}=2{,}508$, $\;\gamma=P(|T_{13}|\lt2{,}508)=0{,}974$</p>
-    <p><b>в)</b> $n=100$: $\frac{\hat S}{10}=0{,}1313$, $t_{0{,}95;99}=1{,}9842$, $\delta=0{,}260$ ⇒ $\mu\in[87{,}740;\;88{,}260]$; $\;t=\frac{0{,}88}{0{,}1313}=6{,}70\Rightarrow\gamma=1{,}000$</p>
+    <p>$\bar x=\dfrac{1232}{14}=88{,}000$; $\;\hat S^2=\dfrac{112}{65}=1{,}7231$; $\;\hat S=1{,}313$</p>
+    <p>$\dfrac{\hat S}{\sqrt n}=\dfrac{1{,}3127}{\sqrt{14}}=\dfrac{1{,}3127}{3{,}7417}=0{,}3508$</p>
+    <p><b>а)</b> $t_{0{,}95;13}=2{,}1604$; $\;\delta=2{,}1604\cdot0{,}3508=0{,}7579$</p>
+    <p>$88-0{,}7579=87{,}242$; $\;88+0{,}7579=88{,}758$</p>
+    <p class="ans">$\mu\in[87{,}242;\;88{,}758]$</p>
+    <p><b>б)</b> $\delta=0{,}01\cdot88=0{,}88$; $\;t=\dfrac{\delta\sqrt n}{\hat S}=\dfrac{0{,}88}{0{,}3508}=2{,}508$</p>
+    <p>$\gamma=P(|T_{13}|\lt2{,}508)=2F_{13}(2{,}508)-1=2\cdot0{,}9869-1=0{,}974$</p>
+    <p class="ans">$\gamma=0{,}974$</p>
+    <p><b>в)</b> $n=100$: $\;\dfrac{\hat S}{\sqrt{100}}=\dfrac{1{,}3127}{10}=0{,}1313$; $\;t_{0{,}95;99}=1{,}9842$</p>
+    <p>$\delta=1{,}9842\cdot0{,}1313=0{,}2605$; $\;88\mp0{,}2605$</p>
+    <p class="ans">$\mu\in[87{,}740;\;88{,}260]$</p>
+    <p>$t=\dfrac{0{,}88}{0{,}1313}=6{,}704$; $\;\gamma=P(|T_{99}|\lt6{,}704)=1{,}000$</p>
+    <p class="ans">$\gamma=1{,}000$</p>
   </div>
 </section>
 
 <!-- 9 -->
 <section class="topic" id="z9">
-  <div class="topic-head"><span class="num">9</span><div><h2>Депозиты, $n=10$ — Стьюдент</h2></div></div>
+  <div class="topic-head"><span class="num">9</span><div><h2>$n=10$; $\;T\sim St(9)$</h2></div></div>
   <div class="card sol">
-    <p>$\bar x=4{,}600$, $\;\sum(x-\bar x)^2=1{,}44$, $\;\hat S=\sqrt{1{,}44/9}=0{,}400$</p>
-    <p>$\delta=0{,}02\cdot4{,}6=0{,}092$, $\;t=\frac{0{,}092\sqrt{10}}{0{,}4}=0{,}727$, $\;\gamma=P(|T_9|\lt0{,}727)=0{,}5145$</p>
+    <p>$\sum x=4{,}6+4{,}4+4{,}5+4{,}0+4{,}3+4{,}2+5{,}2+5{,}0+5{,}1+4{,}7=46{,}0$; $\;\bar x=4{,}600$</p>
+    <div class="scroll"><table class="tbl">
+      <thead><tr><th>$x$</th><th>4,6</th><th>4,4</th><th>4,5</th><th>4,0</th><th>4,3</th><th>4,2</th><th>5,2</th><th>5,0</th><th>5,1</th><th>4,7</th><th>Σ</th></tr></thead>
+      <tbody>
+        <tr><td>$x-\bar x$</td><td>0</td><td>−0,2</td><td>−0,1</td><td>−0,6</td><td>−0,3</td><td>−0,4</td><td>0,6</td><td>0,4</td><td>0,5</td><td>0,1</td><td>0</td></tr>
+        <tr><td>$(x-\bar x)^2$</td><td>0</td><td>0,04</td><td>0,01</td><td>0,36</td><td>0,09</td><td>0,16</td><td>0,36</td><td>0,16</td><td>0,25</td><td>0,01</td><td>1,44</td></tr>
+      </tbody>
+    </table></div>
+    <p>$\hat S^2=\dfrac{1{,}44}{9}=0{,}16$; $\;\hat S=0{,}400$; $\;\dfrac{\hat S}{\sqrt{10}}=\dfrac{0{,}4}{3{,}1623}=0{,}1265$</p>
+    <p>$\delta=0{,}02\cdot4{,}6=0{,}092$; $\;t=\dfrac{0{,}092}{0{,}1265}=0{,}7273$</p>
+    <p>$\gamma=P(|T_9|\lt0{,}7273)=2F_9(0{,}7273)-1=2\cdot0{,}7572-1=0{,}5145$</p>
+    <p class="ans">$4{,}600$; $0{,}400$; $\;\gamma=0{,}5145$</p>
   </div>
 </section>
 
 <!-- 10 -->
 <section class="topic" id="z10">
-  <div class="topic-head"><span class="num">10</span><div><h2>$\sigma=10$ — нормальное</h2></div></div>
+  <div class="topic-head"><span class="num">10</span><div><h2>$\sigma=10$; $\;\frac{\bar X-\mu}{\sigma}\sqrt n\sim N(0;1)$</h2></div></div>
   <div class="card sol">
-    <p>$P\Big(\mu\gt\bar x-z\frac{\sigma}{\sqrt{15}}\Big)=0{,}945\Rightarrow z=1{,}5982$; $\;\bar x=100+1{,}5982\cdot\frac{10}{\sqrt{15}}=104{,}127$</p>
-    <p>$\delta=4$, $\;\Phi_0(z)=0{,}489\Rightarrow z=2{,}2904$; $\;n\ge\big(\frac{2{,}2904\cdot10}{4}\big)^2=32{,}79\Rightarrow n=33$</p>
+    <p>$n=15$: $\;\dfrac{\sigma}{\sqrt n}=\dfrac{10}{3{,}873}=2{,}582$</p>
+    <p>$P\Big(\mu\gt\bar x-z\dfrac{\sigma}{\sqrt n}\Big)=\Phi(z)=0{,}945\;\Rightarrow\;z=1{,}5982$</p>
+    <p>$\bar x-1{,}5982\cdot2{,}582=100\;\Rightarrow\;\bar x=100+4{,}1265=104{,}127$</p>
+    <p>$\delta=\dfrac82=4$; $\;2\Phi_0(z)=0{,}978\Rightarrow\Phi_0(z)=0{,}489\Rightarrow z=2{,}2904$</p>
+    <p>$n\ge\Big(\dfrac{2{,}2904\cdot10}{4}\Big)^2=5{,}726^2=32{,}79$</p>
+    <p class="ans">$\bar x=104{,}127$; $\;n=33$</p>
   </div>
 </section>
 
 <!-- 11 -->
 <section class="topic" id="z11">
-  <div class="topic-head"><span class="num">11</span><div><h2>$n=36,\;\bar x=3{,}6,\;\sigma=0{,}72$ — нормальное</h2></div></div>
+  <div class="topic-head"><span class="num">11</span><div><h2>$n=36,\;\bar x=3{,}6,\;\sigma=0{,}72$; $\;N(0;1)$</h2></div></div>
   <div class="card sol">
-    <p>$\frac{\sigma}{\sqrt n}=0{,}12$</p>
-    <p><b>а)</b> $z=1{,}6449$, $\delta=0{,}197$ ⇒ $\mu\in[3{,}403;\;3{,}797]$</p>
-    <p><b>б)</b> $\gamma=\Phi\big(\frac{0{,}1}{0{,}12}\big)-\Phi\big(-\frac{0{,}3}{0{,}12}\big)=\Phi(0{,}833)-\Phi(-2{,}5)=0{,}7915$</p>
+    <p>$\dfrac{\sigma}{\sqrt n}=\dfrac{0{,}72}{6}=0{,}12$</p>
+    <p><b>а)</b> $\Phi_0(z)=0{,}45\Rightarrow z=1{,}6449$; $\;\delta=1{,}6449\cdot0{,}12=0{,}1974$; $\;3{,}6\mp0{,}1974$</p>
+    <p class="ans">$\mu\in[3{,}403;\;3{,}797]$</p>
+    <p><b>б)</b> $P(3{,}5\lt\mu\lt3{,}9)=P(-0{,}3\lt\bar X-\mu\lt0{,}1)=\Phi\Big(\dfrac{0{,}1}{0{,}12}\Big)-\Phi\Big(\dfrac{-0{,}3}{0{,}12}\Big)$</p>
+    <p>$=\Phi(0{,}8333)-\Phi(-2{,}5)=0{,}7977-0{,}0062=0{,}7915$</p>
+    <p class="ans">$\gamma=0{,}7915$</p>
   </div>
 </section>
 </div>
