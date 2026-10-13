@@ -1,0 +1,170 @@
+<title>Микро-2, читать перед тестом</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;600;700&family=Unbounded:wght@600&display=swap">
+<style>
+/* Layout: одна узкая колонка для чтения с телефона; синий — правило, красный — ловушка */
+:root{
+  --paper:#f8fafd; --ink:#17213b; --muted:#56617a; --line:#d2dae7; --card:#ffffff;
+  --pen:#2346c0; --pen-soft:#e9eefc; --red:#c22f2a; --ok:#1c7a4b;
+  --f-display:"Unbounded","Golos Text",system-ui,sans-serif;
+  --f-body:"Golos Text",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0f141e; --ink:#e3e8f3; --muted:#9ba6be; --line:#29334a; --card:#151c2a;
+  --pen:#93abff; --pen-soft:#1b2544; --red:#ff7d72; --ok:#55c992; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0f141e; --ink:#e3e8f3; --muted:#9ba6be; --line:#29334a; --card:#151c2a;
+  --pen:#93abff; --pen-soft:#1b2544; --red:#ff7d72; --ok:#55c992; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.55}
+.page{max-width:640px;margin:0 auto;padding-inline:16px;padding-block:24px 64px;display:grid;gap:22px}
+h1{font-family:var(--f-display);font-size:1.6rem;line-height:1.2;margin:0;text-wrap:balance}
+h2{font-family:var(--f-display);font-size:1.05rem;font-weight:600;margin:0;color:var(--pen);text-wrap:balance}
+p,ul{margin:0}
+ul{padding-left:1.1em;display:grid;gap:6px}
+.lead{color:var(--muted)}
+section{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;display:grid;gap:10px}
+.tag{font-size:.78rem;color:var(--muted);letter-spacing:.04em}
+.rule{background:var(--pen-soft);border-radius:8px;padding:10px 12px;font-weight:600}
+.trap{color:var(--red);font-weight:600}
+.trap::before{content:"Ловушка: "}
+b.ans{color:var(--ok)}
+</style>
+
+<div class="page">
+<header style="display:grid;gap:8px">
+  <h1>Читать перед тестом</h1>
+  <p class="lead">Только чтение, ничего решать не надо. Девять правил, которые закрывают все 20 типов задач. Примерно 15 минут.</p>
+</header>
+
+<section>
+  <h2>На тесте</h2>
+  <ul>
+    <li>Одна задача из части A, одна из части B, 35 минут.</li>
+    <li>Начинай с (a): там обычно механика.</li>
+    <li>Пиши условие оптимума до чисел: за постановку дают баллы.</li>
+    <li>Рисуй график: оси q и p, подписи кривых, оптимум с пунктиром на обе оси.</li>
+  </ul>
+</section>
+
+<section>
+  <span class="tag">A.1, A.2</span>
+  <h2>Монополия и предложение</h2>
+  <p class="rule">Монополия: MR = MC, цену снимаешь с кривой спроса.</p>
+  <ul>
+    <li>Линейный спрос p = a − bq даёт MR = a − 2bq: та же точка на оси p, наклон вдвое круче.</li>
+    <li>Предложение price-taker: p = MC, но только выше порога. Порог — минимум AC, если C(0) = 0, или минимум AVC, если фиксированные издержки утоплены. Ниже порога выпуск 0.</li>
+    <li>Спрос вида A/p²: эластичность −2, значит p = 2·MC.</li>
+    <li>DWL: эффективный объём там, где спрос пересекает MC.</li>
+  </ul>
+  <p class="trap">PS = прибыль + фиксированные издержки.</p>
+</section>
+
+<section>
+  <span class="tag">A.3, A.5, A.8</span>
+  <h2>Два потребителя</h2>
+  <p class="rule">Спросы складываешь по количеству при одной цене. Получается излом.</p>
+  <ul>
+    <li>Выше меньшего пересечения с осью p покупает только сильный, ниже — оба.</li>
+    <li>Единая цена: реши MR = MC на каждом куске и сравни прибыли. Иногда выгоднее не обслуживать слабого.</li>
+    <li>1-я степень: цена за единицу = MC, взнос F = CS каждого. Прибыль = весь излишек, DWL = 0.</li>
+    <li>3-я степень: MRᵢ = MC на каждом рынке. MR рынков равны между собой при любых издержках.</li>
+  </ul>
+  <p class="trap">обратные спросы не складывают.</p>
+</section>
+
+<section>
+  <span class="tag">A.4</span>
+  <h2>Двухчастный тариф F + pq</h2>
+  <ul>
+    <li>Только сильному: p = MC, F = весь его CS.</li>
+    <li>Обоим: F = CS слабого. Цена из (p − c)·|D′| = D₁ − D₂.</li>
+    <li>Сравни две прибыли. Обоих выгодно обслуживать, когда спросы похожи.</li>
+  </ul>
+</section>
+
+<section>
+  <span class="tag">A.6, A.7</span>
+  <h2>Монополист и мировой рынок</h2>
+  <p class="rule">MC(Q) = p<sub>w</sub> = MR(q<sub>d</sub>). Экспорт = Q − q<sub>d</sub>.</p>
+  <ul>
+    <li>Всё продаёт дома, пока p<sub>w</sub> ≤ уровня, где MR = MC без мирового рынка.</li>
+    <li>Всё уходит на экспорт, когда p<sub>w</sub> ≥ MR(0), то есть верхней точки спроса.</li>
+    <li>Доля s за рубежом: подставь q<sub>d</sub> = (1 − s)Q в MR = MC.</li>
+  </ul>
+  <p class="trap">домашняя цена выше мировой, равны только MR и p<sub>w</sub>.</p>
+</section>
+
+<section>
+  <span class="tag">A.9, A.10</span>
+  <h2>Монопсония</h2>
+  <p class="rule">MV = MBC, платит цену с кривой предложения.</p>
+  <ul>
+    <li>Предложение p = a + bq даёт MBC = a + 2bq.</li>
+    <li>Эффективно: MV = кривая предложения.</li>
+    <li>С мировым рынком: MV(Q) = p<sub>w</sub>, MBC(q<sub>d</sub>) = p<sub>w</sub>. Всё дома при p<sub>w</sub> ≥ MBC в обычном оптимуме, всё импорт при p<sub>w</sub> ≤ MBC(0).</li>
+  </ul>
+</section>
+
+<section>
+  <span class="tag">B.1, B.2, B.3</span>
+  <h2>Штучный спрос: таблица</h2>
+  <ul>
+    <li>Отсортируй готовность платить по убыванию.</li>
+    <li>Эффективно: продаёшь, пока ω ≥ MC. Если MC падает, считай Σω − C(k) для всех k.</li>
+    <li>Единая цена: продать k штук по цене ω<sub>k</sub>, прибыль k·ω<sub>k</sub> − C(k). Проверь каждую группу.</li>
+    <li>1-я и 3-я степень: каждому его ω, объём эффективный.</li>
+    <li>Работники (B.3): зарплата c<sub>k</sub> всем, прибыль R(k) − k·c<sub>k</sub>.</li>
+  </ul>
+  <p class="trap">кусочные издержки: C(40) в B.1 равно 260, а не 6·40.</p>
+</section>
+
+<section>
+  <span class="tag">B.4, B.5</span>
+  <h2>Бандлинг</h2>
+  <ul>
+    <li>Для каждого товара два кандидата цены: низкая (покупают все) и высокая (только тот, кто ценит больше).</li>
+    <li>Набор: ценность = сумма ценностей, те же два кандидата.</li>
+    <li>Найди x, где кандидаты равны, разбей ось и сравни на каждом куске.</li>
+  </ul>
+  <p class="trap">строго больше: концы интервала обычно не входят.</p>
+</section>
+
+<section>
+  <span class="tag">B.6, B.7</span>
+  <h2>Две версии товара</h2>
+  <p class="rule">Слабый платит всю свою ценность дешёвой версии. Сильный безразличен между версиями.</p>
+  <ul>
+    <li>p<sub>L</sub> = ценность L у слабого.</li>
+    <li>p<sub>H</sub> = ценность H у сильного − (ценность L у сильного − p<sub>L</sub>).</li>
+    <li>Сравни с вариантом «только дорогая версия»: max(всем по низкой, только сильному по высокой).</li>
+  </ul>
+  <p class="trap">вычитай MC версии из цены каждой проданной штуки.</p>
+</section>
+
+<section>
+  <span class="tag">B.8, B.9, B.10</span>
+  <h2>Выбор качества</h2>
+  <p class="rule">Сверху без искажений, снизу качество занижено.</p>
+  <ul>
+    <li>v<sub>H</sub> = aq, v<sub>L</sub> = bq, c = q², a &gt; b.</li>
+    <li>Цены по покупателю: q = a/2 и b/2, каждый платит всю ценность.</li>
+    <li>Без дискриминации: p<sub>L</sub> = b·q<sub>L</sub>, p<sub>H</sub> = a·q<sub>H</sub> − (a − b)·q<sub>L</sub>.</li>
+    <li>q<sub>H</sub> = a/2. Для двух покупателей q<sub>L</sub> = b − a/2. Для долей x и 1 − x: q<sub>L</sub> = ½·[b − x(a − b)/(1 − x)].</li>
+    <li>Если q<sub>L</sub> ≤ 0, слабому ничего не продают.</li>
+  </ul>
+  <p class="trap">сначала определи, кто сильный: в B.9 это зависит от α.</p>
+</section>
+
+<section>
+  <h2>Ответы банка для самопроверки в уме</h2>
+  <ul>
+    <li>A.1: порог p = 2; монополия q = 2, p = 12. A.2: q = 16, p = ½, DWL = 4.</li>
+    <li>A.3: p = 6, π = 32; 1-я степень π = 68. A.4: одному π = 25 &gt; обоим 20. A.5: p = 5, π = 9; 3-я степень π = 10.</li>
+    <li>A.6: q<sub>d</sub> = 2, экспорт 4; пороги 8 и 12. A.7: пороги 6 и 18. A.8: разница 2,5 и 2,5, max Q = 12,5.</li>
+    <li>A.9: q = 9, p = 3, DWL = 4,5. A.10: q<sub>d</sub> = 2, импорт 3; пороги 5 и 1.</li>
+    <li>B.1: p = 10, q = 30, DWL = 10. B.2: q* = 5, единая цена 10. B.3: w = 6, q = 40, DWL = 10.</li>
+    <li>B.4: набор лучше при x ∈ (0,5; 3,5). B.5: раздельно при x ∈ (80; 100). B.6: x ∈ (0,4; 0,5). B.7: y ∈ [0; 0,5).</li>
+    <li>B.8: q<sub>T</sub> = 2α − 5, α ∈ (2,5; 4). B.9: q<sub>J</sub> = 6 − α, α ∈ (3; 6). B.10: x ∈ (0; 0,6).</li>
+  </ul>
+</section>
+</div>
