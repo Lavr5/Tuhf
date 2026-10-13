@@ -1,0 +1,275 @@
+<title>ДЗ №5: разбор</title>
+<meta name="description" content="Объяснения к решениям ДЗ №5 по математической статистике.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&family=PT+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* Тетрадь в клетку: красная линия полей, номер задачи на полях, решение справа; на телефоне номер уходит в заголовок над решением.
+   Формулы записаны по одному шагу в строке, чтобы помещаться в ширину телефона. */
+:root{
+  --paper:#FAFCFF; --grid:#E4EBF5; --ink:#1B2A4A; --muted:#5B6680;
+  --pen:#2447A8; --margin:#D0424B; --box:#EEF3FC;
+  --s1:#2447A8; --s2:#D97A1E;
+  --serif:"PT Serif", Georgia, "Times New Roman", serif;
+  --sans:"PT Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --cell:22px; --gut:64px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#12161D; --grid:#1B212B; --ink:#E3E8F1; --muted:#98A3B8;
+    --pen:#8FB0FF; --margin:#E0707A; --box:#18202D;
+    --s1:#3987E5; --s2:#D95926;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#12161D; --grid:#1B212B; --ink:#E3E8F1; --muted:#98A3B8;
+  --pen:#8FB0FF; --margin:#E0707A; --box:#18202D;
+  --s1:#3987E5; --s2:#D95926;
+  color-scheme:dark;
+}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 64px)}
+*,*::before,*::after{box-sizing:border-box}
+body{
+  margin:0; color:var(--ink); font-family:var(--serif); font-size:18px; line-height:1.62;
+  background-color:var(--paper);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size:var(--cell) var(--cell);
+  -webkit-text-size-adjust:100%;
+}
+.wrap{max-width:820px; margin:0 auto; padding:0 20px; padding-block:0 64px}
+
+header.top{margin-left:var(--gut); padding:48px 0 20px 20px; border-left:2px solid var(--margin)}
+header.top h1{font-size:34px; line-height:1.15; margin:0 0 10px; font-weight:700; letter-spacing:-0.01em; text-wrap:balance}
+header.top p.sub{margin:0; font-style:italic; color:var(--muted); font-size:19px}
+
+nav.toc{
+  position:sticky; top:env(safe-area-inset-top,0px); z-index:5;
+  background:var(--paper); border-bottom:1px solid var(--grid);
+  margin-left:var(--gut); padding:10px 0 10px 20px; border-left:2px solid var(--margin);
+  font-family:var(--sans); font-size:15px;
+  display:flex; flex-wrap:wrap; gap:6px; align-items:center;
+}
+nav.toc span{color:var(--muted); margin-right:6px}
+nav.toc a{
+  display:inline-block; min-width:32px; text-align:center; padding:3px 8px;
+  color:var(--pen); text-decoration:none; border:1px solid var(--pen); border-radius:3px;
+}
+nav.toc a:hover{background:var(--pen); color:var(--paper)}
+nav.toc a:focus-visible{outline:2px solid var(--margin); outline-offset:2px}
+
+.task{display:grid; grid-template-columns:var(--gut) minmax(0,1fr)}
+.num{font-family:var(--sans); font-weight:700; font-size:26px; color:var(--pen); text-align:right; padding:24px 14px 0 0; line-height:1.2}
+.num span{display:none}
+.body{padding:24px 0 22px 20px; min-width:0; border-left:2px solid var(--margin)}
+.task + .task .body{border-top:1px dashed var(--grid)}
+.cond{font-style:italic; color:var(--muted); margin:0 0 14px}
+.body p{margin:0 0 10px}
+.body h4{font-family:var(--sans); font-size:16px; font-weight:700; margin:18px 0 6px; color:var(--pen)}
+.answer{border:1.5px solid var(--pen); background:var(--box); border-radius:2px; padding:10px 14px; margin:14px 0 6px}
+.answer b{font-family:var(--sans); color:var(--pen); margin-right:6px}
+.answer p{margin:0 0 6px}
+.answer p:last-child{margin:0}
+
+.tbl{overflow-x:auto; margin:12px 0; max-width:100%}
+table{border-collapse:collapse; font-family:var(--sans); font-size:15px; background:var(--paper); font-variant-numeric:tabular-nums}
+th,td{border:1px solid var(--grid); padding:4px 12px; text-align:center}
+th{background:var(--box); color:var(--pen); font-weight:700}
+tr.sum td{font-weight:700}
+
+figure.chart{margin:14px 0 6px; background:var(--paper); border:1px solid var(--grid); padding:12px 12px 6px; position:relative; max-width:560px}
+figure.chart figcaption{font-family:var(--sans); font-size:15px; font-weight:700; margin:0 0 6px}
+.legend{display:flex; flex-wrap:wrap; gap:4px 18px; font-family:var(--sans); font-size:14px; color:var(--muted); margin:0 0 6px}
+.legend i{display:inline-block; width:12px; height:12px; border-radius:2px; margin-right:6px; vertical-align:-1px}
+.plot svg{display:block; width:100%; height:auto}
+.plot .gl{stroke:var(--grid); stroke-width:1}
+.plot .ax{stroke:var(--muted); stroke-width:1}
+.plot text{fill:var(--muted); font-family:var(--sans); font-size:12px; font-variant-numeric:tabular-nums}
+.plot .b1{fill:var(--s1)} .plot .b2{fill:var(--s2)}
+.plot .hit{fill:transparent; cursor:default}
+.plot .hit:hover, .plot .hit.on{fill:var(--grid); fill-opacity:.55}
+.tip{position:absolute; pointer-events:none; background:var(--paper); color:var(--ink); border:1px solid var(--muted); border-radius:3px; padding:5px 9px; font-family:var(--sans); font-size:13px; line-height:1.35; white-space:nowrap; font-variant-numeric:tabular-nums; box-shadow:0 2px 8px rgba(0,0,0,.12)}
+.tip i{display:inline-block; width:9px; height:9px; border-radius:2px; margin-right:5px}
+
+mjx-container[jax="SVG"]{font-size:95%}
+mjx-container[jax="SVG"][display="true"]{
+  text-align:left !important; margin:10px 0 12px !important; padding:2px 0 2px 18px;
+  overflow-x:auto; overflow-y:hidden; max-width:100%;
+}
+mjx-container[jax="SVG"][display="true"] > svg{max-width:none}
+td mjx-container[jax="SVG"], th mjx-container[jax="SVG"]{font-size:90%}
+
+footer{margin-left:var(--gut); padding:24px 0 0 20px; border-left:2px solid var(--margin); color:var(--muted); font-size:15px; font-family:var(--sans)}
+
+/* Телефон: без колонки полей, номер задачи — заголовком, всё место под формулы. */
+@media (max-width:620px){
+  :root{--gut:0px}
+  body{font-size:17px; line-height:1.55}
+  .wrap{padding:0 16px; padding-block:0 48px}
+  header.top{padding:28px 0 14px 12px}
+  header.top h1{font-size:27px}
+  header.top p.sub{font-size:17px}
+  nav.toc{padding-left:12px; flex-wrap:nowrap; overflow-x:auto; font-size:14px}
+  nav.toc a{min-width:30px; padding:2px 6px; flex:0 0 auto}
+  .task{display:block}
+  .num{text-align:left; font-size:21px; padding:20px 0 0 12px; border-left:2px solid var(--margin)}
+  .num span{display:inline}
+  .task + .task .num{border-top:1px dashed var(--muted)}
+  .task + .task .body{border-top:0}
+  .body{padding:4px 0 18px 12px}
+  .body h4{margin-top:16px}
+  .answer{padding:10px 12px}
+  footer{padding-left:12px}
+  mjx-container[jax="SVG"][display="true"]{padding-left:0; margin:8px 0 12px !important}
+  figure.chart{padding:10px 8px 4px}
+}
+@media (max-width:370px){
+  mjx-container[jax="SVG"]{font-size:88%}
+}
+@media (prefers-reduced-motion: reduce){ *{scroll-behavior:auto} }
+</style>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] },
+  svg: { fontCache: 'global' },
+  options: { skipHtmlTags: ['script','style','textarea','code'] }
+};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.js" defer></script>
+
+<div class="wrap">
+<header class="top">
+  <h1>ДЗ №5: разбор решений</h1>
+  <p class="sub">Почему каждое решение устроено именно так. Сами выкладки — на странице «ДЗ №5 по матстату».</p>
+</header>
+
+<nav class="toc" aria-label="Задачи"><span>Задачи:</span>
+<a href="#t0">Схемы</a><a href="#t1">1</a><a href="#t2">2</a><a href="#t3">3</a><a href="#t4">4</a><a href="#t5">5</a><a href="#t6">6</a><a href="#t7">7</a><a href="#t8">8</a>
+</nav>
+
+<!-- 0 -->
+<section class="task" id="t0"><div class="num"><span>Общие схемы</span></div><div class="body">
+<h4>Метод моментов (ММ) — три шага</h4>
+<p>1) Выразить теоретический момент через параметр, обычно \(M(X)\). 2) Приравнять его выборочному: \(M(X)=\bar X\). 3) Решить уравнение относительно параметра. Идея: при большой выборке \(\bar X\) близко к \(M(X)\), поэтому параметр, при котором они совпадают, — разумная оценка.</p>
+<h4>Метод максимального правдоподобия (ММП) — пять шагов</h4>
+<p>1) Записать \(L(\theta)=\prod f(x_i;\theta)\) — «насколько вероятна именно наша выборка при данном \(\theta\)». 2) Прологарифмировать: произведение становится суммой, а точка максимума не меняется (логарифм возрастает). 3) Взять \(\frac{\partial\ln L}{\partial\theta}\) и приравнять к нулю. 4) Решить. 5) Проверить, что это максимум: \(\frac{\partial^2\ln L}{\partial\theta^2}\lt 0\).</p>
+<p>Слагаемые в \(\ln L\), где нет \(\theta\), при дифференцировании исчезают, поэтому их можно сразу писать как const.</p>
+<h4>Несмещённость</h4>
+<p>Оценка несмещённая, если \(M(\theta^*)=\theta\): «в среднем попадает в цель». Смещение \(b_n=M(\theta^*)-\theta\). Если \(b_n\to0\) при \(n\to\infty\) — асимптотически несмещённая.</p>
+</div></section>
+
+<!-- 1 -->
+<section class="task" id="t1"><div class="num"><span>Задача </span>1</div><div class="body">
+<p class="cond">Отрицательное биномиальное: промахи до 3-го попадания.</p>
+<h4>Откуда формула вероятности</h4>
+<p>Если было \(m\) промахов до 3-го попадания, то всего \(m+3\) выстрела, и последний — обязательно попадание. Среди первых \(m+2\) выстрелов надо выбрать места для двух других попаданий: \(C_{m+2}^2\). Каждое попадание — \(p\), каждый промах — \(q\). Отсюда \(C_{m+2}^2p^3q^m\).</p>
+<h4>Откуда \(M(X)=3q/p\)</h4>
+<p>Число промахов до одного попадания имеет среднее \(q/p\) (геометрическое распределение). До трёх попаданий — три таких независимых куска, средние складываются: \(3q/p\).</p>
+<h4>ММ</h4>
+<p>Приравниваем \(3(1-p)/p=\bar m\) и выражаем \(p\). Единственная алгебра: домножить на \(p\).</p>
+<h4>ММП</h4>
+<p>В \(L\) у каждого наблюдения множитель \(p^3\), их \(k\) штук — получается \(p^{3k}\). Степени \(q\) складываются в \(\sum m_i\). Сочетания от \(p\) не зависят — это const.</p>
+<p>Вторая производная — сумма двух отрицательных дробей, значит меньше нуля, это максимум.</p>
+<h4>Итог</h4>
+<p>Обе оценки дают \(\frac{3}{3+\bar m}\). Так бывает у простых распределений: ММП-уравнение тоже сводится к «теоретическое среднее = выборочное».</p>
+</div></section>
+
+<!-- 2 -->
+<section class="task" id="t2"><div class="num"><span>Задача </span>2</div><div class="body">
+<h4>Главное</h4>
+<p>Стандартный ММП. Параметр \(\theta\) входит в плотность дважды: множителем \(\theta\) и в экспоненте через \(\theta^2\).</p>
+<h4>Логарифм</h4>
+<p>\(\ln(\theta e^{-\theta^2/(2x)})=\ln\theta-\frac{\theta^2}{2x}\). По всем \(n\) наблюдениям: \(n\ln\theta-\frac{\theta^2}{2}\sum\frac1{x_i}\). Корень \(\sqrt{2\pi x_i^3}\) от \(\theta\) не зависит — const.</p>
+<h4>Производная</h4>
+<p>\((n\ln\theta)'=\frac n\theta\), \(\left(\frac{\theta^2}{2}\right)'=\theta\). Получаем \(\frac n\theta=\theta\sum\frac1{x_i}\), откуда \(\theta^2=\frac n{\sum 1/x_i}\).</p>
+<h4>Почему корень положительный</h4>
+<p>По условию \(\theta>0\), поэтому отрицательный корень отбрасываем.</p>
+<h4>Как узнать ответ в форме</h4>
+<p>\(\frac n{\sum 1/X_i}=\frac1{(1/X)_{cp}}\) — делим числитель и знаменатель на \(n\). Поэтому \((n/(\Sigma1/X_i))^{1/2}\) и \(1/((1/X)_{cp})^{1/2}\) — одно и то же.</p>
+</div></section>
+
+<!-- 3 -->
+<section class="task" id="t3"><div class="num"><span>Задача </span>3</div><div class="body">
+<h4>Две параметризации</h4>
+<p>\(\mathrm{Exp}(\theta)\): \(\theta\) — интенсивность, среднее \(1/\theta\). \(\mathrm{Exp}(1/\theta)\): интенсивность \(1/\theta\), значит среднее \(\theta\). Это одно и то же распределение, только параметр назван по-разному.</p>
+<h4>а) Почему \(1/\bar X\) смещена</h4>
+<p>Интуиция: \(M(\bar X)=1/\theta\), но среднее от обратной величины не равно обратному от среднего: \(M\left(\frac1{\bar X}\right)\ne\frac1{M(\bar X)}\). Функция \(1/x\) выпуклая, поэтому оценка в среднем завышает \(\theta\).</p>
+<h4>Зачем гамма-распределение</h4>
+<p>Чтобы точно посчитать \(M(1/Y)\), нужен закон \(Y=\sum X_i\). Сумма \(n\) независимых \(\mathrm{Exp}(\theta)\) — это \(\Gamma(n;\theta)\) с плотностью \(\frac{\theta^ny^{n-1}e^{-\theta y}}{\Gamma(n)}\).</p>
+<h4>Трюк с интегралом</h4>
+<p>Умножение на \(\frac1y\) понижает степень \(y\) на единицу: \(y^{n-2}\). Получившийся интеграл — это «почти плотность» \(\Gamma(n-1;\theta)\), а интеграл плотности равен 1. Поэтому \(\int_0^\infty y^{n-2}e^{-\theta y}dy=\frac{\Gamma(n-1)}{\theta^{n-1}}\). Дальше \(\frac{\Gamma(n-1)}{\Gamma(n)}=\frac1{n-1}\), так как \(\Gamma(n)=(n-1)\Gamma(n-1)\).</p>
+<p>Поэтому \(M(\theta^*)=\frac{n}{n-1}\theta\). Множитель \(\frac n{n-1}\gt 1\), но стремится к 1 — асимптотически несмещённая. Исправленная оценка \(\frac{n-1}{\sum X_i}\) уже несмещённая.</p>
+<h4>б)</h4>
+<p>Здесь оценка — просто \(\bar X\), а среднее выборки всегда несмещённо оценивает среднее распределения, которое равно \(\theta\).</p>
+<p>В форме: мат. ожидание в а) — \(n\theta/(n-1)\), в б) — \(\theta\).</p>
+</div></section>
+
+<!-- 4 -->
+<section class="task" id="t4"><div class="num"><span>Задача </span>4</div><div class="body">
+<h4>Почему все несмещённые</h4>
+<p>\(S\) и \(R\) — взвешенные средние \(T_1\) и \(T_2\), веса в сумме дают 1 (\(\frac12+\frac12\), \(\frac23+\frac13\)). Тогда \(M=\theta\cdot1=\theta\).</p>
+<h4>Почему MSE = дисперсия</h4>
+<p>\(MSE=D+b^2\), а смещение \(b=0\).</p>
+<h4>Формула дисперсии суммы</h4>
+<p>\(D(aT_1+bT_2)=a^2DT_1+b^2DT_2+2ab\operatorname{cov}\). Ковариация из коэффициента корреляции: \(\operatorname{cov}=\rho\sigma_1\sigma_2=0{,}5\sigma^2\).</p>
+<p>Для \(S\): \(a=b=\frac12\), \(2ab=\frac12\). Для \(R\): \(a=\frac23,\ b=\frac13\), \(2ab=\frac49\) — в скобке после вынесения \(\frac19\) остаётся \(4\operatorname{cov}=2\sigma^2\).</p>
+<h4>Смысл ответа</h4>
+<p>Усреднение уменьшает разброс, и сильнее всего — при равных весах, когда оценки одинаково точны. Поэтому \(S\) лучше \(R\), а \(T_1\) в одиночку худшая. Если бы \(\rho=1\), усреднение ничего бы не дало.</p>
+</div></section>
+
+<!-- 5 -->
+<section class="task" id="t5"><div class="num"><span>Задача </span>5</div><div class="body">
+<h4>Условие несмещённости</h4>
+<p>\(M(\hat\mu)=(c_1+c_2)\mu\). Чтобы это было \(\mu\) при любом \(\mu\), нужно \(c_1+c_2=1\). Так остаётся один неизвестный \(c_1\).</p>
+<h4>Дисперсии средних</h4>
+<p>\(D(\bar X)=\sigma_X^2/n\): у первого 20 наблюдений и меньший разброс, \(\sigma^2/4/20=\sigma^2/80\); у второго \(\sigma^2/30\). Первое среднее точнее.</p>
+<h4>Минимизация</h4>
+<p>Средние из разных выборок независимы, поэтому ковариаций нет: \(D(\hat\mu)=c_1^2D\bar X+c_2^2D\bar Y\). Это парабола по \(c_1\) — берём производную и приравниваем к нулю.</p>
+<h4>Проверка ответа без вычислений</h4>
+<p>Правило: веса обратно пропорциональны дисперсиям. \(\frac1{D\bar X}:\frac1{D\bar Y}=80:30=8:3\), отсюда \(c_1=\frac8{11},\ c_2=\frac3{11}\). Более точной выборке — больший вес.</p>
+</div></section>
+
+<!-- 6 -->
+<section class="task" id="t6"><div class="num"><span>Задача </span>6</div><div class="body">
+<h4>Плотность из функции распределения</h4>
+<p>\(F(x)=1-2^\theta x^{-\theta}\), производная: \(\theta 2^\theta x^{-\theta-1}\). Для ММП нужна именно плотность, а не \(F\).</p>
+<h4>Почему появляется среднее геометрическое</h4>
+<p>В \(\ln L\) стоит \(\sum\ln x_i\). А \(\frac1n\sum\ln x_i=\ln\left(\prod x_i\right)^{1/n}=\ln g\). Поэтому вся информация о выборке сводится к одному числу \(g\) — его и дали в условии.</p>
+<h4>Упрощение ответа</h4>
+<p>Делим числитель и знаменатель \(\frac{n}{\sum\ln x_i-n\ln2}\) на \(n\): \(\frac1{\ln g-\ln2}=\frac1{\ln(g/2)}\).</p>
+<h4>Пункт б): две доли</h4>
+<p>\(P(\xi>5)=1-F(5)=(2/5)^\theta\) — доля среди тех, у кого доход больше 2 тыс. Это лишь 2,5% населения, поэтому для всей страны домножаем: \(0{,}025\cdot0{,}237\approx0{,}005925\). Частая ошибка — забыть умножить на 0,025.</p>
+</div></section>
+
+<!-- 7 -->
+<section class="task" id="t7"><div class="num"><span>Задача </span>7</div><div class="body">
+<h4>Что такое вариационный ряд</h4>
+<p>Все значения по возрастанию и сколько раз каждое встретилось. Значения 6 и 7 не встретились, но их пишем с частотой 0 — ряд идёт до максимума 8 без пропусков.</p>
+<h4>Откуда \(p^*\)</h4>
+<p>В каждой выборке 20 изделий, число бракованных — биномиальное \(B(20;p)\), его среднее \(20p\). Метод моментов: \(20p=\bar x=2{,}2\).</p>
+<h4>Теоретические частоты</h4>
+<p>Сколько выборок с \(x\) бракованными мы ожидали бы из 50, если закон действительно биномиальный: \(50\cdot P_{20}(x)\). Их сравнивают с эмпирическими — на гистограмме видно, что форма похожа.</p>
+<h4>Рекуррентная формула</h4>
+<p>Чтобы не считать каждый раз \(C_{20}^x\), берём отношение соседних вероятностей: \(\frac{P(x+1)}{P(x)}=\frac{20-x}{x+1}\cdot\frac pq\). Начинаем с \(P(0)=q^{20}\).</p>
+<h4>Почему столбики отдельно</h4>
+<p>Величина дискретная — между 1 и 2 значений нет, поэтому столбики не должны сливаться, как у непрерывной.</p>
+</div></section>
+
+<!-- 8 -->
+<section class="task" id="t8"><div class="num"><span>Задача </span>8</div><div class="body">
+<h4>а) Откуда \(a\)</h4>
+<p>Функция распределения непрерывной величины непрерывна. Справа от \(2\theta\) она равна 1, значит и в точке \(2\theta\) формула должна дать 1: \(a\theta\ln2=1\).</p>
+<h4>б) ММ</h4>
+<p>Плотность \(\frac1{x\ln2}\), при умножении на \(x\) в интеграле \(x\) сокращается — интеграл от константы, равен длине отрезка \(\theta\), делённой на \(\ln2\). Несмещённость: оценка — константа \(\cdot\bar X\), а \(M(\bar X)=M(X)\).</p>
+<h4>в) Почему ММП необычный</h4>
+<p>В плотности внутри отрезка нет \(\theta\). Параметр задаёт только, где плотность ненулевая. Поэтому \(L\) не зависит от \(\theta\), пока все точки внутри \([\theta;2\theta]\), и равна нулю, как только хоть одна выпала. Дифференцировать нечего — условия регулярности нарушены.</p>
+<p>Чтобы все точки были внутри: левый конец \(\theta\) не правее минимума, правый \(2\theta\) не левее максимума. Отсюда отрезок \([X_{(n)}/2;\,X_{(1)}]\), где \(L\) одинакова — любая его точка даёт максимум.</p>
+<p>Существование: истинное \(\theta\) всегда лежит в этом отрезке, поэтому он не пуст.</p>
+<h4>г)</h4>
+<p>Подставляем числа. Оценка ММ \(0{,}970\) попала в отрезок \([0{,}95;1]\) — хороший знак, она согласована с данными. Вероятность \(P(X>1{,}5)=1-F(1{,}5)\) зависит от выбранного \(\theta\), поэтому для ММП получается диапазон от 0,341 до 0,415.</p>
+</div></section>
+
+<footer>ДЗ №5, «Математическая статистика», 2026 · разбор</footer>
+</div>
