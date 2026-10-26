@@ -1,0 +1,939 @@
+<title>Подготовка к ИКР1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Golos+Text:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Unbounded:wght@500;700&display=swap">
+<style>
+/* Layout: одна колонка-«тетрадь в клетку»; синяя ручка для действий, красная ручка преподавателя для ловушек */
+:root{
+  --paper:#f8fafd; --grid:#e4ebf4; --ink:#17213b; --muted:#56617a; --line:#d2dae7; --card:#ffffff;
+  --pen:#2346c0; --pen-soft:#e9eefc; --red:#c22f2a; --red-soft:#fcecea; --ok:#1c7a4b; --ok-soft:#e3f3ea;
+  --f-display:"Unbounded","Golos Text",system-ui,sans-serif;
+  --f-body:"Golos Text",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-hand:"Caveat","Segoe Print","Comic Sans MS",cursive;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+  --s-1:.8125rem; --s0:1rem; --s1:1.125rem; --s2:1.375rem; --s3:1.75rem; --s4:2.5rem;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0f141e; --grid:#182030; --ink:#e3e8f3; --muted:#9ba6be; --line:#29334a; --card:#151c2a;
+    --pen:#93abff; --pen-soft:#1b2544; --red:#ff7d72; --red-soft:#3a1c1d; --ok:#55c992; --ok-soft:#12301f;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0f141e; --grid:#182030; --ink:#e3e8f3; --muted:#9ba6be; --line:#29334a; --card:#151c2a;
+  --pen:#93abff; --pen-soft:#1b2544; --red:#ff7d72; --red-soft:#3a1c1d; --ok:#55c992; --ok-soft:#12301f;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+body{
+  background-color:var(--paper);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:22px 22px;
+  color:var(--ink); font-family:var(--f-body); font-size:var(--s0); line-height:1.6;
+  -webkit-text-size-adjust:100%;
+}
+.page{max-width:880px;margin:0 auto;padding-inline:16px;padding-block:28px 80px}
+h1,h2,h3{text-wrap:balance;line-height:1.2;margin:0}
+h1{font-family:var(--f-display);font-weight:700;font-size:clamp(2rem,6vw,var(--s4));letter-spacing:-.01em}
+h2{font-family:var(--f-display);font-weight:500;font-size:var(--s3)}
+h3{font-size:var(--s1);font-weight:600;margin-top:8px}
+p{margin:0}
+a{color:var(--pen)}
+.mono,.tbl{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+
+/* hero */
+.hero{display:grid;gap:14px;padding-block:8px 20px}
+.eyebrow{font-size:var(--s-1);text-transform:uppercase;letter-spacing:.09em;color:var(--muted);font-weight:600}
+.lead{font-size:var(--s1);max-width:62ch}
+.howto{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:6px}
+.howto div{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;min-width:0}
+.howto b{display:block;font-family:var(--f-display);font-weight:500;font-size:var(--s-1);color:var(--pen);letter-spacing:.04em;margin-bottom:4px}
+.hand{font-family:var(--f-hand);font-size:1.45rem;line-height:1.25;color:var(--red);font-weight:600}
+
+/* sticky bar */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);border-bottom:1px solid var(--line);margin-inline:-16px;padding:10px 16px;display:grid;gap:8px}
+.progress{display:flex;align-items:center;gap:12px;font-size:var(--s-1);color:var(--muted)}
+.progress .track{flex:1;height:6px;border-radius:3px;background:var(--line);overflow:hidden}
+.progress .fill{height:100%;width:0;background:var(--ok);transition:width .3s}
+.progress strong{color:var(--ink);font-variant-numeric:tabular-nums}
+.nav{display:flex;gap:6px;overflow-x:auto;scrollbar-width:thin;padding-bottom:2px}
+.nav a{flex:none;text-decoration:none;color:var(--ink);font-size:var(--s-1);border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 11px;white-space:nowrap}
+.nav a:hover,.nav a:focus-visible{border-color:var(--pen);color:var(--pen)}
+.nav a span{font-family:var(--f-mono);color:var(--muted);margin-right:4px}
+
+/* topics */
+.topic{display:grid;gap:16px;padding-block:44px 8px;scroll-margin-top:96px}
+.topic-head{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center;border-top:2px solid var(--ink);padding-top:18px}
+.num{font-family:var(--f-display);font-weight:700;font-size:2.6rem;line-height:1;color:var(--pen);min-width:1.4em}
+.src{font-size:var(--s-1);color:var(--muted);margin-top:4px}
+.plain{background:var(--pen-soft);border-radius:var(--r);padding:14px 18px;display:grid;gap:6px}
+.label{font-size:var(--s-1);text-transform:uppercase;letter-spacing:.08em;font-weight:700;color:var(--pen)}
+.plain p,.body p{max-width:68ch}
+.body{display:grid;gap:10px}
+
+ol.recipe{counter-reset:r;list-style:none;margin:0;padding:0;display:grid;gap:8px}
+ol.recipe>li{counter-increment:r;display:grid;grid-template-columns:2rem 1fr;gap:10px;align-items:start}
+ol.recipe>li::before{content:counter(r);font-family:var(--f-display);font-weight:500;font-size:var(--s-1);color:var(--paper);background:var(--pen);width:1.7rem;height:1.7rem;border-radius:50%;display:grid;place-items:center;margin-top:1px}
+ol.recipe>li>div{min-width:0}
+.recipe-box{border:1.5px solid var(--pen);border-radius:var(--r);padding:16px 18px;display:grid;gap:12px;background:var(--card)}
+.recipe-box>.label{color:var(--pen)}
+
+.trap{font-family:var(--f-hand);font-size:1.4rem;line-height:1.25;color:var(--red);font-weight:600;padding:4px 2px 6px;border-bottom:2px dashed var(--red);justify-self:start;max-width:100%}
+.trap::before{content:"Ловушка: ";font-weight:700}
+
+/* cards */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;display:grid;gap:12px;min-width:0}
+.card-head{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:baseline}
+.chip{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;font-weight:700;border-radius:4px;padding:2px 7px}
+.chip.ex{background:var(--pen);color:var(--card)}
+.chip.self{background:var(--ink);color:var(--card)}
+.card-title{font-weight:600}
+.from{font-size:var(--s-1);color:var(--muted)}
+.cond{max-width:70ch}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.step{border-left:2px solid var(--line);padding:2px 0 2px 14px;display:grid;gap:4px;min-width:0}
+.step>b{font-size:var(--s-1);color:var(--pen);text-transform:uppercase;letter-spacing:.06em}
+.step.fresh{animation:pop .35s ease-out}
+@keyframes pop{from{opacity:.25;transform:translateY(4px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){.step.fresh{animation:none}}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{font:inherit;font-size:var(--s-1);font-weight:600;border-radius:8px;padding:7px 13px;border:1.5px solid var(--pen);background:var(--pen);color:var(--card);cursor:pointer}
+.btn.ghost{background:transparent;color:var(--pen)}
+.btn:disabled{opacity:.45;cursor:default}
+.btn:focus-visible,.nav a:focus-visible,summary:focus-visible{outline:3px solid var(--pen);outline-offset:2px}
+.counter{font-size:var(--s-1);color:var(--muted);font-variant-numeric:tabular-nums}
+details{border-top:1px dashed var(--line);padding-top:8px}
+details+details{border-top:none;padding-top:0}
+summary{cursor:pointer;font-weight:600;color:var(--pen);font-size:.95rem;width:max-content;max-width:100%}
+details[open]>summary{margin-bottom:8px}
+details>div{display:grid;gap:8px;min-width:0}
+.task.is-done{border-color:var(--ok);background:linear-gradient(var(--ok-soft),var(--ok-soft)) top/100% 4px no-repeat,var(--card)}
+.done-btn{font:inherit;font-size:var(--s-1);font-weight:600;border-radius:8px;padding:6px 12px;border:1.5px solid var(--line);background:transparent;color:var(--muted);cursor:pointer;justify-self:start}
+.done-btn[aria-pressed="true"]{border-color:var(--ok);color:var(--ok);background:var(--ok-soft)}
+.answer{font-weight:600}
+
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:14px}
+.scroll{overflow-x:auto;max-width:100%}
+.tbl{border-collapse:collapse;font-size:.86rem;min-width:100%}
+.tbl th,.tbl td{border:1px solid var(--line);padding:5px 9px;text-align:right;white-space:nowrap}
+.tbl th{font-family:var(--f-body);font-weight:600;background:var(--pen-soft);text-align:center}
+.tbl td.l,.tbl th.l{text-align:left;white-space:normal}
+.tbl tr.sum td{font-weight:600;border-top:2px solid var(--ink)}
+.tbl.text td{font-family:var(--f-body);white-space:normal;text-align:left;vertical-align:top}
+ul.dense{margin:0;padding-left:1.2em;display:grid;gap:4px}
+mjx-container[display="true"]{overflow-x:auto;overflow-y:hidden;max-width:100%;padding-block:2px}
+mjx-container{color:inherit}
+mjx-container.wide-math{display:block!important;overflow-x:auto;overflow-y:hidden;max-width:100%;padding-block:2px}
+.card p,.plain p,.recipe li,.tbl.text td{overflow-wrap:anywhere}
+.foot{margin-top:56px;font-size:var(--s-1);color:var(--muted);border-top:1px solid var(--line);padding-top:14px}
+@media (max-width:520px){
+  .num{font-size:2rem}
+  .card,.recipe-box{padding:14px}
+  .trap{font-size:1.3rem}
+}
+</style>
+<style>
+.sol{display:grid;gap:7px;grid-template-columns:minmax(0,1fr)}
+.sol p{margin:0}
+.ans{font-weight:700;border:1.5px solid var(--ink);border-radius:6px;padding:4px 10px;justify-self:start;max-width:100%}
+.topic{padding-block:28px 4px;gap:10px}
+.num{font-size:2rem}
+h2{font-size:var(--s2);overflow-wrap:anywhere}
+.topic-head>div{min-width:0}
+.cond{max-width:72ch}
+.topic>*,.sol>*{min-width:0}
+.solwrap{border-top:none;padding-top:0;min-width:0}
+.solwrap>summary{font-size:var(--s-1);text-transform:uppercase;letter-spacing:.06em;border:1.5px solid var(--pen);border-radius:8px;padding:6px 12px;list-style:none;width:auto;display:inline-block}
+.solwrap>summary::-webkit-details-marker{display:none}
+.solwrap>summary::before{content:"▸ "}
+.solwrap[open]>summary::before{content:"▾ "}
+.solwrap[open]>summary{margin-bottom:10px}
+.part{font-size:var(--s-1);text-transform:uppercase;letter-spacing:.07em;font-weight:700;color:var(--pen);margin-top:6px}
+.note{color:var(--muted);font-size:.95rem}
+.sect{margin-top:48px;padding:14px 18px;border-radius:var(--r);background:var(--ink);color:var(--paper);display:grid;gap:4px}
+.sect h2{font-size:var(--s2)}
+.sect p{font-size:var(--s-1);opacity:.85}
+.nav .grp{flex:none;font-size:var(--s-1);color:var(--muted);align-self:center;padding:0 2px 0 6px}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+</style>
+<div class="page">
+<header class="hero">
+  <span class="eyebrow">Матстатистика · раздел I «Статистическое оценивание» · 2026</span>
+  <h1>Подготовка к ИКР1</h1>
+  <p class="lead">Все 26 задач из листа «Возможные варианты задач ДКР1, АКР1 и экзамена» с полными решениями. Задачи 1–18 теоретические (65–70% оценки), задачи 19–26 расчётные (30–35%).</p>
+  <div class="howto">
+    <div><b>Как заниматься</b>Сначала реши задачу сам, потом открой «Решение». Ответ в рамке в конце решения.</div>
+    <div><b>Что повторить в первую очередь</b>Задачи 3, 5, 7 (ММП + Рао–Крамер + частоты), 13 (рисунок), 15 (равномерное), 19–22 (интервалы).</div>
+    <div><b>Обозначения</b>$\theta^*$ — оценка метода моментов (ММ), $\hat\theta$ — оценка максимального правдоподобия (ММП). Все обозначения расписаны в разделе 0.</div>
+  </div>
+  <div class="toolbar">
+    <button class="btn ghost" type="button" id="open-all">Раскрыть все решения</button>
+    <button class="btn ghost" type="button" id="close-all">Свернуть все</button>
+  </div>
+</header>
+
+<div class="bar">
+  <nav class="nav" aria-label="Задачи">
+    <a href="#z0"><span>0</span>Формулы</a>
+    <span class="grp">Теория:</span>
+    <a href="#z1">1</a><a href="#z2">2</a><a href="#z3">3</a><a href="#z4">4</a><a href="#z5">5</a><a href="#z6">6</a><a href="#z7">7</a><a href="#z8">8</a><a href="#z9">9</a><a href="#z10">10</a><a href="#z11">11</a><a href="#z12">12</a><a href="#z13">13</a><a href="#z14">14</a><a href="#z15">15</a><a href="#z16">16</a><a href="#z17">17</a><a href="#z18">18</a>
+    <span class="grp">Расчёт:</span>
+    <a href="#z19">19</a><a href="#z20">20</a><a href="#z21">21</a><a href="#z22">22</a><a href="#z23">23</a><a href="#z24">24</a><a href="#z25">25</a><a href="#z26">26</a>
+  </nav>
+</div>
+
+<!-- 0 -->
+<section class="topic" id="z0">
+  <div class="topic-head"><span class="num">0</span><div><h2>Формулы, которые нужны на ИКР</h2><p class="src">Таблица интервальных оценок — из листа задач (стр. 6), значения $\Phi(t)$ — из табл. П1 методички</p></div></div>
+  <div class="grid2">
+    <div class="recipe-box"><span class="label">Точечные оценки</span>
+      <ol class="recipe">
+        <li><div><b>ММ:</b> $M(X)=\bar X$, выразить $\theta$. Если $M(X)$ не зависит от $\theta$, берём $M(X^2)=\overline{X^2}$ (задачи 6, 15)</div></li>
+        <li><div><b>ММП, регулярный случай:</b> $\ln L=\sum\ln f(x_i;\theta)$, $\dfrac{d\ln L}{d\theta}=0$, проверить $\dfrac{d^2\ln L}{d\theta^2}\lt0$</div></li>
+        <li><div><b>ММП, границы зависят от $\theta$:</b> не дифференцируем. Условие «все $x_i$ в области» переводим в неравенства через $X_{(1)}$, $X_{(n)}$ и смотрим, растёт $L$ или убывает</div></li>
+        <li><div><b>Несмещённость:</b> $M(\theta^*)=\theta$. <b>Состоятельность:</b> несмещённая (или $B\to0$) и $D(\theta^*)\to0$</div></li>
+      </ol>
+    </div>
+    <div class="recipe-box"><span class="label">Рао–Крамер</span>
+      <ol class="recipe">
+        <li><div>Регулярность: область возможных значений $X$ не зависит от $\theta$</div></li>
+        <li><div>$\dfrac{\partial\ln f(X;\theta)}{\partial\theta}$ — обычно выходит $c\cdot(X-MX)$</div></li>
+        <li><div>$I(\theta)=M\Big[\Big(\dfrac{\partial\ln f}{\partial\theta}\Big)^2\Big]=c^2D(X)$</div></li>
+        <li><div>$D_{\min}=\dfrac1{nI(\theta)}$; для смещённой $\dfrac{(1+B'(\theta))^2}{nI(\theta)}$. Если $D(\theta^*)=D_{\min}$, оценка эффективна</div></li>
+      </ol>
+    </div>
+  </div>
+  <div class="recipe-box"><span class="label">Теоретические частоты</span>
+    <p>$m_i^T=n\,p_i$. Для дискретной величины $p_i=P(X=x_i)$, для интервального ряда $p_i=F(b_i)-F(a_i)$. Крайние интервалы продлеваем до $\pm\infty$ (или добавляем столбец «хвост»), чтобы $\sum m_i^T=n$. Для интервального ряда $\bar x$ считаем по серединам интервалов.</p>
+  </div>
+  <div class="recipe-box"><span class="label">Интервальные оценки (обозначения как в листе задач)</span>
+    <p>$\Phi(t)=P(|Z|\lt t)$ — функция Лапласа из табл. П1 ($\Phi(1{,}96)=0{,}95$). $St(t;\nu)=P(|T_\nu|\lt t)$. $t_{\alpha;\nu}$ — квантиль Стьюдента: $P(|T_\nu|\gt t_{\alpha;\nu})=\alpha=1-\gamma$. $S^2=\frac1n\sum(x_i-\bar x)^2$ — выборочная дисперсия, $\hat S^2=\frac{n}{n-1}S^2$ — исправленная. Удобно помнить: $\dfrac{S}{\sqrt{n-1}}=\dfrac{\hat S}{\sqrt n}$.</p>
+    <div class="scroll"><table class="tbl text">
+      <thead><tr><th class="l">Что оцениваем</th><th class="l">Интервал</th><th class="l">Вероятность / объём выборки</th></tr></thead>
+      <tbody>
+        <tr><td>$\mu$, $\sigma$ известно</td><td>$\bar x\pm t\dfrac{\sigma}{\sqrt n}$, $\;\Phi(t)=\gamma$</td><td>$P(\bar x-\delta_1\lt\mu\lt\bar x+\delta_2)=\frac12\Big[\Phi\Big(\frac{\delta_1\sqrt n}{\sigma}\Big)+\Phi\Big(\frac{\delta_2\sqrt n}{\sigma}\Big)\Big]$<br>$P(\mu\lt c)=\frac12\Big[1+\Phi\Big(\frac{(c-\bar x)\sqrt n}{\sigma}\Big)\Big]$<br>$n\ge\Big(\dfrac{t\sigma}{\delta}\Big)^2$, $\delta$ — половина ширины</td></tr>
+        <tr><td>$\mu$, $\sigma$ неизвестно</td><td>$\bar x\pm t_{\alpha;n-1}\dfrac{S}{\sqrt{n-1}}$</td><td>то же, но $St(t;n-1)$ вместо $\Phi(t)$ и $t=\frac{\delta\sqrt{n-1}}{S}$</td></tr>
+        <tr><td>$\sigma^2$, $n\le30$</td><td>$\dfrac{nS^2}{\chi_2^2}\lt\sigma^2\lt\dfrac{nS^2}{\chi_1^2}$, $\nu=n-1$<br>$P(\chi^2\gt\chi_1^2)=\frac{1+\gamma}2$, $\;P(\chi^2\gt\chi_2^2)=\frac{1-\gamma}2$</td><td>$P(\sigma_1^2\lt\sigma^2\lt\sigma_2^2)=P\Big(\chi^2\gt\frac{nS^2}{\sigma_2^2}\Big)-P\Big(\chi^2\gt\frac{nS^2}{\sigma_1^2}\Big)$</td></tr>
+        <tr><td>$\sigma$, $n\gt30$</td><td>$\dfrac{S\sqrt{2n}}{\sqrt{2n-3}+t}\lt\sigma\lt\dfrac{S\sqrt{2n}}{\sqrt{2n-3}-t}$, $\;\Phi(t)=\gamma$</td><td>$\frac12\big[\Phi(t_2)-\Phi(t_1)\big]$, $\;t_{1;2}=\dfrac{S\sqrt{2n}}{\sigma_{2;1}}-\sqrt{2n-3}$</td></tr>
+        <tr><td>доля $p$, $n\gt30$</td><td>$w\pm t\sqrt{\dfrac{w(1-w)}{n}}$, $\;\Phi(t)=\gamma$</td><td>как для $\mu$, с $\sqrt{\frac{w(1-w)}{n}}$ вместо $\frac{\sigma}{\sqrt n}$</td></tr>
+        <tr><td>доля $p$, $n\le30$</td><td>Клоппер–Пирсон: $P(X\ge m\,|\,p_1)=\frac\alpha2$, $\;P(X\le m\,|\,p_2)=\frac\alpha2$</td><td>при $m=0$: $p_1=0$, $(1-p_2)^n=\frac\alpha2$</td></tr>
+      </tbody>
+    </table></div>
+    <div class="scroll"><table class="tbl">
+      <thead><tr><th>$\gamma=\Phi(t)$</th><th>0,899</th><th>0,90</th><th>0,92</th><th>0,94</th><th>0,95</th><th>0,966</th><th>0,978</th><th>0,98</th></tr></thead>
+      <tbody><tr><td>$t$</td><td>1,64</td><td>1,645</td><td>1,75</td><td>1,88</td><td>1,96</td><td>2,12</td><td>2,29</td><td>2,33</td></tr></tbody>
+    </table></div>
+  </div>
+  <p class="trap">Если ищешь объём выборки $n$, всегда округляй вверх: 21,75 → 22.</p>
+</section>
+
+<div class="sect"><h2>Задачи теоретического типа</h2><p>ММ и ММП, несмещённость, состоятельность, эффективность, теоретические частоты · 65–70% оценки</p></div>
+
+<!-- 1 -->
+<section class="topic" id="z1">
+  <div class="topic-head"><span class="num">1</span><div><h2>Ступенчатая плотность: $a$ на $[0;\theta]$, $2a$ на $[\theta;2\theta]$</h2><p class="src">ММ · $M$ и $D$ оценки · несмещённость, состоятельность</p></div></div>
+  <p class="cond">Плотность задана рисунком: $f(x)=a$ при $0\le x\le\theta$, $f(x)=2a$ при $\theta\lt x\le2\theta$, иначе $0$ ($\theta\gt0$). Выборка объёма $n\gt3$. Найти $\theta^*$ методом моментов, $M(\theta^*)$ и $D(\theta^*)$; проверить несмещённость и состоятельность.</p>
+  <details class="solwrap"><summary>Решение</summary>
+  <div class="card sol">
+    <p>$\displaystyle\int f(x)dx=a\theta+2a\theta=3a\theta=1\;\Rightarrow\;a=\frac{1}{3\theta}$</p>
+    <p>$\displaystyle M(X)=\int_0^\theta x\,a\,dx+\int_\theta^{2\theta}x\cdot2a\,dx=a\frac{\theta^2}{2}+2a\cdot\frac{4\theta^2-\theta^2}{2}=\frac{7a\theta^2}{2}=\frac{7\theta}{6}$</p>
+    <p><b>ММ:</b> $\dfrac{7\theta}{6}=\bar X\;\Rightarrow\;\theta^*=\dfrac67\bar X$</p>
+    <p>$\displaystyle M(X^2)=a\frac{\theta^3}{3}+2a\cdot\frac{8\theta^3-\theta^3}{3}=5a\theta^3=\frac{5\theta^2}{3}$; $\;D(X)=\dfrac{5\theta^2}{3}-\dfrac{49\theta^2}{36}=\dfrac{11\theta^2}{36}$</p>
+    <p>$M(\theta^*)=\dfrac67M(\bar X)=\dfrac67\cdot\dfrac{7\theta}{6}=\theta\;\Rightarrow\;$ несмещённая</p>
+    <p>$D(\theta^*)=\dfrac{36}{49}\cdot\dfrac{D(X)}{n}=\dfrac{36}{49}\cdot\dfrac{11\theta^2}{36n}=\dfrac{11\theta^2}{49n}\xrightarrow[n\to\infty]{}0\;\Rightarrow\;$ состоятельная</p>
+    <p class="note">Если в варианте спросят ММП: $L=a^{k}(2a)^{n-k}=\dfrac{2^{\,n-k}}{(3\theta)^n}$, где $n-k$ — число $x_i\gt\theta$, и нужно $2\theta\ge X_{(n)}$. С ростом $\theta$ знаменатель растёт, а $n-k$ не растёт, значит $L$ убывает: $\hat\theta=\dfrac{X_{(n)}}{2}$.</p>
+    <p class="ans">$a=\frac1{3\theta}$; $\;\theta^*=\frac67\bar X$; $\;M(\theta^*)=\theta$; $\;D(\theta^*)=\frac{11\theta^2}{49n}$; несмещ., сост.</p>
+  </div>
+  </details>
+</section>
+
+<!-- 2 -->
+<section class="topic" id="z2">
+  <div class="topic-head"><span class="num">2</span><div><h2>Линейная плотность на $[0;\theta]$, мода в $\theta$</h2><p class="src">ММ · $M$, $D$ · несмещённость, состоятельность · ММП (нерегулярный)</p></div></div>
+  <p class="cond">$X$ принимает значения только на $[0;\theta]$, плотность на отрезке линейная, в точке $0$ непрерывна, в точке $\theta$ мода. Выборка $n\gt3$. а) $\theta^*$ методом моментов; б) $M(\theta^*)$, $D(\theta^*)$, несмещённость и состоятельность; в) $\hat\theta$ методом максимального правдоподобия.</p>
+  <details class="solwrap"><summary>Решение</summary>
+  <div class="card sol">
+    <p>Непрерывность в $0$: $f(0)=0$, значит $f(x)=cx$; мода в $\theta$, значит $c\gt0$</p>
+    <p>$\displaystyle\int_0^\theta cx\,dx=\frac{c\theta^2}{2}=1\;\Rightarrow\;c=\frac{2}{\theta^2}$; $\quad f(x)=\dfrac{2x}{\theta^2}$, $\;F(x)=\dfrac{x^2}{\theta^2}$</p>
+    <p class="part">а)</p>
+    <p>$\displaystyle M(X)=\int_0^\theta\frac{2x^2}{\theta^2}dx=\frac{2\theta}{3}=\bar X\;\Rightarrow\;\theta^*=\frac32\bar X$</p>
+    <p class="part">б)</p>
+    <p>$\displaystyle M(X^2)=\int_0^\theta\frac{2x^3}{\theta^2}dx=\frac{\theta^2}{2}$; $\;D(X)=\dfrac{\theta^2}{2}-\dfrac{4\theta^2}{9}=\dfrac{\theta^2}{18}$</p>
+    <p>$M(\theta^*)=\dfrac32\cdot\dfrac{2\theta}{3}=\theta$ ⇒ несмещённая; $\;D(\theta^*)=\dfrac94\cdot\dfrac{\theta^2}{18n}=\dfrac{\theta^2}{8n}\to0$ ⇒ состоятельная</p>
+    <p class="part">в)</p>
+    <p>$L(\theta)=\prod\dfrac{2x_i}{\theta^2}=\dfrac{2^n\prod x_i}{\theta^{2n}}$ при $\theta\ge X_{(n)}$, иначе $L=0$</p>
+    <p>$L$ убывает по $\theta$ ⇒ берём наименьшее допустимое: $\hat\theta=X_{(n)}$</p>
+    <p class="note">Дополнительно: $F_{X_{(n)}}(x)=\frac{x^{2n}}{\theta^{2n}}$, $\;M(\hat\theta)=\int_0^\theta x\frac{2nx^{2n-1}}{\theta^{2n}}dx=\frac{2n}{2n+1}\theta$ — смещена, асимптотически несмещённая.</p>
+    <p class="ans">$f=\frac{2x}{\theta^2}$; $\;\theta^*=\frac32\bar X$; $\;D(\theta^*)=\frac{\theta^2}{8n}$; несмещ., сост.; $\;\hat\theta=X_{(n)}$</p>
+  </div>
+  </details>
+</section>
+
+<!-- 3 -->
+<section class="topic" id="z3">
+  <div class="topic-head"><span class="num">3</span><div><h2>Пуассон с $\lambda=2\theta-3$</h2><p class="src">ММП · Рао–Крамер · теоретические частоты</p></div></div>
+  <p class="cond">$P(X=k)=\dfrac{(2\theta-3)^k}{k!}e^{-2\theta+3}$, $k=0,1,2,\dots$, $\theta\gt\frac32$. а) $\hat\theta$ методом максимального правдоподобия; б) эффективность по Рао–Крамеру; в) оценка по ряду ($n=30$) и теоретические частоты.</p>
+  <div class="scroll"><table class="tbl"><tbody><tr><th>$x_i$</th><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td></tr><tr><th>$m_i$</th><td>1</td><td>3</td><td>6</td><td>8</td><td>9</td><td>3</td></tr></tbody></table></div>
+  <details class="solwrap"><summary>Решение</summary>
+  <div class="card sol">
+    <p class="part">а)</p>
+    <p>$\ln L=\sum x_i\cdot\ln(2\theta-3)-n(2\theta-3)-\sum\ln x_i!$</p>
+    <p>$\dfrac{d\ln L}{d\theta}=\dfrac{2\sum x_i}{2\theta-3}-2n=0\;\Rightarrow\;2\theta-3=\bar X\;\Rightarrow\;\hat\theta=\dfrac{\bar X+3}{2}$</p>
+    <p>$\dfrac{d^2\ln L}{d\theta^2}=-\dfrac{4\sum x_i}{(2\theta-3)^2}\lt0$ ⇒ максимум</p>
+    <p>$\lambda=2\theta-3$: $\;M(\hat\theta)=\dfrac{\lambda+3}{2}=\theta$; $\;D(\hat\theta)=\dfrac{D(\bar X)}{4}=\dfrac{\lambda}{4n}=\dfrac{2\theta-3}{4n}$</p>
+    <p class="part">б)</p>
+    <p>Значения $k=0,1,\dots$ не зависят от $\theta$ ⇒ случай регулярный</p>
+    <p>$\ln P=x\ln(2\theta-3)-(2\theta-3)-\ln x!$; $\;\dfrac{\partial\ln P}{\partial\theta}=\dfrac{2x}{2\theta-3}-2=\dfrac{2(X-\lambda)}{\lambda}$</p>
+    <p>$I(\theta)=\dfrac{4}{\lambda^2}D(X)=\dfrac{4\lambda}{\lambda^2}=\dfrac{4}{2\theta-3}$; $\;D_{\min}=\dfrac{1}{nI}=\dfrac{2\theta-3}{4n}=D(\hat\theta)$ ⇒ эффективная</p>
+    <p class="part">в)</p>
+    <p>$\sum x_im_i=0+3+12+24+36+15=90$; $\;\bar x=\dfrac{90}{30}=3$; $\;\hat\theta=\dfrac{3+3}{2}=3$; $\;\lambda=2\cdot3-3=3$</p>
+    <p>$p_k=\dfrac{3^k}{k!}e^{-3}$, $e^{-3}=0{,}0498$; $\;m_k^T=30\,p_k$</p>
+    <div class="scroll"><table class="tbl">
+      <thead><tr><th>$x_i$</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>≥6</th><th>Σ</th></tr></thead>
+      <tbody>
+        <tr><td>$m_i$</td><td>1</td><td>3</td><td>6</td><td>8</td><td>9</td><td>3</td><td>0</td><td>30</td></tr>
+        <tr><td>$p_i$</td><td>0,0498</td><td>0,1494</td><td>0,2240</td><td>0,2240</td><td>0,1680</td><td>0,1008</td><td>0,0839</td><td>1</td></tr>
+        <tr><td>$m_i^T$</td><td>1,49</td><td>4,48</td><td>6,72</td><td>6,72</td><td>5,04</td><td>3,02</td><td>2,52</td><td>30</td></tr>
+      </tbody>
+    </table></div>
+    <p class="ans">$\hat\theta=\frac{\bar X+3}{2}$; несмещ., эффективна; по выборке $\hat\theta=3$</p>
+  </div>
+  </details>
+</section>
+
+<!-- 4 -->
+<section class="topic" id="z4">
+  <div class="topic-head"><span class="num">4</span><div><h2>Сдвинутое показательное: $\alpha$ и $\beta$</h2><p class="src">ММП в регулярном и нерегулярном случаях</p></div></div>
+  <p class="cond">$f(x)=\dfrac1\alpha\exp\Big(-\dfrac{x-\beta}{\alpha}\Big)$ при $x\ge\beta$, иначе $0$. а) $\hat\alpha$ ($\alpha\gt0$), если $\beta$ известно; б) $\hat\beta$, если $\alpha$ известно.</p>
+  <details class="solwrap"><summary>Решение</summary>
+  <div class="card sol">
+    <p class="part">а) β известно</p>
+    <p>$\ln L=-n\ln\alpha-\dfrac1\alpha\sum(x_i-\beta)$</p>
+    <p>$\dfrac{d\ln L}{d\alpha}=-\dfrac n\alpha+\dfrac{\sum(x_i-\beta)}{\alpha^2}=0\;\Rightarrow\;\hat\alpha=\dfrac1n\sum(x_i-\beta)=\bar X-\beta$</p>
+    <p>$\dfrac{d^2\ln L}{d\alpha^2}\Big|_{\hat\alpha}=\dfrac{n}{\hat\alpha^2}-\dfrac{2n\hat\alpha}{\hat\alpha^3}=-\dfrac{n}{\hat\alpha^2}\lt0$ ⇒ максимум</p>
+    <p class="part">б) α известно</p>
+    <p>$L(\beta)=\alpha^{-n}\exp\Big(-\dfrac{\sum x_i}{\alpha}+\dfrac{n\beta}{\alpha}\Big)$, если все $x_i\ge\beta$, т.е. $\beta\le X_{(1)}$; иначе $L=0$</p>
+    <p>$\dfrac{d\ln L}{d\beta}=\dfrac n\alpha\neq0$: в ноль не обращается, случай нерегулярный. $L$ возрастает по $\beta$ ⇒ берём наибольшее допустимое: $\hat\beta=X_{(1)}$</p>
+    <p class="note">Дополнительно: $M(\hat\alpha)=M(X)-\beta=\alpha$ — несмещённая. $X_{(1)}-\beta$ распределена показательно со средним $\frac\alpha n$, поэтому $M(\hat\beta)=\beta+\frac\alpha n$ — смещена, асимптотически несмещённая.</p>
+    <p class="ans">$\hat\alpha=\bar X-\beta$; $\;\hat\beta=X_{(1)}$</p>
+  </div>
+  </details>
+</section>
+
+<!-- 5 -->
+<section class="topic" id="z5">
+  <div class="topic-head"><span class="num">5</span><div><h2>$Geom_2\Big(\frac{1}{3\theta+1}\Big)$: число неудач до 1-го успеха</h2><p class="src">ММ и ММП · Рао–Крамер · теоретические частоты</p></div></div>
+  <p class="cond">$P(X=k)=pq^k$, $k=0,1,2,\dots$, $p=\dfrac{1}{3\theta+1}$, $\theta\gt0$. а) $\theta^*$ и $\hat\theta$; б) эффективность по Рао–Крамеру; в) оценка по ряду ($n=20$) и теоретические частоты.</p>
+  <div class="scroll"><table class="tbl"><tbody><tr><th>$x_i$</th><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td></tr><tr><th>$m_i$</th><td>1</td><td>4</td><td>3</td><td>0</td><td>5</td><td>7</td></tr></tbody></table></div>
+  <details class="solwrap"><summary>Решение</summary>
+  <div class="card sol">
+    <p>$q=1-p=\dfrac{3\theta}{3\theta+1}$; $\;M(X)=\dfrac qp=3\theta$; $\;D(X)=\dfrac{q}{p^2}=3\theta(3\theta+1)$</p>
+    <p class="part">а)</p>
+    <p><b>ММ:</b> $3\theta=\bar X\;\Rightarrow\;\theta^*=\dfrac{\bar X}{3}$</p>
+    <p><b>ММП:</b> $P(X=k)=\dfrac{(3\theta)^k}{(3\theta+1)^{k+1}}$; $\;\ln L=\sum x_i\cdot\ln3\theta-\Big(\sum x_i+n\Big)\ln(3\theta+1)$</p>
+    <p>$\dfrac{d\ln L}{d\theta}=\dfrac{\sum x_i}{\theta}-\dfrac{3(\sum x_i+n)}{3\theta+1}=0\;\Rightarrow\;(3\theta+1)\sum x_i=3\theta\sum x_i+3\theta n\;\Rightarrow\;\hat\theta=\dfrac{\bar X}{3}$</p>
+    <p>$\dfrac{d^2\ln L}{d\theta^2}\Big|_{\hat\theta}=-\dfrac{\sum x_i}{\hat\theta^2}+\dfrac{9(\sum x_i+n)}{(3\hat\theta+1)^2}=-\dfrac{3n}{\hat\theta}+\dfrac{9n}{3\hat\theta+1}=-\dfrac{3n}{\hat\theta(3\hat\theta+1)}\lt0$</p>
+    <p>ММ и ММП совпали. $\;M(\hat\theta)=\dfrac{3\theta}{3}=\theta$; $\;D(\hat\theta)=\dfrac{D(X)}{9n}=\dfrac{\theta(3\theta+1)}{3n}$</p>
+    <p class="part">б)</p>
+    <p>$\ln P=x\ln3\theta-(x+1)\ln(3\theta+1)$; $\;\dfrac{\partial\ln P}{\partial\theta}=\dfrac x\theta-\dfrac{3(x+1)}{3\theta+1}=\dfrac{X-3\theta}{\theta(3\theta+1)}$</p>
+    <p>$I(\theta)=\dfrac{D(X)}{\theta^2(3\theta+1)^2}=\dfrac{3}{\theta(3\theta+1)}$; $\;D_{\min}=\dfrac{\theta(3\theta+1)}{3n}=D(\hat\theta)$ ⇒ эффективная</p>
+    <p class="part">в)</p>
+    <p>$\sum x_im_i=0+4+6+0+20+35=65$; $\;\bar x=\dfrac{65}{20}=3{,}25$; $\;\hat\theta=\dfrac{3{,}25}{3}=1{,}0833$</p>
+    <p>$p=\dfrac{1}{3\cdot1{,}0833+1}=\dfrac{1}{4{,}25}=0{,}2353$; $\;q=0{,}7647$; $\;P(X=k)=0{,}2353\cdot0{,}7647^k$; $\;P(X\ge6)=q^6=0{,}2000$</p>
+    <div class="scroll"><table class="tbl">
+      <thead><tr><th>$x_i$</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>≥6</th><th>Σ</th></tr></thead>
+      <tbody>
+        <tr><td>$m_i$</td><td>1</td><td>4</td><td>3</td><td>0</td><td>5</td><td>7</td><td>0</td><td>20</td></tr>
+        <tr><td>$p_i$</td><td>0,2353</td><td>0,1799</td><td>0,1376</td><td>0,1052</td><td>0,0805</td><td>0,0615</td><td>0,2000</td><td>1</td></tr>
+        <tr><td>$m_i^T$</td><td>4,71</td><td>3,60</td><td>2,75</td><td>2,10</td><td>1,61</td><td>1,23</td><td>4,00</td><td>20</td></tr>
+      </tbody>
+    </table></div>
+    <p class="note">Модель ждёт 4,7 нуля, а в выборке ноль один; на 4 и 5 наоборот. Геометрический закон описывает эти данные плохо — это нормальный вывод для такой таблицы.</p>
+    <p class="ans">$\theta^*=\hat\theta=\frac{\bar X}{3}$; несмещ., эффективна; по выборке $\hat\theta=1{,}083$</p>
+  </div>
+  </details>
+</section>
+
+<!-- 6 -->
+<section class="topic" id="z6">
+  <div class="topic-head"><span class="num">6</span><div><h2>Дискретный закон: $-1,0,3$ с вероятностями $3\theta$, $1-4\theta$, $\theta$</h2><p class="src">ММ (второй момент) и ММП · что эффективнее · частоты по двум выборкам</p></div></div>
+  <p class="cond">$P(X=-1)=3\theta$, $P(X=0)=1-4\theta$, $P(X=3)=\theta$. Найти $\theta^*$ и $\hat\theta$, проверить несмещённость и состоятельность. Какая оценка эффективнее? Какие ограничения на $\theta$? По выборкам $\{-1;0;-1;-1;3;-1;-1;3;0;-1\}$ и $\{-1;0;-1;0;3;-1;-1;3;0;-1\}$ найти эмпирические частоты, оценки и теоретические частоты.</p>
+  <details class="solwrap"><summary>Решение</summary>
+  <div class="card sol">
+    <p><b>Ограничения:</b> $3\theta\ge0$, $1-4\theta\ge0$, $\theta\ge0$ ⇒ $0\le\theta\le\frac14$ (невырожденный закон: $0\lt\theta\lt\frac14$)</p>
+    <p class="part">ММ</p>
+    <p>$M(X)=-1\cdot3\theta+0+3\cdot\theta=0$ — от $\theta$ не зависит, по первому моменту оценку не построить</p>
+    <p>$M(X^2)=1\cdot3\theta+0+9\cdot\theta=12\theta=\overline{X^2}\;\Rightarrow\;\theta^*=\dfrac{\overline{X^2}}{12}=\dfrac{1}{12n}\sum X_i^2$</p>
+    <p>$M(\theta^*)=\dfrac{12\theta}{12}=\theta$ ⇒ несмещённая</p>
+    <p>$M(X^4)=3\theta+81\theta=84\theta$; $\;D(X^2)=84\theta-144\theta^2=12\theta(7-12\theta)$</p>
+    <p>$D(\theta^*)=\dfrac{D(X^2)}{144n}=\dfrac{\theta(7-12\theta)}{12n}\to0$ ⇒ состоятельная</p>
+    <p class="part">ММП</p>
+    <p>$n_{-1},n_0,n_3$ — сколько раз встретились $-1$, $0$, $3$: $\;L=(3\theta)^{n_{-1}}(1-4\theta)^{n_0}\theta^{n_3}$</p>
+    <p>$\ln L=n_{-1}\ln3+(n_{-1}+n_3)\ln\theta+n_0\ln(1-4\theta)$; $\;\dfrac{n_{-1}+n_3}{\theta}-\dfrac{4n_0}{1-4\theta}=0$</p>
+    <p>$(n_{-1}+n_3)(1-4\theta)=4n_0\theta\;\Rightarrow\;n_{-1}+n_3=4\theta n\;\Rightarrow\;\hat\theta=\dfrac{n_{-1}+n_3}{4n}$</p>
+    <p>$\dfrac{d^2\ln L}{d\theta^2}=-\dfrac{n_{-1}+n_3}{\theta^2}-\dfrac{16n_0}{(1-4\theta)^2}\lt0$ ⇒ максимум</p>
+    <p>$Y_i=\mathbb 1(X_i\neq0)$ — бернуллиевская с $p=4\theta$, $\hat\theta=\dfrac{\bar Y}{4}$: $\;M(\hat\theta)=\dfrac{4\theta}{4}=\theta$; $\;D(\hat\theta)=\dfrac{4\theta(1-4\theta)}{16n}=\dfrac{\theta(1-4\theta)}{4n}\to0$ ⇒ несмещ., сост.</p>
+    <p class="part">Какая эффективнее</p>
+    <p>$D(\hat\theta)=\dfrac{\theta(3-12\theta)}{12n}\lt\dfrac{\theta(7-12\theta)}{12n}=D(\theta^*)$ ⇒ ММП эффективнее</p>
+    <p>Рао–Крамер: $\displaystyle I(\theta)=\sum\frac{(p_i')^2}{p_i}=\frac{3^2}{3\theta}+\frac{(-4)^2}{1-4\theta}+\frac{1^2}{\theta}=\frac4\theta+\frac{16}{1-4\theta}=\frac{4}{\theta(1-4\theta)}$; $\;D_{\min}=\dfrac{\theta(1-4\theta)}{4n}=D(\hat\theta)$ ⇒ $\hat\theta$ эффективна</p>
+    <p class="part">Выборки ($n=10$)</p>
+    <p>1) $n_{-1}=6$, $n_0=2$, $n_3=2$; $\;\sum x_i^2=6+2\cdot9=24$; $\;\theta^*=\dfrac{24}{120}=0{,}2$; $\;\hat\theta=\dfrac{6+2}{40}=0{,}2$</p>
+    <p>2) $n_{-1}=5$, $n_0=3$, $n_3=2$; $\;\sum x_i^2=5+18=23$; $\;\theta^*=\dfrac{23}{120}=0{,}1917$; $\;\hat\theta=\dfrac{5+2}{40}=0{,}175$</p>
+    <p>$m^T=10\cdot(3\theta;\;1-4\theta;\;\theta)$:</p>
+    <div class="scroll"><table class="tbl">
+      <thead><tr><th class="l"></th><th>$-1$</th><th>$0$</th><th>$3$</th><th>Σ</th></tr></thead>
+      <tbody>
+        <tr><td class="l">выборка 1: $m_i$</td><td>6</td><td>2</td><td>2</td><td>10</td></tr>
+        <tr><td class="l">$m_i^T$ (ММ = ММП, $\theta=0{,}2$)</td><td>6</td><td>2</td><td>2</td><td>10</td></tr>
+        <tr class="sum"><td class="l">выборка 2: $m_i$</td><td>5</td><td>3</td><td>2</td><td>10</td></tr>
+        <tr><td class="l">$m_i^T$ (ММ, $\theta=0{,}1917$)</td><td>5,75</td><td>2,33</td><td>1,92</td><td>10</td></tr>
+        <tr><td class="l">$m_i^T$ (ММП, $\theta=0{,}175$)</td><td>5,25</td><td>3,00</td><td>1,75</td><td>10</td></tr>
+      </tbody>
+    </table></div>
+    <p class="ans">$0\lt\theta\lt\frac14$; $\;\theta^*=\frac{\overline{X^2}}{12}$, $D=\frac{\theta(7-12\theta)}{12n}$; $\;\hat\theta=\frac{n_{-1}+n_3}{4n}$, $D=\frac{\theta(1-4\theta)}{4n}$ — эффективнее</p>
+  </div>
+  </details>
+</section>
+
+<!-- 7 -->
+<section class="topic" id="z7">
+  <div class="topic-head"><span class="num">7</span><div><h2>Показательное со средним $2\theta-3$</h2><p class="src">ММП · Рао–Крамер · частоты по интервальному ряду</p></div></div>
+  <p class="cond">$f(x)=\dfrac{1}{2\theta-3}e^{-\frac{x}{2\theta-3}}$ при $x\ge0$, $\theta\gt\frac32$. а) $\hat\theta$; б) эффективность по Рао–Крамеру; в) оценка по интервальному ряду ($n=30$) и теоретические частоты.</p>
+  <div class="scroll"><table class="tbl"><tbody><tr><th>$x_i$</th><td>0–4</td><td>4–8</td><td>8–12</td><td>12–16</td></tr><tr><th>$m_i$</th><td>15</td><td>9</td><td>4</td><td>2</td></tr></tbody></table></div>
+  <details class="solwrap"><summary>Решение</summary>
+  <div class="card sol">
+    <p>Обозначим $\beta=2\theta-3\gt0$: $\;M(X)=\beta$, $\;D(X)=\beta^2$</p>
+    <p class="part">а)</p>
+    <p>$\ln L=-n\ln(2\theta-3)-\dfrac{\sum x_i}{2\theta-3}$</p>
+    <p>$\dfrac{d\ln L}{d\theta}=-\dfrac{2n}{2\theta-3}+\dfrac{2\sum x_i}{(2\theta-3)^2}=0\;\Rightarrow\;2\theta-3=\bar X\;\Rightarrow\;\hat\theta=\dfrac{\bar X+3}{2}$</p>
+    <p>$\dfrac{d^2\ln L}{d\theta^2}\Big|_{\hat\theta}=\dfrac{4n}{\beta^2}-\dfrac{8\sum x_i}{\beta^3}=\dfrac{4n}{\beta^2}-\dfrac{8n}{\beta^2}=-\dfrac{4n}{\beta^2}\lt0$</p>
+    <p>$M(\hat\theta)=\dfrac{\beta+3}{2}=\theta$; $\;D(\hat\theta)=\dfrac{D(\bar X)}{4}=\dfrac{(2\theta-3)^2}{4n}$</p>
+    <p class="part">б)</p>
+    <p>Область $x\ge0$ не зависит от $\theta$ ⇒ регулярный случай</p>
+    <p>$\ln f=-\ln\beta-\dfrac x\beta$; $\;\dfrac{\partial\ln f}{\partial\theta}=-\dfrac2\beta+\dfrac{2x}{\beta^2}=\dfrac{2(X-\beta)}{\beta^2}$</p>
+    <p>$I(\theta)=\dfrac{4D(X)}{\beta^4}=\dfrac{4}{(2\theta-3)^2}$; $\;D_{\min}=\dfrac{(2\theta-3)^2}{4n}=D(\hat\theta)$ ⇒ эффективная</p>
+    <p class="part">в)</p>
+    <p>Середины $2;6;10;14$: $\;\sum x_im_i=30+54+40+28=152$; $\;\bar x=\dfrac{152}{30}=5{,}0667$; $\;\hat\theta=\dfrac{5{,}0667+3}{2}=4{,}0333$</p>
+    <p>$F(x)=1-e^{-x/5{,}0667}$; $\;p_i=e^{-a_i/\beta}-e^{-b_i/\beta}$: $\;e^{-4/\beta}=0{,}4541$, $e^{-8/\beta}=0{,}2062$, $e^{-12/\beta}=0{,}0936$, $e^{-16/\beta}=0{,}0425$</p>
+    <div class="scroll"><table class="tbl">
+      <thead><tr><th>$x_i$</th><th>0–4</th><th>4–8</th><th>8–12</th><th>12–16</th><th>16–∞</th><th>Σ</th></tr></thead>
+      <tbody>
+        <tr><td>$m_i$</td><td>15</td><td>9</td><td>4</td><td>2</td><td>0</td><td>30</td></tr>
+        <tr><td>$p_i$</td><td>0,5459</td><td>0,2479</td><td>0,1126</td><td>0,0511</td><td>0,0425</td><td>1</td></tr>
+        <tr><td>$m_i^T$</td><td>16,38</td><td>7,44</td><td>3,38</td><td>1,53</td><td>1,28</td><td>30</td></tr>
+      </tbody>
+    </table></div>
+    <p class="note">Если последний интервал считать «12 и больше»: $p_4=0{,}0936$, $m_4^T=2{,}81$.</p>
+    <p class="ans">$\hat\theta=\frac{\bar X+3}{2}$; несмещ., эффективна; по выборке $\hat\theta=4{,}033$</p>
+  </div>
+  </details>
+</section>
+
+<!-- 8 -->
+<section class="topic" id="z8">
+  <div class="topic-head"><span class="num">8</span><div><h2>$f(x)=kx$ на $\big[0;\sqrt{2/k}\big]$</h2><p class="src">ММ и ММП (нерегулярный) · как на семинаре 7–8, №5</p></div></div>
+  <p class="cond">$f(x)=kx$ при $x\in\big[0;\sqrt{2/k}\big]$, $k\gt0$, иначе $0$. Найти оценки параметра $\theta=k$ методом моментов и методом максимального правдоподобия.</p>
+  <details class="solwrap"><summary>Решение</summary>
+  <div class="card sol">
+    <p>Проверка: $\displaystyle\int_0^{\sqrt{2/k}}kx\,dx=\frac k2\cdot\frac2k=1$</p>
+    <p><b>ММ:</b> $\displaystyle M(X)=\int_0^{\sqrt{2/k}}kx^2dx=\frac k3\Big(\frac2k\Big)^{3/2}=\frac{2\sqrt2}{3\sqrt k}$</p>
+    <p>$\dfrac{2\sqrt2}{3\sqrt k}=\bar X\;\Rightarrow\;\sqrt k=\dfrac{2\sqrt2}{3\bar X}\;\Rightarrow\;k^*=\dfrac{8}{9\bar X^2}$</p>
+    <p><b>ММП:</b> $L(k)=k^n\prod x_i$, если все $x_i\le\sqrt{2/k}$, т.е. $k\le\dfrac{2}{X_{(n)}^2}$; иначе $L=0$</p>
+    <p>$k^n$ растёт по $k$ ⇒ берём наибольшее допустимое: $\hat k=\dfrac{2}{X_{(n)}^2}$</p>
+    <p class="ans">$k^*=\frac{8}{9\bar X^2}$; $\;\hat k=\frac{2}{X_{(n)}^2}$</p>
+  </div>
+  </details>
+</section>
+
+<!-- 9 -->
+<section class="topic" id="z9">
+  <div class="topic-head"><span class="num">9</span><div><h2>$f(x)=2\theta x\,e^{-\theta x^2}$, $x\ge0$</h2><p class="src">ММП · оценка по интервальному ряду · частоты</p></div></div>
+  <p class="cond">а) $\hat\theta$ методом максимального правдоподобия; б) оценка по выборке ($n=50$); в) теоретические частоты.</p>
+  <div class="scroll"><table class="tbl"><tbody><tr><th>$x_i$</th><td>0–0,4</td><td>0,4–0,8</td><td>0,8–1,2</td><td>1,2–1,6</td><td>1,6–2,0</td></tr><tr><th>$m_i$</th><td>12</td><td>20</td><td>13</td><td>4</td><td>1</td></tr></tbody></table></div>
+  <details class="solwrap"><summary>Решение</summary>
+  <div class="card sol">
+    <p class="part">а)</p>
+    <p>$\ln L=n\ln2\theta+\sum\ln x_i-\theta\sum x_i^2$; $\;\dfrac{d\ln L}{d\theta}=\dfrac n\theta-\sum x_i^2=0\;\Rightarrow\;\hat\theta=\dfrac{n}{\sum x_i^2}=\dfrac{1}{\overline{X^2}}$</p>
+    <p>$\dfrac{d^2\ln L}{d\theta^2}=-\dfrac{n}{\theta^2}\lt0$ ⇒ максимум</p>
+    <p class="part">б)</p>
+    <p>Середины $0{,}2;\,0{,}6;\,1{,}0;\,1{,}4;\,1{,}8$: $\;\sum m_ix_i^2=12\cdot0{,}04+20\cdot0{,}36+13\cdot1+4\cdot1{,}96+1\cdot3{,}24=0{,}48+7{,}2+13+7{,}84+3{,}24=31{,}76$</p>
+    <p>$\overline{x^2}=\dfrac{31{,}76}{50}=0{,}6352$; $\;\hat\theta=\dfrac{1}{0{,}6352}=1{,}574$</p>
+    <p class="part">в)</p>
+    <p>$\displaystyle F(x)=\int_0^x2\theta t\,e^{-\theta t^2}dt=1-e^{-\theta x^2}$; $\;p_i=e^{-\theta a_i^2}-e^{-\theta b_i^2}$</p>
+    <p>$e^{-\theta b^2}$ при $b=0{,}4;\,0{,}8;\,1{,}2;\,1{,}6;\,2{,}0$: $\;0{,}7773;\;0{,}3651;\;0{,}1036;\;0{,}0178;\;0{,}0018$</p>
+    <div class="scroll"><table class="tbl">
+      <thead><tr><th>$x_i$</th><th>0–0,4</th><th>0,4–0,8</th><th>0,8–1,2</th><th>1,2–1,6</th><th>1,6–2,0</th><th>&gt;2,0</th><th>Σ</th></tr></thead>
+      <tbody>
+        <tr><td>$m_i$</td><td>12</td><td>20</td><td>13</td><td>4</td><td>1</td><td>0</td><td>50</td></tr>
+        <tr><td>$p_i$</td><td>0,2227</td><td>0,4122</td><td>0,2615</td><td>0,0859</td><td>0,0159</td><td>0,0018</td><td>1</td></tr>
+        <tr><td>$m_i^T$</td><td>11,13</td><td>20,61</td><td>13,07</td><td>4,29</td><td>0,80</td><td>0,09</td><td>50</td></tr>
+      </tbody>
+    </table></div>
+    <p class="note">Если спросят ММ: $M(X)=\frac12\sqrt{\pi/\theta}$, $\;\theta^*=\frac{\pi}{4\bar X^2}$; по ряду $\bar x=0{,}696$, $\theta^*=1{,}621$.</p>
+    <p class="ans">$\hat\theta=\frac{n}{\sum x_i^2}=1{,}574$; частоты хорошо совпадают с эмпирическими</p>
+  </div>
+  </details>
+</section>
+
+<!-- 10 -->
+<section class="topic" id="z10">
+  <div class="topic-head"><span class="num">10</span><div><h2>Пуассон с параметром $\sqrt{\frac{\theta+1}{3}}$</h2><p class="src">ММП и ММ · смещение · асимптотическая несмещённость</p></div></div>
+  <p class="cond">$X\sim\Pi(\lambda)$, $\lambda=\sqrt{\dfrac{\theta+1}{3}}$, $\theta\gt-1$. Найти оценки методами ММП и ММ. Несмещённая? Асимптотически несмещённая?</p>
+  <details class="solwrap"><summary>Решение</summary>
+  <div class="card sol">
+    <p><b>ММП:</b> $\ln L=\sum x_i\cdot\ln\lambda(\theta)-n\lambda(\theta)-\sum\ln x_i!$</p>
+    <p>$\dfrac{d\ln L}{d\theta}=\lambda'(\theta)\Big(\dfrac{\sum x_i}{\lambda}-n\Big)=0$, $\;\lambda'(\theta)=\dfrac{1}{6\lambda}\neq0\;\Rightarrow\;\lambda=\bar X$</p>
+    <p>$\dfrac{\theta+1}{3}=\bar X^2\;\Rightarrow\;\hat\theta=3\bar X^2-1$</p>
+    <p><b>ММ:</b> $M(X)=\lambda=\sqrt{\dfrac{\theta+1}{3}}=\bar X\;\Rightarrow\;\theta^*=3\bar X^2-1$ — то же самое</p>
+    <p><b>Смещение:</b> $M(\bar X^2)=D(\bar X)+\big(M\bar X\big)^2=\dfrac\lambda n+\lambda^2$</p>
+    <p>$M(\hat\theta)=3\lambda^2+\dfrac{3\lambda}{n}-1=\theta+\dfrac{3\lambda}{n}=\theta+\dfrac{\sqrt{3(\theta+1)}}{n}$</p>
+    <p>$B=\dfrac{\sqrt{3(\theta+1)}}{n}\neq0$ ⇒ смещённая; $\;B\xrightarrow[n\to\infty]{}0$ ⇒ асимптотически несмещённая</p>
+    <p class="note">Несмещённый вариант: $3\bar X^2-\frac{3\bar X}{n}-1$, потому что $M\big(\frac{3\bar X}{n}\big)=\frac{3\lambda}{n}$.</p>
+    <p class="ans">$\hat\theta=\theta^*=3\bar X^2-1$; смещённая, асимптотически несмещённая</p>
+  </div>
+  </details>
+</section>
+
+<!-- 11 -->
+<section class="topic" id="z11">
+  <div class="topic-head"><span class="num">11</span><div><h2>$Geom_1(1/\theta)$: эффективна «в классе»</h2><p class="src">Условия Рао–Крамера · граница для смещённой оценки</p></div></div>
+  <p class="cond">$X\sim Geom_1\big(\frac1\theta\big)$ (число испытаний до первого успеха), $\theta\gt1$. Проверить условия Рао–Крамера и доказать, что $\theta^*=\dfrac{n-2}{n}\bar X$ эффективна в некотором классе. В каком?</p>
+  <details class="solwrap"><summary>Решение</summary>
+  <div class="card sol">
+    <p>$P(X=k)=\dfrac1\theta\Big(1-\dfrac1\theta\Big)^{k-1}$, $k=1,2,\dots$; $\;M(X)=\dfrac1p=\theta$; $\;D(X)=\dfrac{q}{p^2}=\Big(1-\dfrac1\theta\Big)\theta^2=\theta(\theta-1)$</p>
+    <p><b>Условия:</b> значения $k=1,2,\dots$ не зависят от $\theta$; $P$ дифференцируема по $\theta$ при $\theta\gt1$; $I(\theta)$ конечна (ниже) ⇒ выполняются</p>
+    <p>$\ln P=(k-1)\ln(\theta-1)-k\ln\theta$; $\;\dfrac{\partial\ln P}{\partial\theta}=\dfrac{k-1}{\theta-1}-\dfrac k\theta=\dfrac{\theta(k-1)-k(\theta-1)}{\theta(\theta-1)}=\dfrac{X-\theta}{\theta(\theta-1)}$</p>
+    <p>$I(\theta)=\dfrac{D(X)}{\theta^2(\theta-1)^2}=\dfrac{1}{\theta(\theta-1)}$</p>
+    <p>$M(\theta^*)=\dfrac{n-2}{n}\theta$; $\;B(\theta)=-\dfrac{2\theta}{n}$; $\;1+B'(\theta)=1-\dfrac2n=\dfrac{n-2}{n}$</p>
+    <p>$D(\theta^*)=\Big(\dfrac{n-2}{n}\Big)^2\dfrac{D(X)}{n}=\Big(\dfrac{n-2}{n}\Big)^2\dfrac{\theta(\theta-1)}{n}$</p>
+    <p>Граница: $\dfrac{(1+B')^2}{nI(\theta)}=\Big(\dfrac{n-2}{n}\Big)^2\dfrac{\theta(\theta-1)}{n}=D(\theta^*)$ ⇒ эффективна</p>
+    <p class="note">Для сравнения: $\bar X$ несмещённая и $D(\bar X)=\frac{\theta(\theta-1)}{n}=\frac{1}{nI}$, то есть эффективна среди несмещённых.</p>
+    <p class="ans">Условия выполнены; $\theta^*$ эффективна в классе оценок со смещением $B(\theta)=-\frac{2\theta}{n}$ (т.е. с $M(\theta^*)=\frac{n-2}{n}\theta$)</p>
+  </div>
+  </details>
+</section>
+
+<!-- 12 -->
+<section class="topic" id="z12">
+  <div class="topic-head"><span class="num">12</span><div><h2>Три оценки $\mu$ для $N(\mu;\sigma)$</h2><p class="src">Несмещённость · сравнение дисперсий · Рао–Крамер · состоятельность</p></div></div>
+  <p class="cond">$\hat\mu_1=\bar X$, $\;\hat\mu_2=X_1$, $\;\hat\mu_3=\dfrac{X_1}{2}+\dfrac{1}{2(n-1)}(X_2+\ldots+X_n)$. а) Какие несмещённые? б) Какая эффективнее всех; эффективна ли она по Рао–Крамеру? в) Какие состоятельные?</p>
+  <details class="solwrap"><summary>Решение</summary>
+  <div class="card sol">
+    <p class="part">а)</p>
+    <p>$M(\hat\mu_1)=\mu$; $\;M(\hat\mu_2)=\mu$; $\;M(\hat\mu_3)=\dfrac\mu2+\dfrac{(n-1)\mu}{2(n-1)}=\mu$ ⇒ все три несмещённые</p>
+    <p class="part">б)</p>
+    <p>$D(\hat\mu_1)=\dfrac{\sigma^2}{n}$; $\;D(\hat\mu_2)=\sigma^2$; $\;D(\hat\mu_3)=\dfrac{\sigma^2}{4}+\dfrac{(n-1)\sigma^2}{4(n-1)^2}=\dfrac{\sigma^2}{4}\cdot\dfrac{n}{n-1}$</p>
+    <p>$\dfrac{\sigma^2}{n}\le\dfrac{n\sigma^2}{4(n-1)}\iff4(n-1)\le n^2\iff(n-2)^2\ge0$ — верно; $\;\dfrac{n}{4(n-1)}\le1\iff n\ge\frac43$ — верно</p>
+    <p>$D(\hat\mu_1)\le D(\hat\mu_3)\lt D(\hat\mu_2)$ ⇒ эффективнее всех $\bar X$</p>
+    <p>$\ln f=-\ln(\sigma\sqrt{2\pi})-\dfrac{(x-\mu)^2}{2\sigma^2}$; $\;\dfrac{\partial\ln f}{\partial\mu}=\dfrac{X-\mu}{\sigma^2}$; $\;I(\mu)=\dfrac{D(X)}{\sigma^4}=\dfrac{1}{\sigma^2}$</p>
+    <p>$D_{\min}=\dfrac{\sigma^2}{n}=D(\bar X)$ ⇒ $\bar X$ эффективная</p>
+    <p class="part">в)</p>
+    <p>$\hat\mu_1$: $D\to0$ ⇒ состоятельная. $\hat\mu_2$: $D=\sigma^2\not\to0$, распределение $X_1$ от $n$ не зависит ⇒ не состоятельная</p>
+    <p>$\hat\mu_3$: $D\to\dfrac{\sigma^2}{4}\neq0$; $\;\hat\mu_3-\mu\to\dfrac{X_1-\mu}{2}$, а это не ноль ⇒ не состоятельная</p>
+    <p class="ans">Все несмещённые; эффективнее всех $\bar X$, она эффективна по Р–К; состоятельна только $\bar X$</p>
+  </div>
+  </details>
+</section>
+
+<!-- 13 -->
+<section class="topic" id="z13">
+  <div class="topic-head"><span class="num">13</span><div><h2>Плотность-трапеция: от $a$ в $\theta$ до $2a$ в $2\theta$</h2><p class="src">ММ · $M$, $D$ · несмещённость, состоятельность · ММП (нерегулярный)</p></div></div>
+  <p class="cond">По рисунку: $f(x)=0$ вне $[\theta;2\theta]$, на $[\theta;2\theta]$ — отрезок прямой из точки $(\theta;a)$ в точку $(2\theta;2a)$. Выборка $n\gt3$. Найти $\theta^*$ методом моментов, $M(\theta^*)$, $D(\theta^*)$, проверить несмещённость и состоятельность; найти $\hat\theta$.</p>
+  <details class="solwrap"><summary>Решение</summary>
+  <div class="card sol">
+    <p>Прямая через $(\theta;a)$ и $(2\theta;2a)$: $\;f(x)=a+\dfrac{a}{\theta}(x-\theta)=\dfrac{a}{\theta}x$</p>
+    <p>$\displaystyle\int_\theta^{2\theta}\frac a\theta x\,dx=\frac a\theta\cdot\frac{4\theta^2-\theta^2}{2}=\frac{3a\theta}{2}=1\;\Rightarrow\;a=\frac{2}{3\theta}$, $\;f(x)=\dfrac{2x}{3\theta^2}$</p>
+    <p class="note">Константа $a$ не свободная: она выражается через $\theta$.</p>
+    <p>$\displaystyle M(X)=\int_\theta^{2\theta}\frac{2x^2}{3\theta^2}dx=\frac{2}{3\theta^2}\cdot\frac{8\theta^3-\theta^3}{3}=\frac{14\theta}{9}$</p>
+    <p><b>ММ:</b> $\dfrac{14\theta}{9}=\bar X\;\Rightarrow\;\theta^*=\dfrac{9}{14}\bar X$</p>
+    <p>$\displaystyle M(X^2)=\frac{2}{3\theta^2}\cdot\frac{16\theta^4-\theta^4}{4}=\frac{5\theta^2}{2}$; $\;D(X)=\dfrac{5\theta^2}{2}-\dfrac{196\theta^2}{81}=\dfrac{405-392}{162}\theta^2=\dfrac{13\theta^2}{162}$</p>
+    <p>$M(\theta^*)=\dfrac9{14}\cdot\dfrac{14\theta}{9}=\theta$ ⇒ несмещённая</p>
+    <p>$D(\theta^*)=\dfrac{81}{196}\cdot\dfrac{13\theta^2}{162n}=\dfrac{13\theta^2}{392n}\to0$ ⇒ состоятельная</p>
+    <p><b>ММП:</b> $L(\theta)=\prod\dfrac{2x_i}{3\theta^2}=\Big(\dfrac23\Big)^n\dfrac{\prod x_i}{\theta^{2n}}$, если все $x_i\in[\theta;2\theta]$</p>
+    <p>Условие: $\theta\le X_{(1)}$ и $2\theta\ge X_{(n)}$ ⇒ $\dfrac{X_{(n)}}{2}\le\theta\le X_{(1)}$ (отрезок не пуст: истинное $\theta$ в нём лежит)</p>
+    <p>$L$ убывает по $\theta$ ⇒ $\hat\theta=\dfrac{X_{(n)}}{2}$</p>
+    <p class="ans">$a=\frac2{3\theta}$; $\;\theta^*=\frac9{14}\bar X$; $\;M=\theta$; $\;D(\theta^*)=\frac{13\theta^2}{392n}$; несмещ., сост.; $\;\hat\theta=\frac{X_{(n)}}{2}$</p>
+  </div>
+  </details>
+</section>
+
+<!-- 14 -->
+<section class="topic" id="z14">
+  <div class="topic-head"><span class="num">14</span><div><h2>$f(x)=\lambda e^{\lambda(x-20)}$, $x\le20$</h2><p class="src">ММП · оценка по ряду · критерий Пирсона (к экзамену)</p></div></div>
+  <p class="cond">а) $\hat\lambda$; б) оценка по интервальному ряду ($n=100$); в) по критерию Пирсона при $\alpha=0{,}05$ проверить согласие с предполагаемым законом.</p>
+  <div class="scroll"><table class="tbl"><tbody><tr><th>$a_i-b_i$</th><td>2–4</td><td>4–6</td><td>6–8</td><td>8–10</td><td>10–12</td><td>12–14</td><td>14–16</td><td>16–18</td><td>18–20</td></tr><tr><th>$m_i$</th><td>1</td><td>2</td><td>3</td><td>5</td><td>7</td><td>10</td><td>15</td><td>20</td><td>37</td></tr></tbody></table></div>
+  <details class="solwrap"><summary>Решение</summary>
+  <div class="card sol">
+    <p class="part">а)</p>
+    <p>$\ln L=n\ln\lambda+\lambda\sum(x_i-20)$; $\;\dfrac{d\ln L}{d\lambda}=\dfrac n\lambda+\sum(x_i-20)=0\;\Rightarrow\;\hat\lambda=\dfrac{n}{\sum(20-x_i)}=\dfrac{1}{20-\bar X}$</p>
+    <p>$\dfrac{d^2\ln L}{d\lambda^2}=-\dfrac n{\lambda^2}\lt0$. (Граница $x\le20$ от $\lambda$ не зависит — случай регулярный.)</p>
+    <p class="part">б)</p>
+    <p>Середины $3,5,\dots,19$: $\;\sum x_im_i=3+10+21+45+77+130+225+340+703=1554$; $\;\bar x=15{,}54$</p>
+    <p>$\hat\lambda=\dfrac{1}{20-15{,}54}=\dfrac{1}{4{,}46}=0{,}2242$</p>
+    <p class="part">в)</p>
+    <p>$F(x)=e^{\lambda(x-20)}$ при $x\le20$; первый интервал продлеваем до $-\infty$: $p_1=F(4)$, дальше $p_i=F(b_i)-F(a_i)$</p>
+    <p>$F(b_i)$: $0{,}0277;\;0{,}0433;\;0{,}0678;\;0{,}1062;\;0{,}1663;\;0{,}2605;\;0{,}4078;\;0{,}6386;\;1$</p>
+    <p>$m_i^T=100p_i$: $\;2{,}77;\;1{,}57;\;2{,}45;\;3{,}84;\;6{,}01;\;9{,}41;\;14{,}74;\;23{,}08;\;36{,}14$</p>
+    <p>Объединяем интервалы, пока $m^T\lt5$: $(-\infty;8]$ и $(8;12]$</p>
+    <div class="scroll"><table class="tbl">
+      <thead><tr><th>интервал</th><th>$m_i$</th><th>$m_i^T$</th><th>$\frac{(m_i-m_i^T)^2}{m_i^T}$</th></tr></thead>
+      <tbody>
+        <tr><td>до 8</td><td>6</td><td>6,78</td><td>0,0906</td></tr>
+        <tr><td>8–12</td><td>12</td><td>9,85</td><td>0,4694</td></tr>
+        <tr><td>12–14</td><td>10</td><td>9,41</td><td>0,0367</td></tr>
+        <tr><td>14–16</td><td>15</td><td>14,74</td><td>0,0046</td></tr>
+        <tr><td>16–18</td><td>20</td><td>23,08</td><td>0,4106</td></tr>
+        <tr><td>18–20</td><td>37</td><td>36,14</td><td>0,0206</td></tr>
+        <tr class="sum"><td>Σ</td><td>100</td><td>100</td><td>1,03</td></tr>
+      </tbody>
+    </table></div>
+    <p>$k=6$ групп, оценён 1 параметр: $\nu=6-1-1=4$; $\;\chi^2_{0{,}05;4}=9{,}488$</p>
+    <p>$\chi^2_{\text{набл}}=1{,}03\lt9{,}488$ ⇒ гипотеза не отвергается</p>
+    <p class="ans">$\hat\lambda=\frac1{20-\bar X}=0{,}224$; $\;\chi^2=1{,}03\lt9{,}49$ — выборка согласуется с законом</p>
+  </div>
+  </details>
+</section>
+
+<!-- 15 -->
+<section class="topic" id="z15">
+  <div class="topic-head"><span class="num">15</span><div><h2>Равномерное на $(-4;\theta)$ и другие интервалы</h2><p class="src">ММ · несмещённость, состоятельность · ММП · частоты · Пирсон (к экзамену)</p></div></div>
+  <p class="cond">$X\sim U(-4;\theta)$, $\theta\gt-4$. а) $\theta^*$, несмещённость и состоятельность; б) $\hat\theta$; в) по сгруппированной выборке ($x_{(1)}=-3{,}9$, $x_{(n)}=11{,}8$) найти обе оценки, теоретические частоты и по критерию Пирсона ($\alpha=0{,}025$) выяснить, какая оценка даёт лучшее согласие.</p>
+  <div class="scroll"><table class="tbl"><tbody><tr><th>$a_i-b_i$</th><td>(−4)–0</td><td>0–4</td><td>4–8</td><td>8–12</td></tr><tr><th>$m_i$</th><td>12</td><td>8</td><td>9</td><td>11</td></tr></tbody></table></div>
+  <details class="solwrap"><summary>Решение</summary>
+  <div class="card sol">
+    <p>$f=\dfrac{1}{\theta+4}$ на $(-4;\theta)$; $\;M(X)=\dfrac{\theta-4}{2}$; $\;D(X)=\dfrac{(\theta+4)^2}{12}$</p>
+    <p class="part">а)</p>
+    <p>$\dfrac{\theta-4}{2}=\bar X\;\Rightarrow\;\theta^*=2\bar X+4$; $\;M(\theta^*)=2\cdot\dfrac{\theta-4}{2}+4=\theta$ ⇒ несмещённая</p>
+    <p>$D(\theta^*)=4\cdot\dfrac{(\theta+4)^2}{12n}=\dfrac{(\theta+4)^2}{3n}\to0$ ⇒ состоятельная</p>
+    <p class="part">б)</p>
+    <p>$L=(\theta+4)^{-n}$ при $\theta\ge X_{(n)}$, иначе $0$; убывает ⇒ $\hat\theta=X_{(n)}$</p>
+    <p class="note">$M(\hat\theta)=\theta-\frac{\theta+4}{n+1}$ — смещена, асимптотически несмещённая.</p>
+    <p class="part">Другие варианты интервала</p>
+    <div class="scroll"><table class="tbl text">
+      <thead><tr><th class="l">Интервал</th><th class="l">ММ</th><th class="l">ММП</th></tr></thead>
+      <tbody>
+        <tr><td>$[-\theta;0]$, $\theta\gt0$</td><td>$-\frac\theta2=\bar X\Rightarrow\theta^*=-2\bar X$</td><td>$\theta\ge-X_{(1)}$, $L=\theta^{-n}\downarrow$ ⇒ $\hat\theta=-X_{(1)}$</td></tr>
+        <tr><td>$[-\theta;\theta]$, $\theta\gt0$</td><td>$M(X)=0$ ⇒ второй момент: $\frac{\theta^2}{3}=\overline{X^2}\Rightarrow\theta^*=\sqrt{3\overline{X^2}}$</td><td>$\hat\theta=\max|X_i|$</td></tr>
+        <tr><td>$[\theta;\theta+2]$, $\theta\in R$</td><td>$\theta+1=\bar X\Rightarrow\theta^*=\bar X-1$</td><td>$L=2^{-n}$ при $X_{(n)}-2\le\theta\le X_{(1)}$: любое $\theta$ из отрезка, ОМП не единственна</td></tr>
+        <tr><td>$[\theta;2\theta]$, $\theta\gt0$</td><td>$\frac{3\theta}{2}=\bar X\Rightarrow\theta^*=\frac23\bar X$</td><td>$\frac{X_{(n)}}2\le\theta\le X_{(1)}$, $L=\theta^{-n}\downarrow$ ⇒ $\hat\theta=\frac{X_{(n)}}{2}$</td></tr>
+      </tbody>
+    </table></div>
+    <p class="part">в)</p>
+    <p>Середины $-2;2;6;10$, $n=40$: $\;\sum x_im_i=-24+16+54+110=156$; $\;\bar x=3{,}9$</p>
+    <p>$\theta^*=2\cdot3{,}9+4=11{,}8$; $\;\hat\theta=x_{(n)}=11{,}8$ — оценки совпали</p>
+    <p>$p_i=\dfrac{b_i-a_i}{\theta+4}=\dfrac{4}{15{,}8}=0{,}2532$ для первых трёх, последний интервал $8$–$11{,}8$: $\dfrac{3{,}8}{15{,}8}=0{,}2405$</p>
+    <div class="scroll"><table class="tbl">
+      <thead><tr><th>интервал</th><th>(−4)–0</th><th>0–4</th><th>4–8</th><th>8–11,8</th><th>Σ</th></tr></thead>
+      <tbody>
+        <tr><td>$m_i$</td><td>12</td><td>8</td><td>9</td><td>11</td><td>40</td></tr>
+        <tr><td>$p_i$</td><td>0,2532</td><td>0,2532</td><td>0,2532</td><td>0,2405</td><td>1</td></tr>
+        <tr><td>$m_i^T$</td><td>10,13</td><td>10,13</td><td>10,13</td><td>9,62</td><td>40</td></tr>
+        <tr><td>$\frac{(m-m^T)^2}{m^T}$</td><td>0,347</td><td>0,447</td><td>0,125</td><td>0,198</td><td>1,116</td></tr>
+      </tbody>
+    </table></div>
+    <p>$\nu=4-1-1=2$; $\;\chi^2_{0{,}025;2}=7{,}378$; $\;1{,}116\lt7{,}378$ ⇒ согласие есть</p>
+    <p>Здесь обе оценки равны, поэтому и согласие одинаковое. В общем случае лучше та оценка, у которой $\chi^2_{\text{набл}}$ меньше.</p>
+    <p class="ans">$\theta^*=2\bar X+4$ (несмещ., сост.); $\;\hat\theta=X_{(n)}$; по выборке обе $=11{,}8$; $\;\chi^2=1{,}12\lt7{,}38$</p>
+  </div>
+  </details>
+</section>
+
+<!-- 16 -->
+<section class="topic" id="z16">
+  <div class="topic-head"><span class="num">16</span><div><h2>$N(\theta;\sqrt\theta)$: $\mu=\sigma^2=\theta$</h2><p class="src">Несмещённость, состоятельность · какая эффективнее · оценки по ряду</p></div></div>
+  <p class="cond">$\theta\gt\frac12$. Оценки $\theta_1^*=\bar X$ и $\theta_2^*=\hat S^2=\frac{1}{n-1}\sum(X_i-\bar X)^2$. а) Доказать несмещённость и состоятельность; какая эффективнее? б) Найти обе оценки по ряду ($n=100$).</p>
+  <div class="scroll"><table class="tbl"><tbody><tr><th>$x_i$</th><td>0–2</td><td>2–4</td><td>4–6</td><td>6–8</td><td>8–10</td><td>10–12</td><td>12–14</td><td>14–16</td><td>16–18</td></tr><tr><th>$m_i$</th><td>1</td><td>4</td><td>11</td><td>18</td><td>25</td><td>23</td><td>9</td><td>7</td><td>2</td></tr></tbody></table></div>
+  <details class="solwrap"><summary>Решение</summary>
+  <div class="card sol">
+    <p class="part">а)</p>
+    <p>$M(\bar X)=\mu=\theta$; $\;D(\bar X)=\dfrac{\sigma^2}{n}=\dfrac\theta n\to0$ ⇒ несмещ., сост.</p>
+    <p>$M(\hat S^2)=\sigma^2=\theta$; по теореме Фишера $\dfrac{(n-1)\hat S^2}{\sigma^2}\sim\chi^2(n-1)$, $D(\chi^2_{n-1})=2(n-1)$</p>
+    <p>$D(\hat S^2)=\dfrac{\sigma^4}{(n-1)^2}\cdot2(n-1)=\dfrac{2\theta^2}{n-1}\to0$ ⇒ несмещ., сост.</p>
+    <p>$D(\bar X)\lt D(\hat S^2)\iff\dfrac\theta n\lt\dfrac{2\theta^2}{n-1}\iff\theta\gt\dfrac{n-1}{2n}$. Так как $\dfrac{n-1}{2n}\lt\dfrac12\lt\theta$, это верно всегда ⇒ $\bar X$ эффективнее</p>
+    <p class="note">По Рао–Крамеру ни одна не эффективна: $I(\theta)=\frac1\theta+\frac1{2\theta^2}$, $D_{\min}=\frac{2\theta^2}{n(2\theta+1)}\lt\frac\theta n$.</p>
+    <p class="part">б)</p>
+    <p>Середины $1,3,\dots,17$: $\;\sum x_im_i=1+12+55+126+225+253+117+105+34=928$; $\;\bar x=9{,}28$</p>
+    <p>$\sum x_i^2m_i=1+36+275+882+2025+2783+1521+1575+578=9676$; $\;\overline{x^2}=96{,}76$</p>
+    <p>$S^2=96{,}76-9{,}28^2=96{,}76-86{,}1184=10{,}6416$; $\;\hat S^2=\dfrac{100}{99}\cdot10{,}6416=10{,}749$</p>
+    <p class="ans">Обе несмещ. и сост.; $\bar X$ эффективнее при всех $\theta\gt\frac12$; $\;\theta_1^*=9{,}28$, $\;\theta_2^*=10{,}75$</p>
+  </div>
+  </details>
+</section>
+
+<!-- 17 -->
+<section class="topic" id="z17">
+  <div class="topic-head"><span class="num">17</span><div><h2>$-1;0;1$ с вероятностями $\frac{1+\theta}3$, $\frac{1-5\theta}3$, $\frac{1+4\theta}3$</h2><p class="src">ММ · $D$ оценки · ограничения · частоты</p></div></div>
+  <p class="cond">а) Доказать, что $\theta^*$ (ММ) несмещённая, найти $D(\theta^*)$, ограничения на $\theta$, доказать состоятельность. б) Оценка по выборке ($-1$: 3 раза, $0$: 5, $1$: 2). в) Теоретические частоты.</p>
+  <details class="solwrap"><summary>Решение</summary>
+  <div class="card sol">
+    <p class="part">а)</p>
+    <p>$M(X)=-\dfrac{1+\theta}{3}+0+\dfrac{1+4\theta}{3}=\dfrac{3\theta}{3}=\theta\;\Rightarrow\;\theta^*=\bar X$; $\;M(\theta^*)=\theta$ ⇒ несмещённая</p>
+    <p>$M(X^2)=\dfrac{1+\theta}{3}+\dfrac{1+4\theta}{3}=\dfrac{2+5\theta}{3}$; $\;D(X)=\dfrac{2+5\theta}{3}-\theta^2$</p>
+    <p>$D(\theta^*)=\dfrac{D(X)}{n}=\dfrac{2+5\theta-3\theta^2}{3n}\to0$ ⇒ состоятельная</p>
+    <p>Ограничения: $1+\theta\ge0$, $1-5\theta\ge0$, $1+4\theta\ge0$ ⇒ $-\frac14\le\theta\le\frac15$</p>
+    <p class="part">б)</p>
+    <p>$\bar x=\dfrac{-1\cdot3+0\cdot5+1\cdot2}{10}=-0{,}1$; $\;\theta^*=-0{,}1$ (в допустимых пределах)</p>
+    <p class="part">в)</p>
+    <p>$p_1=\dfrac{0{,}9}{3}=0{,}3$; $\;p_2=\dfrac{1{,}5}{3}=0{,}5$; $\;p_3=\dfrac{0{,}6}{3}=0{,}2$; $\;m^T=10p$: $\;3;\;5;\;2$ — совпадают с эмпирическими</p>
+    <p class="ans">$\theta^*=\bar X$, $D=\frac{2+5\theta-3\theta^2}{3n}$; $\;-\frac14\le\theta\le\frac15$; $\;\theta^*=-0{,}1$; $\;m^T=3;5;2$</p>
+  </div>
+  </details>
+</section>
+
+<!-- 18 -->
+<section class="topic" id="z18">
+  <div class="topic-head"><span class="num">18</span><div><h2>Биатлонисты: выстрелы до 1-го попадания</h2><p class="src">ММ и ММП для геометрического · варианты условия · частоты</p></div></div>
+  <p class="cond">Число выстрелов до 1-го попадания — геометрический закон. а) $p^*$ и $\hat p$; б) по 10 спортсменам (2, 1, 1, 2, 2, 3, 1, 4, 2, 2) найти эмпирические частоты и оценку $p$; в) теоретические частоты.</p>
+  <details class="solwrap"><summary>Решение</summary>
+  <div class="card sol">
+    <p>Выстрелы до попадания включительно: $P(X=k)=q^{k-1}p$, $k=1,2,\dots$; $\;M(X)=\dfrac1p$</p>
+    <p class="part">а)</p>
+    <p><b>ММ:</b> $\dfrac1p=\bar X\;\Rightarrow\;p^*=\dfrac{1}{\bar X}$</p>
+    <p><b>ММП:</b> $L=p^n(1-p)^{\sum x_i-n}$; $\;\ln L=n\ln p+\Big(\sum x_i-n\Big)\ln(1-p)$</p>
+    <p>$\dfrac np-\dfrac{\sum x_i-n}{1-p}=0\;\Rightarrow\;n(1-p)=p\Big(\sum x_i-n\Big)\;\Rightarrow\;\hat p=\dfrac{n}{\sum x_i}=\dfrac1{\bar X}$</p>
+    <p>$\dfrac{d^2\ln L}{dp^2}=-\dfrac n{p^2}-\dfrac{\sum x_i-n}{(1-p)^2}\lt0$</p>
+    <div class="scroll"><table class="tbl text">
+      <thead><tr><th class="l">Если в условии</th><th class="l">$M(X)$</th><th class="l">$p^*=\hat p$</th></tr></thead>
+      <tbody>
+        <tr><td>выстрелы до 1-го попадания</td><td>$\frac1p$</td><td>$\frac{1}{\bar X}$</td></tr>
+        <tr><td>промахи до 1-го попадания</td><td>$\frac qp$</td><td>$\frac{1}{1+\bar X}$</td></tr>
+        <tr><td>выстрелы до $r$-го попадания</td><td>$\frac rp$</td><td>$\frac{r}{\bar X}$</td></tr>
+        <tr><td>промахи до $r$-го попадания (отриц. биномиальное)</td><td>$\frac{rq}{p}$</td><td>$\frac{r}{r+\bar X}$</td></tr>
+      </tbody>
+    </table></div>
+    <p class="part">б)</p>
+    <p>Частоты: $1$ — 3 раза, $2$ — 5, $3$ — 1, $4$ — 1. $\;\sum x_i=20$; $\;\bar x=2$; $\;\hat p=0{,}5$</p>
+    <p class="part">в)</p>
+    <div class="scroll"><table class="tbl">
+      <thead><tr><th>$x_i$</th><th>1</th><th>2</th><th>3</th><th>4</th><th>≥5</th><th>Σ</th></tr></thead>
+      <tbody>
+        <tr><td>$m_i$</td><td>3</td><td>5</td><td>1</td><td>1</td><td>0</td><td>10</td></tr>
+        <tr><td>$p_i=0{,}5^{k}$</td><td>0,5</td><td>0,25</td><td>0,125</td><td>0,0625</td><td>0,0625</td><td>1</td></tr>
+        <tr><td>$m_i^T$</td><td>5</td><td>2,5</td><td>1,25</td><td>0,625</td><td>0,625</td><td>10</td></tr>
+      </tbody>
+    </table></div>
+    <p class="ans">$p^*=\hat p=\frac1{\bar X}$; по выборке $\hat p=0{,}5$</p>
+  </div>
+  </details>
+</section>
+
+<div class="sect"><h2>Задачи расчётного типа</h2><p>Интервальные оценки параметров нормального и биномиального законов · 30–35% оценки</p></div>
+
+<!-- 19 -->
+<section class="topic" id="z19">
+  <div class="topic-head"><span class="num">19</span><div><h2>Вода: $n=27$, $\sum x=864$, $\sum x^2=30915$</h2><p class="src">$\mu$ при неизвестной $\sigma$ · Стьюдент</p></div></div>
+  <p class="cond">Нормальный закон. а) Доверительный интервал для средней концентрации с $\gamma=0{,}98$; б) доверительная вероятность того, что точность оценки среднего равна 4 мг/л; в) вероятность того, что средняя концентрация не превысит 35 мг/л.</p>
+  <details class="solwrap"><summary>Решение</summary>
+  <div class="card sol">
+    <p>$\bar x=\dfrac{864}{27}=32$; $\;\overline{x^2}=\dfrac{30915}{27}=1145$; $\;S^2=1145-32^2=121$; $\;S=11$</p>
+    <p>$\sigma$ неизвестна, $n\le30$ ⇒ Стьюдент с $\nu=26$; $\;\dfrac{S}{\sqrt{n-1}}=\dfrac{11}{\sqrt{26}}=2{,}1573$</p>
+    <p class="part">а)</p>
+    <p>$\alpha=1-0{,}98=0{,}02$; $\;t_{0{,}02;26}=2{,}479$; $\;\delta=2{,}479\cdot2{,}1573=5{,}347$</p>
+    <p class="ans">$26{,}65\lt\mu\lt37{,}35$</p>
+    <p class="part">б)</p>
+    <p>$t=\dfrac{\delta}{S/\sqrt{n-1}}=\dfrac{4}{2{,}1573}=1{,}854$; $\;\gamma=St(1{,}854;26)=P(|T_{26}|\lt1{,}854)=0{,}925$</p>
+    <p class="ans">$\gamma\approx0{,}925$</p>
+    <p class="part">в)</p>
+    <p>$t=\dfrac{(35-32)\sqrt{26}}{11}=1{,}391$; $\;P(\mu\lt35)=\dfrac12\big[1+St(1{,}391;26)\big]=\dfrac12(1+0{,}824)=0{,}912$</p>
+    <p class="ans">$P\approx0{,}912$</p>
+  </div>
+  </details>
+</section>
+
+<!-- 20 -->
+<section class="topic" id="z20">
+  <div class="topic-head"><span class="num">20</span><div><h2>Основные фонды: $n=27$, $\bar x=32$, $\sigma=11$</h2><p class="src">$\mu$ при известной $\sigma$ · объём выборки</p></div></div>
+  <p class="cond">а) Интервал для среднего с $\gamma=0{,}978$; б) вероятность того, что точность оценки равна 4 млн руб.; в) вероятность того, что среднее больше 35 млн руб.; г) минимальное $n$, чтобы с вероятностью 0,966 среднее лежало в интервале шириной 10 млн руб.</p>
+  <details class="solwrap"><summary>Решение</summary>
+  <div class="card sol">
+    <p>$\dfrac{\sigma}{\sqrt n}=\dfrac{11}{\sqrt{27}}=\dfrac{11}{5{,}196}=2{,}117$</p>
+    <p class="part">а)</p>
+    <p>$\Phi(t)=0{,}978\Rightarrow t=2{,}29$; $\;\delta=2{,}29\cdot2{,}117=4{,}848$</p>
+    <p class="ans">$27{,}15\lt\mu\lt36{,}85$</p>
+    <p class="part">б)</p>
+    <p>$t=\dfrac{4}{2{,}117}=1{,}89$; $\;\gamma=\Phi(1{,}89)=0{,}941$</p>
+    <p class="ans">$\gamma\approx0{,}941$</p>
+    <p class="part">в)</p>
+    <p>$t=\dfrac{35-32}{2{,}117}=1{,}417$; $\;P(\mu\gt35)=\dfrac12\big[1-\Phi(1{,}417)\big]=\dfrac12(1-0{,}8435)=0{,}078$</p>
+    <p class="ans">$P\approx0{,}078$</p>
+    <p class="part">г)</p>
+    <p>$\Phi(t)=0{,}966\Rightarrow t=2{,}12$; ширина 10 ⇒ $\delta=5$; $\;n\ge\Big(\dfrac{2{,}12\cdot11}{5}\Big)^2=4{,}664^2=21{,}75$</p>
+    <p class="ans">$n=22$</p>
+  </div>
+  </details>
+</section>
+
+<!-- 21 -->
+<section class="topic" id="z21">
+  <div class="topic-head"><span class="num">21</span><div><h2>Товарооборот: $\bar x=608$, $S^2=225$</h2><p class="src">Интервал для $\sigma$ и $\sigma^2$ · малая и большая выборка</p></div></div>
+  <p class="cond">а) Ширина интервала для СКО с $\gamma=0{,}9$ при $n=18$; б) как изменится ширина при $n=90$; в) вероятность того, что дисперсия лежит в $(169;324)$, при $n=18$; г) то же при $n=90$.</p>
+  <details class="solwrap"><summary>Решение</summary>
+  <div class="card sol">
+    <p class="note">Считаем 225 выборочной дисперсией $S^2$ (как в формуле $nS^2$ из таблицы); $S=15$. Если в задаче имелась в виду исправленная $\hat S^2$, вместо $nS^2$ подставляй $(n-1)\hat S^2$: в п. а) получится $11{,}78\lt\sigma\lt21{,}00$.</p>
+    <p class="part">а) $n=18$, $\nu=17$</p>
+    <p>$P(\chi^2\gt\chi_1^2)=0{,}95\Rightarrow\chi_1^2=8{,}672$; $\;P(\chi^2\gt\chi_2^2)=0{,}05\Rightarrow\chi_2^2=27{,}587$; $\;nS^2=18\cdot225=4050$</p>
+    <p>$\dfrac{4050}{27{,}587}\lt\sigma^2\lt\dfrac{4050}{8{,}672}$: $\;146{,}81\lt\sigma^2\lt467{,}03$ ⇒ $12{,}12\lt\sigma\lt21{,}61$</p>
+    <p class="ans">ширина $\approx9{,}49$</p>
+    <p class="part">б) $n=90\gt30$</p>
+    <p>$\Phi(t)=0{,}9\Rightarrow t=1{,}645$; $\;S\sqrt{2n}=15\sqrt{180}=201{,}25$; $\;\sqrt{2n-3}=\sqrt{177}=13{,}304$</p>
+    <p>$\dfrac{201{,}25}{13{,}304+1{,}645}\lt\sigma\lt\dfrac{201{,}25}{13{,}304-1{,}645}$: $\;13{,}46\lt\sigma\lt17{,}26$</p>
+    <p class="ans">ширина $\approx3{,}80$ — уменьшится на 5,70 (в 2,5 раза)</p>
+    <p class="part">в) $n=18$</p>
+    <p>$\dfrac{nS^2}{\sigma_2^2}=\dfrac{4050}{324}=12{,}5$; $\;\dfrac{nS^2}{\sigma_1^2}=\dfrac{4050}{169}=23{,}96$</p>
+    <p>$P=P(\chi^2_{17}\gt12{,}5)-P(\chi^2_{17}\gt23{,}96)=0{,}769-0{,}120=0{,}649$</p>
+    <p class="ans">$P\approx0{,}649$</p>
+    <p class="part">г) $n=90$</p>
+    <p>$\sigma^2\in(169;324)\iff\sigma\in(13;18)$; $\;t_1=\dfrac{201{,}25}{18}-13{,}304=-2{,}124$; $\;t_2=\dfrac{201{,}25}{13}-13{,}304=2{,}176$</p>
+    <p>$P=\dfrac12\big[\Phi(2{,}176)+\Phi(2{,}124)\big]=\dfrac12(0{,}9704+0{,}9663)=0{,}968$</p>
+    <p class="ans">$P\approx0{,}968$ — вероятность вырастет</p>
+  </div>
+  </details>
+</section>
+
+<!-- 22 -->
+<section class="topic" id="z22">
+  <div class="topic-head"><span class="num">22</span><div><h2>Выборы: $n=450$, $w=0{,}78$</h2><p class="src">Доля · большая выборка</p></div></div>
+  <p class="cond">а) С $\gamma=0{,}899$ границы для доли сторонников; б) с той же надёжностью границы для числа сторонников среди 4500 жителей; в) вероятность того, что за кандидата более 80% жителей.</p>
+  <details class="solwrap"><summary>Решение</summary>
+  <div class="card sol">
+    <p>$\sqrt{\dfrac{w(1-w)}{n}}=\sqrt{\dfrac{0{,}78\cdot0{,}22}{450}}=\sqrt{0{,}000381}=0{,}01953$</p>
+    <p class="part">а)</p>
+    <p>$\Phi(t)=0{,}899\Rightarrow t=1{,}64$; $\;\delta=1{,}64\cdot0{,}01953=0{,}0320$</p>
+    <p class="ans">$0{,}748\lt p\lt0{,}812$</p>
+    <p class="part">б)</p>
+    <p>$4500\cdot0{,}748=3366$; $\;4500\cdot0{,}812=3654$</p>
+    <p class="ans">от 3366 до 3654 человек</p>
+    <p class="part">в)</p>
+    <p>$t=\dfrac{0{,}80-0{,}78}{0{,}01953}=1{,}024$; $\;P(p\gt0{,}8)=\dfrac12\big[1-\Phi(1{,}024)\big]=\dfrac12(1-0{,}694)=0{,}153$</p>
+    <p class="ans">$P\approx0{,}153$</p>
+  </div>
+  </details>
+</section>
+
+<!-- 23 -->
+<section class="topic" id="z23">
+  <div class="topic-head"><span class="num">23</span><div><h2>Биохимия: $n=19$, $\bar x=150$, $S=25$</h2><p class="src">$\sigma^2$ при малой выборке · Стьюдент · вероятность для $\sigma$</p></div></div>
+  <p class="cond">а) Ширина интервала для дисперсии с $\gamma=0{,}99$; б) вероятность того, что средняя концентрация не превысит 165 мг/л; в) вероятность того, что СКО лежит в $(20;30)$ мг/л.</p>
+  <details class="solwrap"><summary>Решение</summary>
+  <div class="card sol">
+    <p>$nS^2=19\cdot625=11875$; $\;\nu=18$</p>
+    <p class="part">а)</p>
+    <p>$P(\chi^2\gt\chi_1^2)=0{,}995\Rightarrow\chi_1^2=6{,}265$; $\;P(\chi^2\gt\chi_2^2)=0{,}005\Rightarrow\chi_2^2=37{,}156$</p>
+    <p>$\dfrac{11875}{37{,}156}\lt\sigma^2\lt\dfrac{11875}{6{,}265}$: $\;319{,}6\lt\sigma^2\lt1895{,}5$</p>
+    <p class="ans">ширина $\approx1575{,}9$</p>
+    <p class="part">б)</p>
+    <p>$t=\dfrac{(165-150)\sqrt{18}}{25}=0{,}6\cdot4{,}243=2{,}546$; $\;P(\mu\lt165)=\dfrac12\big[1+St(2{,}546;18)\big]=\dfrac12(1+0{,}980)=0{,}990$</p>
+    <p class="ans">$P\approx0{,}990$</p>
+    <p class="part">в)</p>
+    <p>$\dfrac{nS^2}{30^2}=\dfrac{11875}{900}=13{,}19$; $\;\dfrac{nS^2}{20^2}=\dfrac{11875}{400}=29{,}69$</p>
+    <p>$P=P(\chi^2_{18}\gt13{,}19)-P(\chi^2_{18}\gt29{,}69)=0{,}780-0{,}041=0{,}739$</p>
+    <p class="ans">$P\approx0{,}739$</p>
+  </div>
+  </details>
+</section>
+
+<!-- 24 -->
+<section class="topic" id="z24">
+  <div class="topic-head"><span class="num">24</span><div><h2>Горячий шоколад: $\sigma=2$, $n=9$, $\bar x=152$</h2><p class="src">$\mu$ при известной $\sigma$ · несимметричный интервал · объём</p></div></div>
+  <p class="cond">а) 92%-й интервал для среднего; б) доверительная вероятность для интервала $(\bar x-4;\bar x+2)$; в) минимальное число чашек, чтобы с вероятностью 0,98 среднее лежало в симметричном интервале шириной 3 мл.</p>
+  <details class="solwrap"><summary>Решение</summary>
+  <div class="card sol">
+    <p>$\dfrac{\sigma}{\sqrt n}=\dfrac23=0{,}6667$</p>
+    <p class="part">а)</p>
+    <p>$\Phi(t)=0{,}92\Rightarrow t=1{,}75$; $\;\delta=1{,}75\cdot0{,}6667=1{,}167$</p>
+    <p class="ans">$150{,}83\lt\mu\lt153{,}17$</p>
+    <p class="part">б)</p>
+    <p>$P=\dfrac12\Big[\Phi\Big(\dfrac{4}{0{,}6667}\Big)+\Phi\Big(\dfrac{2}{0{,}6667}\Big)\Big]=\dfrac12\big[\Phi(6)+\Phi(3)\big]=\dfrac12(1+0{,}9973)=0{,}9987$</p>
+    <p class="ans">$\gamma\approx0{,}9987$</p>
+    <p class="part">в)</p>
+    <p>$\Phi(t)=0{,}98\Rightarrow t=2{,}33$; $\;\delta=1{,}5$; $\;n\ge\Big(\dfrac{2{,}33\cdot2}{1{,}5}\Big)^2=3{,}107^2=9{,}65$</p>
+    <p class="ans">$n=10$ чашек</p>
+  </div>
+  </details>
+</section>
+
+<!-- 25 -->
+<section class="topic" id="z25">
+  <div class="topic-head"><span class="num">25</span><div><h2>Скорость: $\sigma=12$, $n=16$, нижняя граница 92%-го интервала 86,55</h2><p class="src">Восстановить $\bar x$ · интервал · вероятность · объём</p></div></div>
+  <p class="cond">а) Симметричный 95%-й интервал для среднего; б) доверительная вероятность для $[\bar x-0{,}06\bar x;\;\bar x+0{,}03\bar x]$; в) минимальное число машин, чтобы с вероятностью 0,978 среднее лежало в симметричном интервале шириной 8 км/ч.</p>
+  <details class="solwrap"><summary>Решение</summary>
+  <div class="card sol">
+    <p>$\dfrac{\sigma}{\sqrt n}=\dfrac{12}{4}=3$; $\;\Phi(t)=0{,}92\Rightarrow t=1{,}75$; $\;\delta=5{,}25$ ⇒ $\bar x=86{,}55+5{,}25=91{,}8$</p>
+    <p class="part">а)</p>
+    <p>$\Phi(t)=0{,}95\Rightarrow t=1{,}96$; $\;\delta=1{,}96\cdot3=5{,}88$</p>
+    <p class="ans">$85{,}92\lt\mu\lt97{,}68$</p>
+    <p class="part">б)</p>
+    <p>$\delta_1=0{,}06\cdot91{,}8=5{,}508$; $\;\delta_2=0{,}03\cdot91{,}8=2{,}754$</p>
+    <p>$P=\dfrac12\Big[\Phi\Big(\dfrac{5{,}508}{3}\Big)+\Phi\Big(\dfrac{2{,}754}{3}\Big)\Big]=\dfrac12\big[\Phi(1{,}836)+\Phi(0{,}918)\big]=\dfrac12(0{,}9336+0{,}6414)=0{,}7875$</p>
+    <p class="ans">$\gamma\approx0{,}788$</p>
+    <p class="part">в)</p>
+    <p>$\Phi(t)=0{,}978\Rightarrow t=2{,}29$; $\;\delta=4$; $\;n\ge\Big(\dfrac{2{,}29\cdot12}{4}\Big)^2=6{,}87^2=47{,}2$</p>
+    <p class="ans">$n=48$</p>
+  </div>
+  </details>
+</section>
+
+<!-- 26 -->
+<section class="topic" id="z26">
+  <div class="topic-head"><span class="num">26</span><div><h2>Обложки: $n=350$, $m=140$</h2><p class="src">Доля · большая и малая выборка (Клоппер–Пирсон)</p></div></div>
+  <p class="cond">а) 94%-й интервал для доли выбравших серебристый цвет; б) вероятность того, что эта доля не превысит 35%; в) 94%-й интервал, если $n=8$ и никто не выбрал серебристый; г) то же, если $n=8$ и серебристый выбрала половина.</p>
+  <details class="solwrap"><summary>Решение</summary>
+  <div class="card sol">
+    <p>$w=\dfrac{140}{350}=0{,}4$; $\;\sqrt{\dfrac{0{,}4\cdot0{,}6}{350}}=0{,}02619$</p>
+    <p class="part">а)</p>
+    <p>$\Phi(t)=0{,}94\Rightarrow t=1{,}88$; $\;\delta=1{,}88\cdot0{,}02619=0{,}0492$</p>
+    <p class="ans">$0{,}351\lt p\lt0{,}449$</p>
+    <p class="part">б)</p>
+    <p>$t=\dfrac{0{,}4-0{,}35}{0{,}02619}=1{,}909$; $\;P(p\le0{,}35)=\dfrac12\big[1-\Phi(1{,}909)\big]=\dfrac12(1-0{,}9437)=0{,}028$</p>
+    <p class="ans">$P\approx0{,}028$</p>
+    <p class="part">в) $n=8$, $m=0$</p>
+    <p>$n\le30$ ⇒ точный интервал Клоппера–Пирсона, $\frac\alpha2=0{,}03$. Нормальная формула здесь даёт $\delta=0$ и не годится</p>
+    <p>$p_1=0$; $\;P(X\le0\,|\,p_2)=(1-p_2)^8=0{,}03\;\Rightarrow\;p_2=1-0{,}03^{1/8}=1-0{,}645=0{,}355$</p>
+    <p class="ans">$0\le p\lt0{,}355$</p>
+    <p class="part">г) $n=8$, $m=4$</p>
+    <p>$p_1$: $\;P(X\ge4\,|\,p_1)=\sum_{i=4}^8C_8^ip_1^i(1-p_1)^{8-i}=0{,}03\;\Rightarrow\;p_1=0{,}166$</p>
+    <p>$p_2$: $\;P(X\le4\,|\,p_2)=\sum_{i=0}^4C_8^ip_2^i(1-p_2)^{8-i}=0{,}03\;\Rightarrow\;p_2=0{,}834$ (по симметрии $p_2=1-p_1$)</p>
+    <p class="ans">$0{,}166\lt p\lt0{,}834$</p>
+  </div>
+  </details>
+</section>
+
+<p class="foot">Условия — из файла «Возможные варианты задач ДКР1, АКР1 и Экзамена по разделу I» (Миронкина Ю.Н., 2026). Обозначения интервальных оценок и $\Phi(t)$ — по таблице на стр. 6 этого файла и табл. П1 методички к типовому расчёту. Методы точечного оценивания — как в тренажёре по семинарам 1–8. Числа пересчитаны программой, формулы для $M$ и $D$ оценок проверены симуляцией.</p>
+</div>
+
+<script>
+window.MathJax = { tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$']] }, svg: { fontCache: 'global' },
+  startup: { pageReady: function(){ return MathJax.startup.defaultPageReady().then(function(){ window.fixWideMath(document); }); } } };
+(function(){
+  var s = document.createElement('script');
+  s.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.js'; s.async = true;
+  s.onerror = function(){ var f = document.createElement('script'); f.src = 'https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js'; f.async = true; document.head.appendChild(f); };
+  document.head.appendChild(s);
+})();
+</script>
+<script>
+(function(){
+  /* Long inline formulas: let them scroll inside the column instead of widening the page */
+  window.fixWideMath = function(root){
+    root.querySelectorAll('mjx-container:not([display="true"])').forEach(function(m){
+      if (m.offsetParent === null) return;
+      m.classList.remove('wide-math');
+      var host = m.parentElement;
+      while (host.parentElement && getComputedStyle(host).display === 'inline') host = host.parentElement;
+      if (m.getBoundingClientRect().width > host.clientWidth + 1) m.classList.add('wide-math');
+    });
+  };
+  var rt;
+  window.addEventListener('resize', function(){ clearTimeout(rt); rt = setTimeout(function(){ window.fixWideMath(document); }, 150); });
+  document.addEventListener('toggle', function(e){ window.fixWideMath(e.target); }, true);
+
+  /* Open or close every solution at once */
+  var sols = document.querySelectorAll('details.solwrap');
+  document.getElementById('open-all').addEventListener('click', function(){ sols.forEach(function(d){ d.open = true; }); });
+  document.getElementById('close-all').addEventListener('click', function(){ sols.forEach(function(d){ d.open = false; }); });
+})();
+</script>
