@@ -194,36 +194,98 @@ figure{margin:0}
   <div class="topic-head"><span class="num">2</span><div><h2>$X\sim U[\theta;\theta+4]$<span class="pts">2 балла</span></h2></div></div>
   <p class="cond">ММ и ММП; несмещённость и состоятельность $\theta^*$; сравнение с $\tilde\theta=k(x_1+x_2+x_3)$; оценки по выборке, ряд из 4 интервалов на $[\theta^*;\theta^*+4]$, теоретические частоты.</p>
   <div class="card sol">
-    <p>$f(x)=\dfrac14$ на $[\theta;\theta+4]$; $\;M(X)=\dfrac{2\theta+4}{2}=\theta+2$; $\;D(X)=\dfrac{4^2}{12}=\dfrac43$</p>
-    <p><b>ММ:</b> $\theta+2=\bar X\;\Rightarrow\;\theta^*=\bar X-2$</p>
-    <p>$M(\theta^*)=M(\bar X)-2=\theta+2-2=\theta$ ⇒ несмещённая</p>
-    <p>$D(\theta^*)=D(\bar X)=\dfrac{D(X)}{n}=\dfrac{4}{3n}\to0$ ⇒ состоятельная</p>
-    <p><b>ММП:</b> $L(\theta)=\Big(\dfrac14\Big)^n$, если все $x_i\in[\theta;\theta+4]$, иначе $0$</p>
-    <p>$\theta\le X_{(1)}$ и $\theta+4\ge X_{(n)}$ ⇒ $\;X_{(n)}-4\le\theta\le X_{(1)}$ (и $\theta\gt0$)</p>
-    <p>$L$ от $\theta$ не зависит ⇒ ОМП — любое $\hat\theta\in\big[\max(0;X_{(n)}-4);\;X_{(1)}\big]$, не единственная; например середина $\hat\theta=\dfrac{X_{(1)}+X_{(n)}-4}{2}$. Отрезок не пуст: истинное $\theta$ в нём лежит.</p>
-    <p class="part">Сравнение с $\tilde\theta=k(X_1+X_2+X_3)$</p>
-    <p>$M(\tilde\theta)=k\cdot3(\theta+2)=3k\theta+6k$</p>
-    <p>Несмещённость: $3k\theta+6k=\theta$ при всех $\theta\gt0$ ⇔ $3k=1$ и $6k=0$ — противоречие. ⇒ ни при каком $k\gt0$ оценка $\tilde\theta$ не является несмещённой</p>
-    <p>Ближе всего $k=\frac13$: $M(\tilde\theta)=\theta+2$, смещение $B=2$ ($\frac13\sum$ оценивает центр отрезка, а не $\theta$). Несмещённой была бы $\frac{X_1+X_2+X_3}{3}-2$, но она не вида $k(X_1+X_2+X_3)$</p>
-    <p>$D(\tilde\theta)=k^2\cdot3\cdot\dfrac43=4k^2$ — не зависит от $n$ ⇒ $\tilde\theta$ не состоятельна (использует только 3 наблюдения)</p>
-    <p>$MSE(\tilde\theta)=4k^2+\big((3k-1)\theta+6k\big)^2$; при $k=\frac13$: $\;\frac49+4=\frac{40}{9}$; $\;MSE(\theta^*)=D(\theta^*)=\dfrac{4}{3n}$</p>
-    <p>$\dfrac{4}{3n}\lt\dfrac{40}{9}$ при всех $n\ge1$ ⇒ $\theta^*$ лучше: несмещённая, состоятельная и точнее</p>
+    <p class="part">Характеристики закона</p>
+    <p>Длина отрезка $(\theta+4)-\theta=4$ ⇒ $f(x)=\dfrac14$ при $x\in[\theta;\theta+4]$, иначе $0$; $\;F(x)=\dfrac{x-\theta}{4}$ на отрезке</p>
+    <p>$\displaystyle M(X)=\int_\theta^{\theta+4}x\cdot\frac14\,dx=\frac14\cdot\frac{x^2}{2}\Big|_\theta^{\theta+4}=\frac{(\theta+4)^2-\theta^2}{8}=\frac{\theta^2+8\theta+16-\theta^2}{8}=\frac{8\theta+16}{8}=\theta+2$</p>
+    <p>$\displaystyle M(X^2)=\int_\theta^{\theta+4}x^2\cdot\frac14\,dx=\frac{(\theta+4)^3-\theta^3}{12}=\frac{\theta^3+12\theta^2+48\theta+64-\theta^3}{12}=\theta^2+4\theta+\frac{16}{3}$</p>
+    <p>$D(X)=M(X^2)-\big(M(X)\big)^2=\theta^2+4\theta+\dfrac{16}{3}-(\theta^2+4\theta+4)=\dfrac{16}{3}-4=\dfrac43$</p>
+
+    <p class="part">Метод моментов</p>
+    <p>$M(X)=\bar X$: $\;\theta+2=\bar X\;\Rightarrow\;\theta^*_{ММ}=\bar X-2$</p>
+    <p><b>Несмещённость:</b> $M(\bar X)=\dfrac1n\sum\limits_{i=1}^nM(X_i)=\dfrac1n\cdot n(\theta+2)=\theta+2$</p>
+    <p>$M(\theta^*)=M(\bar X)-2=\theta+2-2=\theta$ ⇒ $\theta^*$ несмещённая</p>
+    <p><b>Состоятельность:</b> $D(\bar X)=\dfrac{1}{n^2}\sum\limits_{i=1}^nD(X_i)=\dfrac{1}{n^2}\cdot n\cdot\dfrac43=\dfrac{4}{3n}$; $\;D(\theta^*)=D(\bar X-2)=D(\bar X)=\dfrac{4}{3n}$</p>
+    <p>$\lim\limits_{n\to\infty}D(\theta^*)=\lim\limits_{n\to\infty}\dfrac{4}{3n}=0$; по неравенству Чебышёва $P\big(|\theta^*-\theta|\ge\varepsilon\big)\le\dfrac{D(\theta^*)}{\varepsilon^2}=\dfrac{4}{3n\varepsilon^2}\to0$ ⇒ $\theta^*$ состоятельная</p>
+
+    <p class="part">Метод максимального правдоподобия</p>
+    <p>$L(\theta)=\prod\limits_{i=1}^nf(x_i;\theta)=\Big(\dfrac14\Big)^n$, если все $x_i\in[\theta;\theta+4]$; иначе $L=0$</p>
+    <p>Все $x_i\ge\theta$ ⇔ $\theta\le X_{(1)}$; все $x_i\le\theta+4$ ⇔ $\theta\ge X_{(n)}-4$</p>
+    <p>$L(\theta)=\begin{cases}4^{-n}, & X_{(n)}-4\le\theta\le X_{(1)}\\0, & \text{иначе}\end{cases}$ — на отрезке $L$ постоянна, производная $\frac{dL}{d\theta}=0$ ни в одной точке не выделяет максимум</p>
+    <p>Максимум $L$ достигается при любом $\theta\in\big[X_{(n)}-4;\;X_{(1)}\big]$ (с учётом $\theta\gt0$: $\big[\max(0;X_{(n)}-4);\;X_{(1)}\big]$) ⇒ ОМП не единственная; обычно берут середину: $\hat\theta=\dfrac{X_{(1)}+X_{(n)}-4}{2}$</p>
+    <p>Отрезок не пуст: $X_{(n)}-X_{(1)}\le4$, так как все наблюдения лежат на отрезке длины 4</p>
+
+    <p class="part">Оценка $\tilde\theta=k(X_1+X_2+X_3)$: матожидание</p>
+    <p>$M(\tilde\theta)=k\big(M(X_1)+M(X_2)+M(X_3)\big)=k\big((\theta+2)+(\theta+2)+(\theta+2)\big)=3k(\theta+2)=3k\theta+6k$</p>
+    <p>Смещение: $B(\tilde\theta)=M(\tilde\theta)-\theta=3k\theta+6k-\theta=(3k-1)\theta+6k$</p>
+    <p><b>При каком $k$ несмещённая:</b> нужно $B=0$ при всех $\theta\gt0$, т.е. $(3k-1)\theta+6k=0$ тождественно по $\theta$</p>
+    <p>Многочлен по $\theta$ равен нулю тождественно ⇔ все коэффициенты равны нулю: $\;\begin{cases}3k-1=0\;\Rightarrow\;k=\frac13\\6k=0\;\Rightarrow\;k=0\end{cases}$ — система несовместна</p>
+    <p>Если решать уравнение $3k\theta+6k=\theta$ относительно $k$: $\;k(3\theta+6)=\theta\;\Rightarrow\;k=\dfrac{\theta}{3(\theta+2)}$ — зависит от неизвестного $\theta$, т.е. это не константа и такую оценку посчитать нельзя</p>
+    <p>⇒ <b>ни при каком постоянном $k\gt0$ оценка $\tilde\theta$ не является несмещённой</b></p>
+
+    <p class="part">Смещение при разных $k$</p>
+    <div class="scroll"><table class="tbl">
+      <thead><tr><th>$k$</th><th>$M(\tilde\theta)=3k\theta+6k$</th><th>$B=(3k-1)\theta+6k$</th><th>при $\theta=1$</th><th>при $\theta=4$</th></tr></thead>
+      <tbody>
+        <tr><td>$\frac16$</td><td>$\frac12\theta+1$</td><td>$-\frac12\theta+1$</td><td>0,5</td><td>−1</td></tr>
+        <tr><td>$\frac13$</td><td>$\theta+2$</td><td>$2$</td><td>2</td><td>2</td></tr>
+        <tr><td>$\frac12$</td><td>$\frac32\theta+3$</td><td>$\frac12\theta+3$</td><td>3,5</td><td>5</td></tr>
+      </tbody>
+    </table></div>
+    <p>При $k=\frac16$ смещение обращается в ноль только при $\theta=2$ ($-\frac12\cdot2+1=0$), при других $\theta$ — нет. При $k=\frac13$ смещение постоянно и равно 2 при любом $\theta$</p>
+
+    <p class="part">$k=\frac13$ подробно</p>
+    <p>$\tilde\theta=\dfrac{X_1+X_2+X_3}{3}$; $\;M(\tilde\theta)=3\cdot\dfrac13\cdot(\theta+2)=\theta+2$; $\;B=\theta+2-\theta=2$</p>
+    <p>Смысл: $\frac13(X_1+X_2+X_3)$ оценивает центр отрезка $\theta+2$, а не левую границу $\theta$. Несмещённой была бы $\dfrac{X_1+X_2+X_3}{3}-2$: $\;M=\theta+2-2=\theta$, но она уже не вида $k(X_1+X_2+X_3)$</p>
+
+    <p class="part">Дисперсия и состоятельность $\tilde\theta$</p>
+    <p>$X_1,X_2,X_3$ независимы ⇒ $D(\tilde\theta)=k^2\big(D(X_1)+D(X_2)+D(X_3)\big)=k^2\cdot3\cdot\dfrac43=4k^2$</p>
+    <p>При $k=\frac13$: $\;D(\tilde\theta)=4\cdot\dfrac19=\dfrac49\approx0{,}444$</p>
+    <p>$D(\tilde\theta)=4k^2$ не зависит от $n$ и не стремится к нулю, а $M(\tilde\theta)\ne\theta$ ⇒ $\tilde\theta$ не состоятельна (использует только 3 первых наблюдения, остальные $n-3$ теряются)</p>
+
+    <p class="part">Сравнение $\theta^*$ и $\tilde\theta$ по среднеквадратической ошибке</p>
+    <p>$MSE=M(\hat\theta-\theta)^2=D+B^2$</p>
+    <p>$MSE(\theta^*)=D(\theta^*)+0^2=\dfrac{4}{3n}$</p>
+    <p>$MSE(\tilde\theta)=4k^2+\big((3k-1)\theta+6k\big)^2$; при $k=\frac13$: $\;\dfrac49+2^2=\dfrac49+\dfrac{36}{9}=\dfrac{40}{9}\approx4{,}444$</p>
+    <p>$\dfrac{4}{3n}\lt\dfrac{40}{9}\iff36\lt120n\iff n\gt0{,}3$ — верно при любом $n\ge1$</p>
+    <p>Для $n=20$: $\;MSE(\theta^*)=\dfrac{4}{60}=0{,}0667$, $\;MSE(\tilde\theta)=4{,}444$ — в $\dfrac{4{,}444}{0{,}0667}\approx67$ раз больше</p>
+    <p>Даже исправленная $\frac{X_1+X_2+X_3}{3}-2$ (без смещения) хуже: $\;D=\dfrac49=0{,}444$ против $\dfrac{4}{3\cdot20}=0{,}0667$, в $\dfrac{0{,}444}{0{,}0667}=\dfrac n3=6{,}7$ раза больше</p>
+    <p class="note">Наилучшее $k$ по MSE: $\frac{d\,MSE}{dk}=8k+2(3\theta+6)\big((3\theta+6)k-\theta\big)=0\Rightarrow k=\dfrac{3\theta(\theta+2)}{4+9(\theta+2)^2}$ — снова зависит от неизвестного $\theta$, поэтому использовать его нельзя.</p>
+    <p>⇒ $\theta^*$ лучше: несмещённая, состоятельная и с намного меньшей ошибкой</p>
+
     <p class="part">По выборке ($n=20$)</p>
-    <p>$\sum x_i=116{,}5$; $\;\bar x=\dfrac{116{,}5}{20}=5{,}825$; $\;\theta^*=5{,}825-2=3{,}825$</p>
-    <p>$x_{(1)}=4{,}1$, $\;x_{(20)}=7{,}9$ ⇒ $\hat\theta\in[7{,}9-4;\;4{,}1]=[3{,}9;\;4{,}1]$; середина $\hat\theta=4{,}0$</p>
-    <p class="note">$\theta^*=3{,}825\lt x_{(20)}-4=3{,}9$: при $\theta=3{,}825$ значение $7{,}9\gt\theta^*+4=7{,}825$ появиться не могло. Это известный недостаток ММ для равномерного закона: оценка может противоречить выборке; ОМП всегда с ней согласована.</p>
-    <p>Ряд на $[3{,}825;\;7{,}825]$, $h=1$; значение $7{,}9$ лежит правее $7{,}825$ и отнесено к последнему интервалу. $\;p_i=\dfrac{1}{4}$, $\;m_i^T=20\cdot\dfrac14=5$</p>
+    <p>$\sum x_i=5{,}4+7{,}6+4{,}1+7{,}2+4{,}9+7{,}9+5{,}1+5{,}5+5{,}1+6{,}0\,+$</p>
+    <p>$\qquad+\,4{,}9+4{,}7+5{,}8+5{,}0+5{,}5+7{,}1+6{,}8+6{,}3+6{,}4+5{,}2$</p>
+    <p>Нарастающим итогом: $5{,}4;\;13{,}0;\;17{,}1;\;24{,}3;\;29{,}2;\;37{,}1;\;42{,}2;\;47{,}7;\;52{,}8;\;58{,}8;$</p>
+    <p>$63{,}7;\;68{,}4;\;74{,}2;\;79{,}2;\;84{,}7;\;91{,}8;\;98{,}6;\;104{,}9;\;111{,}3;\;116{,}5$</p>
+    <p>$\bar x=\dfrac{116{,}5}{20}=5{,}825$; $\;\theta^*=5{,}825-2=3{,}825$</p>
+    <p>Ранжированный ряд: 4,1; 4,7; 4,9; 4,9; 5,0; 5,1; 5,1; 5,2; 5,4; 5,5; 5,5; 5,8; 6,0; 6,3; 6,4; 6,8; 7,1; 7,2; 7,6; 7,9 ⇒ $x_{(1)}=4{,}1$, $\;x_{(20)}=7{,}9$</p>
+    <p>ММП: $\;7{,}9-4\le\theta\le4{,}1$ ⇒ $\hat\theta\in[3{,}9;\;4{,}1]$; середина $\hat\theta=\dfrac{4{,}1+7{,}9-4}{2}=\dfrac{8}{2}=4{,}0$</p>
+    <p>$\tilde\theta$ при $k=\frac13$: $\;\dfrac{5{,}4+7{,}6+4{,}1}{3}=\dfrac{17{,}1}{3}=5{,}7$ — это оценка $\theta+2$, а не $\theta$; исправленная $5{,}7-2=3{,}7$ (по трём наблюдениям)</p>
+    <p>Проверка согласованности с выборкой: при $\theta^*=3{,}825$ правая граница $\theta^*+4=7{,}825\lt x_{(20)}=7{,}9$, т.е. значение $7{,}9$ при таком $\theta$ появиться не могло; ОМП $\hat\theta=4{,}0$ даёт отрезок $[4{,}0;\;8{,}0]$, в котором лежат все значения</p>
+
+    <p class="part">Интервальный ряд на $[\theta^*;\theta^*+4]=[3{,}825;\;7{,}825]$</p>
+    <p>Ширина интервала $h=\dfrac{4}{4}=1$; границы: $3{,}825$; $\;3{,}825+1=4{,}825$; $\;4{,}825+1=5{,}825$; $\;5{,}825+1=6{,}825$; $\;6{,}825+1=7{,}825$</p>
+    <p>Теоретические вероятности по $F(x)=\dfrac{x-\theta^*}{4}$: $\;p_i=F(b_i)-F(a_i)=\dfrac{b_i-a_i}{4}=\dfrac14=0{,}25$ для каждого интервала; $\;m_i^T=n\,p_i=20\cdot0{,}25=5$</p>
     <div class="scroll"><table class="tbl">
       <thead><tr><th>$[a_i;b_i)$</th><th>3,825–4,825</th><th>4,825–5,825</th><th>5,825–6,825</th><th>6,825–7,825</th><th>Σ</th></tr></thead>
       <tbody>
         <tr><td>значения</td><td class="l">4,1; 4,7</td><td class="l">4,9; 4,9; 5,0; 5,1; 5,1; 5,2; 5,4; 5,5; 5,5; 5,8</td><td class="l">6,0; 6,3; 6,4; 6,8</td><td class="l">7,1; 7,2; 7,6; (7,9)</td><td></td></tr>
         <tr><td>$m_i$</td><td>2</td><td>10</td><td>4</td><td>4</td><td>20</td></tr>
-        <tr><td>$p_i$</td><td>0,25</td><td>0,25</td><td>0,25</td><td>0,25</td><td>1</td></tr>
+        <tr><td>$p_i=\frac{1}{4}$</td><td>0,25</td><td>0,25</td><td>0,25</td><td>0,25</td><td>1</td></tr>
+        <tr><td>$m_i^T=20p_i$</td><td>5</td><td>5</td><td>5</td><td>5</td><td>20</td></tr>
+      </tbody>
+    </table></div>
+    <p>Значение 7,9 лежит правее $7{,}825$ и отнесено к последнему интервалу, чтобы сумма частот была равна $n=20$</p>
+    <p>Для сравнения ряд по ОМП $\hat\theta=4$ на $[4;8]$: границы 4, 5, 6, 7, 8</p>
+    <div class="scroll"><table class="tbl">
+      <thead><tr><th>$[a_i;b_i)$</th><th>4–5</th><th>5–6</th><th>6–7</th><th>7–8</th><th>Σ</th></tr></thead>
+      <tbody>
+        <tr><td>значения</td><td class="l">4,1; 4,7; 4,9; 4,9</td><td class="l">5,0; 5,1; 5,1; 5,2; 5,4; 5,5; 5,5; 5,8</td><td class="l">6,0; 6,3; 6,4; 6,8</td><td class="l">7,1; 7,2; 7,6; 7,9</td><td></td></tr>
+        <tr><td>$m_i$</td><td>4</td><td>8</td><td>4</td><td>4</td><td>20</td></tr>
         <tr><td>$m_i^T$</td><td>5</td><td>5</td><td>5</td><td>5</td><td>20</td></tr>
       </tbody>
     </table></div>
-    <p>Для сравнения, ряд по ОМП $\hat\theta=4$ на $[4;8]$: $m_i=4;\,8;\,4;\,4$, $\;m_i^T=5$ — все значения внутри отрезка</p>
-    <p class="ans">$\theta^*=\bar X-2=3{,}825$ (несмещ., сост., $D=\frac{4}{3n}$); $\;\hat\theta\in[X_{(n)}-4;X_{(1)}]=[3{,}9;4{,}1]$; несмещённого $\tilde\theta$ вида $k\sum_{1}^{3}X_i$ нет; $\;m^T=5$</p>
+    <p class="ans">$\theta^*=\bar X-2=3{,}825$ (несмещ., сост., $D=\frac{4}{3n}$); $\;\hat\theta\in[X_{(n)}-4;X_{(1)}]=[3{,}9;4{,}1]$, $\hat\theta=4{,}0$; $\;M(\tilde\theta)=3k\theta+6k$ — несмещённой ни при каком $k$ (при $k=\frac13$ смещение 2, $MSE=\frac{40}{9}$); $\;m^T=5$</p>
   </div>
 </section>
 
