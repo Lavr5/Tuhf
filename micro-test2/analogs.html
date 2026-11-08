@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ru">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Микро-2, аналоги к тесту 2</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;600;700&family=JetBrains+Mono:wght@400;600&family=Unbounded:wght@600&display=swap">
+<style>
+/* Layout: узкая колонка для чтения с телефона; каждая задача — карточка: условие, нумерованные шаги, зелёный ответ */
+:root{
+  --paper:#f8fafd; --ink:#17213b; --muted:#56617a; --line:#d2dae7; --card:#ffffff;
+  --pen:#2346c0; --pen-soft:#e9eefc; --ok:#1c7a4b; --ok-soft:#e3f3ea;
+  --f-display:"Unbounded","Golos Text",system-ui,sans-serif;
+  --f-body:"Golos Text",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0f141e; --ink:#e3e8f3; --muted:#9ba6be; --line:#29334a; --card:#151c2a;
+  --pen:#93abff; --pen-soft:#1b2544; --ok:#55c992; --ok-soft:#12301f; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0f141e; --ink:#e3e8f3; --muted:#9ba6be; --line:#29334a; --card:#151c2a;
+  --pen:#93abff; --pen-soft:#1b2544; --ok:#55c992; --ok-soft:#12301f; color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:16.5px;line-height:1.55}
+.page{max-width:680px;margin:0 auto;padding-inline:16px;padding-block:24px 64px;display:grid;gap:18px}
+h1{font-family:var(--f-display);font-size:1.55rem;line-height:1.2;margin:0;text-wrap:balance}
+h2{font-family:var(--f-display);font-size:1rem;font-weight:600;margin:14px 0 0;color:var(--pen);text-wrap:balance}
+p,ol{margin:0}
+.lead{color:var(--muted)}
+.nav{display:flex;flex-wrap:wrap;gap:6px}
+.nav a{font-family:var(--f-mono);font-size:.8rem;text-decoration:none;color:var(--ink);border:1px solid var(--line);background:var(--card);border-radius:999px;padding:3px 9px}
+.nav a:focus-visible,.nav a:hover{border-color:var(--pen);color:var(--pen);outline:none}
+article{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:grid;gap:10px;scroll-margin-top:12px;min-width:0}
+.head{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:baseline}
+.tag{font-family:var(--f-mono);font-size:.78rem;font-weight:600;background:var(--pen);color:var(--card);border-radius:4px;padding:1px 6px}
+.like{font-size:.8rem;color:var(--muted)}
+.cond{background:var(--pen-soft);border-radius:8px;padding:9px 12px}
+ol.st{padding-left:1.3em;display:grid;gap:6px}
+ol.st li::marker{color:var(--pen);font-weight:700}
+.ans{background:var(--ok-soft);color:var(--ok);font-weight:600;border-radius:8px;padding:8px 12px}
+.m{font-family:var(--f-mono);font-size:.92em;white-space:nowrap}
+.scroll{overflow-x:auto;max-width:100%}
+table{border-collapse:collapse;font-family:var(--f-mono);font-size:.85rem}
+th,td{border:1px solid var(--line);padding:4px 8px;text-align:center;white-space:nowrap}
+th{background:var(--pen-soft);font-family:var(--f-body)}
+caption{caption-side:top;text-align:left;font-family:var(--f-body);font-size:.8rem;color:var(--muted);padding-bottom:3px}
+.two{display:flex;flex-wrap:wrap;gap:10px}
+p,li{overflow-wrap:anywhere}
+</style>
+
+<div class="page">
+<header style="display:grid;gap:8px">
+  <h1>Аналоги к тесту 2</h1>
+  <p class="lead">По одной задаче на каждый тип банка, с другими числами. Решение коротко по шагам, ответ зелёным. Попробуй сначала сказать ход решения сам, потом читай. Все ответы проверены перебором.</p>
+  <nav class="nav" aria-label="Задачи">
+    <a href="#a1">A.1</a><a href="#a2">A.2</a><a href="#a3">A.3</a><a href="#a4">A.4</a><a href="#a5">A.5</a><a href="#a6">A.6</a><a href="#a7">A.7</a><a href="#a8">A.8</a><a href="#a9">A.9</a><a href="#a10">A.10</a>
+    <a href="#b1">B.1</a><a href="#b2">B.2</a><a href="#b3">B.3</a><a href="#b4">B.4</a><a href="#b5">B.5</a><a href="#b6">B.6</a><a href="#b7">B.7</a><a href="#b8">B.8</a><a href="#b9">B.9</a><a href="#b10">B.10</a>
+  </nav>
+</header>
+
+<h2>Часть A</h2>
+
+<article id="a1">
+  <div class="head"><span class="tag">A.1</span><b>Матричная игра</b><span class="like">IESDS, IEWDS, NE</span></div>
+  <div class="scroll"><table><thead><tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th></tr></thead><tbody>
+    <tr><th>x</th><td>8, 8</td><td>5, 7</td><td>3, 4</td><td>8, 6</td></tr>
+    <tr><th>y</th><td>6, 3</td><td>6, 8</td><td>3, 4</td><td>8, 7</td></tr>
+    <tr><th>z</th><td>5, 5</td><td>7, 5</td><td>7, 4</td><td>8, 3</td></tr></tbody></table></div>
+  <ol class="st">
+    <li>Игрок 2: B = (7, 8, 5) строго больше C = (4, 4, 4) и D = (6, 7, 3). Вычёркиваем C и D.</li>
+    <li>Игрок 1 в столбцах A, B: x = (8, 5), y = (6, 6), z = (5, 7). Смесь 0,4·x + 0,6·z = (6,2; 6,2) &gt; (6; 6). Вычёркиваем y.</li>
+    <li>Игрок 2 в строках x, z: A = (8, 5), B = (7, 5). Только слабо, IESDS остановился.</li>
+    <li>IEWDS: вычёркиваем B (слабо), затем z (5 &lt; 8 в столбце A).</li>
+    <li>NE: подчёркиваем лучшие ответы в исходной матрице. На A у игрока 1 лучшее x, на B — z. На x у игрока 2 лучшее A, на z — A и B (по 5).</li>
+  </ol>
+  <p class="ans">IESDS: {x, z} × {A, B}. IEWDS: (x, A). NE: (x, A) и (z, B).</p>
+</article>
+
+<article id="a2">
+  <div class="head"><span class="tag">A.2</span><b>Игра трёх игроков</b></div>
+  <div class="two">
+    <div class="scroll"><table><caption>III играет U</caption><thead><tr><th></th><th>L</th><th>R</th></tr></thead><tbody>
+      <tr><th>T</th><td>3, 2, 4</td><td>1, 1, 2</td></tr><tr><th>B</th><td>0, 2, 1</td><td>2, 2, 3</td></tr></tbody></table></div>
+    <div class="scroll"><table><caption>III играет D</caption><thead><tr><th></th><th>L</th><th>R</th></tr></thead><tbody>
+      <tr><th>T</th><td>2, 3, 1</td><td>0, 1, 0</td></tr><tr><th>B</th><td>1, 4, 0</td><td>4, 2, 2</td></tr></tbody></table></div>
+  </div>
+  <ol class="st">
+    <li>Игрок III: в одинаковых клетках U против D: 4 &gt; 1, 2 &gt; 0, 1 &gt; 0, 3 &gt; 2. D строго доминируема.</li>
+    <li>Игрок II: L против R: 2 &gt; 1, 2 = 2, 3 &gt; 1, 4 &gt; 2. R слабо, но не строго доминируема.</li>
+    <li>Игрок I: T = (3, 1, 2, 0), B = (0, 2, 1, 4). Доминирования нет.</li>
+    <li>NE ищем только при U. (T, L, U): I 3 &gt; 0, II 2 &gt; 1, III 4 &gt; 1. (B, R, U): I 2 &gt; 1, II 2 = 2, III 3 &gt; 2. В (T, R, U) и (B, L, U) игрок I отклоняется.</li>
+  </ol>
+  <p class="ans">Строго: D у III. Слабо: R у II. NE: (T, L, U) и (B, R, U).</p>
+</article>
+
+<article id="a3">
+  <div class="head"><span class="tag">A.3</span><b>Угадай цель</b></div>
+  <p class="cond">s ∈ {1, …, 100}, цель T = round(4 + A/3), A — среднее, игроков очень много.</p>
+  <ol class="st">
+    <li>A ∈ [1; 100] ⇒ 4 + A/3 ∈ [4,33; 37,33] ⇒ T ∈ {4, …, 37}. Остальные числа никогда не выигрывают.</li>
+    <li>Раунд 2: A ∈ [4; 37] ⇒ [5,33; 16,33] ⇒ {5, …, 16}.</li>
+    <li>Раунд 3: A ∈ [5; 16] ⇒ [5,67; 9,33] ⇒ {6, …, 9}.</li>
+    <li>Симметричное NE: все называют s, нужно round(4 + s/3) = s ⇔ |2s/3 − 4| &lt; 0,5 ⇔ s ∈ (5,25; 6,75).</li>
+  </ol>
+  <p class="ans">Слабо доминируемы 1–3 и 38–100. После трёх раундов {6, …, 9}. NE: все называют 6.</p>
+</article>
+
+<article id="a4">
+  <div class="head"><span class="tag">A.4</span><b>Пробки I</b></div>
+  <p class="cond">Верх 20 + z/10, центр 50 (только A → B), низ 30 + z/10. (a) 800 из A в B. (b) 800 из B в A. (c) по 400 в каждую сторону.</p>
+  <ol class="st">
+    <li>(a) Все дороги заняты, время 50: верх 20 + u/10 = 50 ⇒ u = 300; низ 30 + l/10 = 50 ⇒ l = 200; центр 800 − 500 = 300.</li>
+    <li>(b) Центра нет: u + l = 800, u − l = 100 ⇒ u = 450, l = 350, время 65.</li>
+    <li>(c) Если из A в B все по центру, то 400 из B в A дают u − l = 100, u + l = 400 ⇒ 250 и 150, время 45 &lt; 50. Тогда части едущих из A в B выгодно уйти на пробочные дороги, пока время там не станет 50: всего 500 машин (300 + 200).</li>
+  </ol>
+  <p class="ans">(a) 300 / 300 / 200, время 50. (b) 450 / 350, время 65. (c) Из A в B 300 по центру и 100 по пробочным; на пробочных всего 300 сверху и 200 снизу; время у всех 50.</p>
+</article>
+
+<article id="a5">
+  <div class="head"><span class="tag">A.5</span><b>Пробки II, платная дорога</b></div>
+  <p class="cond">Верх 10 + z/10, центр 20 минут + X рублей, низ 20 + z/10; минута = 10 рублей; 1000 машин.</p>
+  <ol class="st">
+    <li>Центр стоит M = 20 + X/10 минут. Если все дороги заняты: u = 10(M − 10), l = 10(M − 20), m = 1000 − u − l = 1300 − 20M = 900 − 2X.</li>
+    <li>(a) X = 100: M = 30, u = 200, l = 100, m = 700. Выручка 70 000.</li>
+    <li>(b) X = 450: M = 65. Без центра u − l = 100, u + l = 1000 ⇒ 550 и 450, время 65 = M. На центр никто не переходит, m = 0.</li>
+    <li>(c) Выручка R = X(900 − 2X), максимум при X = 225: m = 450.</li>
+  </ol>
+  <p class="ans">(a) 200 / 700 / 100, выручка 70 000. (b) 550 / 0 / 450, выручка 0. (c) X = 225, выручка 101 250.</p>
+</article>
+
+<article id="a6">
+  <div class="head"><span class="tag">A.6</span><b>Партнёрство</b></div>
+  <p class="cond">Доли по 50%, прибыль фирмы 4(s<sub>T</sub> + s<sub>J</sub> + s<sub>T</sub>s<sub>J</sub>), издержки c<sub>T</sub> = s², c<sub>J</sub> = 1,5s², s ∈ [0; 6].</p>
+  <ol class="st">
+    <li>u<sub>T</sub> = 2(s<sub>T</sub> + s<sub>J</sub> + s<sub>T</sub>s<sub>J</sub>) − s<sub>T</sub>², u<sub>J</sub> = 2(…) − 1,5s<sub>J</sub>².</li>
+    <li>Производные: 2 + 2s<sub>J</sub> − 2s<sub>T</sub> = 0 ⇒ s<sub>T</sub> = min(1 + s<sub>J</sub>, 6); 2 + 2s<sub>T</sub> − 3s<sub>J</sub> = 0 ⇒ s<sub>J</sub> = (1 + s<sub>T</sub>)/3.</li>
+    <li>Диапазоны BR: Том [1; 6], Джерри [1/3; 7/3]. Всё вне диапазона строго доминируемо.</li>
+    <li>NE: s<sub>T</sub> = 1 + (1 + s<sub>T</sub>)/3 ⇒ s<sub>T</sub> = 2, s<sub>J</sub> = 1.</li>
+  </ol>
+  <p class="ans">Строго доминируемы: Том [0; 1), Джерри [0; 1/3) и (7/3; 6]. NE (2; 1); выигрыши Тома 6, Джерри 8,5.</p>
+</article>
+
+<article id="a7">
+  <div class="head"><span class="tag">A.7</span><b>Последовательная игра</b></div>
+  <div class="scroll"><table><thead><tr><th></th><th>A</th><th>B</th></tr></thead><tbody>
+    <tr><th>x</th><td>6, 4</td><td>3, 2</td></tr><tr><th>y</th><td>9, 1</td><td>4, 5</td></tr><tr><th>z</th><td colspan="2">5, 3 (конец)</td></tr></tbody></table></div>
+  <ol class="st">
+    <li>Дерево: игрок 1 выбирает x, y, z; после x и после y по отдельному узлу игрока 2 с A и B.</li>
+    <li>Стратегии игрока 2: AA, AB, BA, BB (ответ на x, ответ на y). Лучшие ответы игрока 1: на AA и BA — y, на AB — x, на BB — z. Игрока 2: на x — AA, AB; на y — AB, BB; на z — любая.</li>
+    <li>NE: клетки, где оба лучшие ответы: (x, AB) и (z, BB).</li>
+    <li>Обратная индукция: после x игрок 2 берёт A (4 &gt; 2), после y — B (5 &gt; 1). Игрок 1: x даёт 6, y — 4, z — 5.</li>
+  </ol>
+  <p class="ans">NE: (x, AB), (z, BB). SPNE: (x, AB); угроза в (z, BB) невыполнима.</p>
+</article>
+
+<article id="a8">
+  <div class="head"><span class="tag">A.8</span><b>Скидываемся на ремонт</b></div>
+  <p class="cond">Ремонт стоит 3. Ценности: Том 2, Джерри 1, Спайк 1. s ∈ {0, 1, 2, 3}, платёж 3s<sub>i</sub>/S при S ≥ 3. При безразличии предпочитают ремонт.</p>
+  <ol class="st">
+    <li>Без ремонта: игрок i может добавить 3 − S<sub>−i</sub> и заплатить столько же; не захочет, только если 3 − S<sub>−i</sub> &gt; v<sub>i</sub>. Условия: s<sub>J</sub> + s<sub>S</sub> = 0, s<sub>T</sub> + s<sub>S</sub> ≤ 1, s<sub>T</sub> + s<sub>J</sub> ≤ 1.</li>
+    <li>С ремонтом: при S &gt; 3 кто-то снизит взнос, значит S = 3 и каждый платит s<sub>i</sub>; нужно s<sub>i</sub> ≤ v<sub>i</sub>.</li>
+    <li>По очереди. Спайк: если сумма двоих 2, добавляет 1; если ≥ 3, даёт 0; иначе ремонта нет.</li>
+    <li>Джерри: при s<sub>1</sub> = 1 даёт 1 (платит 1, выигрыш 0, предпочитает ремонт); при s<sub>1</sub> = 2 даёт 0. Том: s<sub>1</sub> = 1 даёт ему 1, s<sub>1</sub> = 2 даёт 0.</li>
+  </ol>
+  <p class="ans">Без ремонта: (0, 0, 0), (1, 0, 0). С ремонтом: (2, 1, 0), (2, 0, 1), (1, 1, 1). По очереди: (1, 1, 1), выигрыши 1, 0, 0.</p>
+</article>
+
+<article id="a9">
+  <div class="head"><span class="tag">A.9</span><b>Реклама</b></div>
+  <p class="cond">π<sub>c</sub> = (6 + N)C − C², π<sub>n</sub> = (6 + C)N − N².</p>
+  <ol class="st">
+    <li>BR: C = (6 + N)/2, N = (6 + C)/2.</li>
+    <li>(a) Одновременно: C = (6 + (6 + C)/2)/2 ⇒ C = 6, N = 6. Прибыли 12·6 − 36 = 36.</li>
+    <li>(b) Кафе первым: π<sub>c</sub> = (9 + C/2)C − C² = 9C − C²/2 ⇒ C = 9, N = 7,5. π<sub>c</sub> = 40,5, π<sub>n</sub> = 15·7,5 − 56,25 = 56,25.</li>
+    <li>(c) Клуб первым: симметрично N = 9, C = 7,5.</li>
+  </ol>
+  <p class="ans">(a) (6; 6), по 36. (b) C = 9, N = 7,5; 40,5 и 56,25. (c) N = 9, C = 7,5; клуб 40,5, кафе 56,25.</p>
+</article>
+
+<article id="a10">
+  <div class="head"><span class="tag">A.10</span><b>Сговор в повторяющейся игре</b></div>
+  <div class="scroll"><table><thead><tr><th></th><th>L</th><th>C</th><th>R</th></tr></thead><tbody>
+    <tr><th>T</th><td>9, 9</td><td>2, 12</td><td>4, 5</td></tr><tr><th>M</th><td>7, 8</td><td>7, 7</td><td>4, 2</td></tr><tr><th>B</th><td>10, 4</td><td>3, 2</td><td>5, 5</td></tr></tbody></table></div>
+  <ol class="st">
+    <li>(a) B строго лучше T (10 &gt; 9, 3 &gt; 2, 5 &gt; 4). Затем L строго лучше C (8 &gt; 7, 4 &gt; 2). Затем B строго лучше M (10 &gt; 7, 5 &gt; 4). Затем R лучше L (5 &gt; 4). Остаётся одна клетка (B, R).</li>
+    <li>(b) (T, L), наказание (B, R) = 5. Игрок 1: 9 ≥ 10(1 − δ) + 5δ ⇒ δ ≥ 1/5. Игрок 2 (отклонение C = 12): 9 ≥ 12(1 − δ) + 5δ ⇒ δ ≥ 3/7.</li>
+    <li>(c) (M, C): игроку 1 отклоняться некуда (M уже лучший ответ на C). Игрок 2 (L = 8): 7 ≥ 8(1 − δ) + 5δ ⇒ δ ≥ 1/3.</li>
+  </ol>
+  <p class="ans">Единственное NE (B, R). (T, L): δ ≥ 3/7. (M, C): δ ≥ 1/3.</p>
+</article>
+
+<h2>Часть B</h2>
+
+<article id="b1">
+  <div class="head"><span class="tag">B.1</span><b>Курно, разные издержки</b></div>
+  <p class="cond">D(p) = 20 − 2p, C<sub>1</sub> = q, C<sub>2</sub> = 4q.</p>
+  <ol class="st">
+    <li>p = 10 − Q/2. π<sub>1</sub> = (9 − (q<sub>1</sub> + q<sub>2</sub>)/2)q<sub>1</sub> ⇒ 9 − q<sub>1</sub> − q<sub>2</sub>/2 = 0 ⇒ q<sub>1</sub> = 9 − q<sub>2</sub>/2. Так же q<sub>2</sub> = 6 − q<sub>1</sub>/2.</li>
+    <li>График (q<sub>1</sub> по горизонтали): BR<sub>1</sub> от 18 на оси q<sub>2</sub> до 9 на оси q<sub>1</sub>; BR<sub>2</sub> от 6 на оси q<sub>2</sub> до 12 на оси q<sub>1</sub>.</li>
+    <li>q<sub>1</sub> = 9 − 3 + q<sub>1</sub>/4 ⇒ q<sub>1</sub> = 8, q<sub>2</sub> = 2, Q = 10, p = 5.</li>
+  </ol>
+  <p class="ans">(8; 2), p = 5, π<sub>1</sub> = 32, π<sub>2</sub> = 2.</p>
+</article>
+
+<article id="b2">
+  <div class="head"><span class="tag">B.2</span><b>Курно с параметром</b></div>
+  <p class="cond">D(p) = 20 − 2p, C<sub>1</sub> = q, C<sub>2</sub> = cq, c ≥ 1.</p>
+  <ol class="st">
+    <li>BR<sub>1</sub> = max(0; 9 − q<sub>2</sub>/2), BR<sub>2</sub> = max(0; 10 − c − q<sub>1</sub>/2).</li>
+    <li>Одна фирма: q<sub>1</sub> = 9, и фирма 2 молчит, если 10 − c − 4,5 ≤ 0 ⇔ c ≥ 5,5. Тогда p = 5,5, π<sub>1</sub> = 40,5.</li>
+    <li>Обе: q<sub>1</sub> = 9 − (10 − c − q<sub>1</sub>/2)/2 ⇒ q<sub>1</sub> = 2(8 + c)/3, q<sub>2</sub> = (22 − 4c)/3 &gt; 0 при c &lt; 5,5.</li>
+  </ol>
+  <p class="ans">c ≥ 5,5: (9; 0). 1 ≤ c &lt; 5,5: q<sub>1</sub> = (16 + 2c)/3, q<sub>2</sub> = (22 − 4c)/3. Проверка: c = 4 даёт (8; 2), как в B.1.</p>
+</article>
+
+<article id="b3">
+  <div class="head"><span class="tag">B.3</span><b>Бертран с выпуклыми издержками</b></div>
+  <p class="cond">D(p) = 8 − 2p, C<sub>i</sub> = q².</p>
+  <ol class="st">
+    <li>Каждая продаёт q = 4 − p. Прибыль (4 − p)(2p − 4) ≥ 0 ⇔ 2 ≤ p ≤ 4.</li>
+    <li>Снизить цену: продажи 2q, прибыль 2pq − 4q². Невыгодно, если pq − q² ≥ 2pq − 4q² ⇔ p ≤ 3q = 3(4 − p) ⇔ p ≤ 3.</li>
+    <li>Конкурентный исход: каждая p = 2q, предложение рынка S = p, S = D ⇒ p = 8/3.</li>
+  </ol>
+  <p class="ans">Равновесия p* ∈ [2; 3]; конкурентная цена 8/3 входит в этот отрезок.</p>
+</article>
+
+<article id="b4">
+  <div class="head"><span class="tag">B.4</span><b>Дискретный Бертран</b></div>
+  <p class="cond">D(p) = 16 − 2p, цены целые. (a) c = 2,4. (b) c = 2 + δ: (5, 5) не NE. (c) Все симметричные NE.</p>
+  <ol class="st">
+    <li>Делим рынок: (p − c)(8 − p). Снижение на 1: (p − 1 − c)(18 − 2p).</li>
+    <li>(a) p = 3: 0,6·5 = 3, снижение даёт убыток ⇒ NE. p = 4: 1,6·4 = 6,4 ≥ 0,6·10 = 6 ⇒ NE. p = 5: 2,6·3 = 7,8 &lt; 1,6·8 = 12,8 ⇒ нет.</li>
+    <li>(b) (5, 5): 9 − 3δ против 16 − 8δ; разница 7 − 5δ &gt; 0 при δ &lt; 1, снижение выгодно всегда.</li>
+    <li>(c) (3, 3): всегда. (4, 4): 8 − 4δ ≥ 10 − 10δ ⇔ δ ≥ 1/3.</li>
+  </ol>
+  <p class="ans">(a) (3, 3) и (4, 4). (c) (3, 3) при любом δ; (4, 4) при δ ≥ 1/3.</p>
+</article>
+
+<article id="b5">
+  <div class="head"><span class="tag">B.5</span><b>Курно, разные товары</b></div>
+  <p class="cond">p<sub>1</sub> = 16 − q<sub>1</sub> − Q, p<sub>2</sub> = 16 − q<sub>2</sub> − Q, C<sub>i</sub> = q.</p>
+  <ol class="st">
+    <li>p<sub>1</sub> = 16 − 2q<sub>1</sub> − q<sub>2</sub>. π<sub>1</sub> = (15 − 2q<sub>1</sub> − q<sub>2</sub>)q<sub>1</sub> ⇒ q<sub>1</sub> = (15 − q<sub>2</sub>)/4.</li>
+    <li>График: BR<sub>1</sub> от 15 на оси q<sub>2</sub> до 3,75 на оси q<sub>1</sub>; BR<sub>2</sub> симметрично.</li>
+    <li>Симметрично: q = (15 − q)/4 ⇒ q = 3, p = 16 − 9 = 7.</li>
+  </ol>
+  <p class="ans">(3; 3), цены 7, прибыли по 18.</p>
+</article>
+
+<article id="b6">
+  <div class="head"><span class="tag">B.6</span><b>Бертран, разные товары</b></div>
+  <p class="cond">D<sub>1</sub> = 12 − p<sub>1</sub> + (p<sub>2</sub> − p<sub>1</sub>), D<sub>2</sub> симметрично, C<sub>i</sub> = 3q.</p>
+  <ol class="st">
+    <li>π<sub>1</sub> = (p<sub>1</sub> − 3)(12 − 2p<sub>1</sub> + p<sub>2</sub>). Производная: 12 − 2p<sub>1</sub> + p<sub>2</sub> − 2(p<sub>1</sub> − 3) = 0 ⇒ p<sub>1</sub> = (18 + p<sub>2</sub>)/4.</li>
+    <li>График (p<sub>1</sub> по горизонтали): BR<sub>1</sub> начинается с 4,5 на оси p<sub>1</sub> и круто растёт, BR<sub>2</sub> — с 4,5 на оси p<sub>2</sub> и полого растёт.</li>
+    <li>p = (18 + p)/4 ⇒ p = 6, спрос 12 − 12 + 6 = 6.</li>
+  </ol>
+  <p class="ans">p<sub>1</sub> = p<sub>2</sub> = 6, по 6 единиц, прибыли по 18.</p>
+</article>
+
+<article id="b7">
+  <div class="head"><span class="tag">B.7</span><b>Штакельберг с параметром</b></div>
+  <p class="cond">D(p) = 10 − p, C<sub>1</sub> = 0, C<sub>2</sub> = cq. (b) c = 4. (c) все c.</p>
+  <ol class="st">
+    <li>BR<sub>2</sub> = (10 − c − q<sub>1</sub>)/2 при q<sub>1</sub> &lt; 10 − c, иначе 0.</li>
+    <li>(b) c = 4: при q<sub>1</sub> &lt; 6 прибыль лидера (14 − q<sub>1</sub>)q<sub>1</sub>/2 растёт до 7, значит до 6; при q<sub>1</sub> ≥ 6 он монополист, но (10 − q<sub>1</sub>)q<sub>1</sub> падает после 5. Максимум в стыке q<sub>1</sub> = 6.</li>
+    <li>(c) Внутренний максимум (10 + c)/2 &lt; 10 − c ⇔ c &lt; 10/3. Монопольный объём 5 ≥ 10 − c ⇔ c ≥ 5.</li>
+  </ol>
+  <p class="ans">(b) q<sub>1</sub> = 6, q<sub>2</sub> = 0, π<sub>1</sub> = 24. (c) c &lt; 10/3: q<sub>1</sub> = 5 + c/2, q<sub>2</sub> = (5 − 1,5c)/2; 10/3 ≤ c &lt; 5: q<sub>1</sub> = 10 − c; c ≥ 5: q<sub>1</sub> = 5.</p>
+</article>
+
+<article id="b8">
+  <div class="head"><span class="tag">B.8</span><b>Сдерживание входа</b></div>
+  <p class="cond">p = 10 − Q, C<sub>1</sub> = 0, вход фирмы 2 стоит F. (b) F = 0. (c) F = 1.</p>
+  <ol class="st">
+    <li>Фирма 2 входит, если ((10 − q<sub>1</sub>)/2)² &gt; F ⇔ q<sub>1</sub> &lt; 10 − 2√F; тогда q<sub>2</sub> = (10 − q<sub>1</sub>)/2.</li>
+    <li>(b) F = 0: π<sub>1</sub> = (10 − q<sub>1</sub>)q<sub>1</sub>/2 ⇒ q<sub>1</sub> = 5, q<sub>2</sub> = 2,5, p = 2,5.</li>
+    <li>(c) F = 1: порог 8. Пустить: q<sub>1</sub> = 5, π<sub>1</sub> = 12,5. Не пустить: q<sub>1</sub> = 8, p = 2, π<sub>1</sub> = 16.</li>
+  </ol>
+  <p class="ans">(b) π<sub>1</sub> = 12,5, π<sub>2</sub> = 6,25. (c) q<sub>1</sub> = 8, вход сдержан; π<sub>1</sub> = 16, π<sub>2</sub> = 0.</p>
+</article>
+
+<article id="b9">
+  <div class="head"><span class="tag">B.9</span><b>Хотеллинг, ходят по очереди</b></div>
+  <p class="cond">Улица [0; 1], t = 30, MC = c, фирма 1 назначает цену первой.</p>
+  <ol class="st">
+    <li>p<sub>1</sub> + 30x = p<sub>2</sub> + 30(1 − x) ⇒ x̂ = 1/2 + (p<sub>2</sub> − p<sub>1</sub>)/60; обе продают при |p<sub>2</sub> − p<sub>1</sub>| &lt; 30.</li>
+    <li>π<sub>2</sub> = (p<sub>2</sub> − c)(30 + p<sub>1</sub> − p<sub>2</sub>)/60 ⇒ p<sub>2</sub> = (30 + p<sub>1</sub> + c)/2.</li>
+    <li>Подставляем: x̂ = (90 + c − p<sub>1</sub>)/120, π<sub>1</sub> = (p<sub>1</sub> − c)(90 + c − p<sub>1</sub>)/120 ⇒ p<sub>1</sub> = c + 45.</li>
+  </ol>
+  <p class="ans">p<sub>1</sub> = c + 45, p<sub>2</sub> = c + 37,5, x̂ = 3/8; π<sub>1</sub> = 16,875 &lt; π<sub>2</sub> ≈ 23,44. Второй зарабатывает больше.</p>
+</article>
+
+<article id="b10">
+  <div class="head"><span class="tag">B.10</span><b>Цены в горах</b></div>
+  <p class="cond">Фирма 1 внизу (0), фирма 2 наверху (1); вниз бесплатно, вверх t = 6 за километр; цены одновременно.</p>
+  <ol class="st">
+    <li>p<sub>1</sub> = p<sub>2</sub> + 6(1 − x) ⇒ x̂ = 1 − (p<sub>1</sub> − p<sub>2</sub>)/6; обе продают при 0 &lt; p<sub>1</sub> − p<sub>2</sub> &lt; 6.</li>
+    <li>π<sub>1</sub> = (p<sub>1</sub> − c)(6 − p<sub>1</sub> + p<sub>2</sub>)/6 ⇒ p<sub>1</sub> = (6 + p<sub>2</sub> + c)/2. π<sub>2</sub> = (p<sub>2</sub> − c)(p<sub>1</sub> − p<sub>2</sub>)/6 ⇒ p<sub>2</sub> = (p<sub>1</sub> + c)/2.</li>
+    <li>Решаем: p<sub>1</sub> = c + 4, p<sub>2</sub> = c + 2, x̂ = 2/3.</li>
+  </ol>
+  <p class="ans">p<sub>1</sub> = c + 4, p<sub>2</sub> = c + 2; π<sub>1</sub> = 8/3, π<sub>2</sub> = 2/3.</p>
+</article>
+
+</div>
+</html>
