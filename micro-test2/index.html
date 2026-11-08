@@ -1,0 +1,972 @@
+<title>Микро-2, тест 2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Golos+Text:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Unbounded:wght@500;700&display=swap">
+<style>
+/* Layout: одна колонка-«тетрадь в клетку», как в конспектах по матстату; синяя ручка для действий, красная для ловушек, зелёная для ответов */
+:root{
+  --paper:#f8fafd; --grid:#e4ebf4; --ink:#17213b; --muted:#56617a; --line:#d2dae7; --card:#ffffff;
+  --pen:#2346c0; --pen-soft:#e9eefc; --red:#c22f2a; --red-soft:#fcecea; --ok:#1c7a4b; --ok-soft:#e3f3ea;
+  --f-display:"Unbounded","Golos Text",system-ui,sans-serif;
+  --f-body:"Golos Text",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-hand:"Caveat","Segoe Print","Comic Sans MS",cursive;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+  --s-1:.8125rem; --s0:1rem; --s1:1.125rem; --s2:1.375rem; --s3:1.75rem; --s4:2.5rem;
+  --r:10px;
+  --cv-buy:#2346c0; --cv-cost:#c22f2a; --cv-third:#008f8c;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0f141e; --grid:#182030; --ink:#e3e8f3; --muted:#9ba6be; --line:#29334a; --card:#151c2a;
+    --pen:#93abff; --pen-soft:#1b2544; --red:#ff7d72; --red-soft:#3a1c1d; --ok:#55c992; --ok-soft:#12301f;
+    --cv-buy:#6f88ea; --cv-cost:#e0654f; --cv-third:#1f9e9a;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0f141e; --grid:#182030; --ink:#e3e8f3; --muted:#9ba6be; --line:#29334a; --card:#151c2a;
+  --pen:#93abff; --pen-soft:#1b2544; --red:#ff7d72; --red-soft:#3a1c1d; --ok:#55c992; --ok-soft:#12301f;
+  --cv-buy:#6f88ea; --cv-cost:#e0654f; --cv-third:#1f9e9a;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+body{
+  background-color:var(--paper);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:22px 22px;
+  color:var(--ink); font-family:var(--f-body); font-size:var(--s0); line-height:1.6;
+  -webkit-text-size-adjust:100%;
+}
+.page{max-width:880px;margin:0 auto;padding-inline:16px;padding-block:28px 80px}
+h1,h2,h3{text-wrap:balance;line-height:1.2;margin:0}
+h1{font-family:var(--f-display);font-weight:700;font-size:clamp(2rem,6vw,var(--s4));letter-spacing:-.01em}
+h2{font-family:var(--f-display);font-weight:500;font-size:var(--s3)}
+h3{font-size:var(--s1);font-weight:600;margin-top:8px}
+p{margin:0}
+a{color:var(--pen)}
+.mono,.tbl{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+
+/* hero */
+.hero{display:grid;gap:14px;padding-block:8px 20px}
+.eyebrow{font-size:var(--s-1);text-transform:uppercase;letter-spacing:.09em;color:var(--muted);font-weight:600}
+.lead{font-size:var(--s1);max-width:62ch}
+.howto{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:6px}
+.howto div{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;min-width:0}
+.howto b{display:block;font-family:var(--f-display);font-weight:500;font-size:var(--s-1);color:var(--pen);letter-spacing:.04em;margin-bottom:4px}
+.hand{font-family:var(--f-hand);font-size:1.45rem;line-height:1.25;color:var(--red);font-weight:600}
+
+/* sticky bar */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);border-bottom:1px solid var(--line);margin-inline:-16px;padding:10px 16px;display:grid;gap:8px}
+.progress{display:flex;align-items:center;gap:12px;font-size:var(--s-1);color:var(--muted)}
+.progress .track{flex:1;height:6px;border-radius:3px;background:var(--line);overflow:hidden}
+.progress .fill{height:100%;width:0;background:var(--ok);transition:width .3s}
+.progress strong{color:var(--ink);font-variant-numeric:tabular-nums}
+.nav{display:flex;gap:6px;overflow-x:auto;scrollbar-width:thin;padding-bottom:2px}
+.nav a{flex:none;text-decoration:none;color:var(--ink);font-size:var(--s-1);border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 11px;white-space:nowrap}
+.nav a:hover,.nav a:focus-visible{border-color:var(--pen);color:var(--pen)}
+.nav a span{font-family:var(--f-mono);color:var(--muted);margin-right:4px}
+
+/* topics */
+.topic{display:grid;gap:16px;padding-block:44px 8px;scroll-margin-top:96px}
+.topic-head{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center;border-top:2px solid var(--ink);padding-top:18px}
+.num{font-family:var(--f-display);font-weight:700;font-size:2.4rem;line-height:1;color:var(--pen);min-width:1.4em}
+.src{font-size:var(--s-1);color:var(--muted);margin-top:4px}
+.plain{background:var(--pen-soft);border-radius:var(--r);padding:14px 18px;display:grid;gap:6px}
+.label{font-size:var(--s-1);text-transform:uppercase;letter-spacing:.08em;font-weight:700;color:var(--pen)}
+.plain p,.body p{max-width:68ch}
+.body{display:grid;gap:10px}
+
+ol.recipe{counter-reset:r;list-style:none;margin:0;padding:0;display:grid;gap:8px}
+ol.recipe>li{counter-increment:r;display:grid;grid-template-columns:2rem 1fr;gap:10px;align-items:start}
+ol.recipe>li::before{content:counter(r);font-family:var(--f-display);font-weight:500;font-size:var(--s-1);color:var(--paper);background:var(--pen);width:1.7rem;height:1.7rem;border-radius:50%;display:grid;place-items:center;margin-top:1px}
+ol.recipe>li>div{min-width:0}
+.recipe-box{border:1.5px solid var(--pen);border-radius:var(--r);padding:16px 18px;display:grid;gap:12px;background:var(--card)}
+.recipe-box>.label{color:var(--pen)}
+.recipe-box h3{margin-top:4px}
+
+.trap{font-family:var(--f-hand);font-size:1.4rem;line-height:1.25;color:var(--red);font-weight:600;padding:4px 2px 6px;border-bottom:2px dashed var(--red);justify-self:start;max-width:100%}
+.trap::before{content:"Ловушка: ";font-weight:700}
+.tip{border-left:3px solid var(--ok);background:var(--ok-soft);border-radius:0 var(--r) var(--r) 0;padding:10px 14px;display:grid;gap:4px}
+.tip .label{color:var(--ok)}
+
+/* cards */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;display:grid;gap:12px;min-width:0}
+.card-head{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:baseline}
+.chip{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;font-weight:700;border-radius:4px;padding:2px 7px}
+.chip.ex{background:var(--pen);color:var(--card)}
+.chip.self{background:var(--ink);color:var(--card)}
+.card-title{font-weight:600}
+.from{font-size:var(--s-1);color:var(--muted)}
+.cond{max-width:70ch}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.step{border-left:2px solid var(--line);padding:2px 0 2px 14px;display:grid;gap:6px;min-width:0}
+.step>b{font-size:var(--s-1);color:var(--pen);text-transform:uppercase;letter-spacing:.06em}
+.step.fresh{animation:pop .35s ease-out}
+@keyframes pop{from{opacity:.25;transform:translateY(4px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){.step.fresh{animation:none}}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{font:inherit;font-size:var(--s-1);font-weight:600;border-radius:8px;padding:7px 13px;border:1.5px solid var(--pen);background:var(--pen);color:var(--card);cursor:pointer}
+.btn.ghost{background:transparent;color:var(--pen)}
+.btn:disabled{opacity:.45;cursor:default}
+.btn:focus-visible,.nav a:focus-visible,summary:focus-visible,.done-btn:focus-visible{outline:3px solid var(--pen);outline-offset:2px}
+.counter{font-size:var(--s-1);color:var(--muted);font-variant-numeric:tabular-nums}
+details{border-top:1px dashed var(--line);padding-top:8px}
+summary{cursor:pointer;font-weight:600;color:var(--pen);font-size:.95rem;width:max-content;max-width:100%}
+details[open]>summary{margin-bottom:8px}
+details>div{display:grid;gap:8px;min-width:0}
+.task.is-done{border-color:var(--ok);background:linear-gradient(var(--ok-soft),var(--ok-soft)) top/100% 4px no-repeat,var(--card)}
+.done-btn{font:inherit;font-size:var(--s-1);font-weight:600;border-radius:8px;padding:6px 12px;border:1.5px solid var(--line);background:transparent;color:var(--muted);cursor:pointer;justify-self:start}
+.done-btn[aria-pressed="true"]{border-color:var(--ok);color:var(--ok);background:var(--ok-soft)}
+.answer{font-weight:600;color:var(--ok)}
+
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:14px}
+.scroll{overflow-x:auto;max-width:100%}
+.tbl{border-collapse:collapse;font-size:.86rem;min-width:100%}
+.tbl th,.tbl td{border:1px solid var(--line);padding:5px 9px;text-align:right;white-space:nowrap}
+.tbl th{font-family:var(--f-body);font-weight:600;background:var(--pen-soft);text-align:center}
+.tbl td.l,.tbl th.l{text-align:left;white-space:normal}
+.tbl tr.best td{font-weight:700;color:var(--ok);background:var(--ok-soft)}
+.tbl.text td{font-family:var(--f-body);white-space:normal;text-align:left;vertical-align:top}
+.tbl.map td a{font-family:var(--f-mono);font-weight:600;text-decoration:none;white-space:nowrap}
+.tbl.map td:first-child{font-family:var(--f-mono);font-weight:600}
+ul.dense{margin:0;padding-left:1.2em;display:grid;gap:4px}
+
+/* plan */
+ol.plan{list-style:none;margin:0;padding:0;display:grid;gap:10px;counter-reset:pl}
+ol.plan>li{counter-increment:pl;display:grid;grid-template-columns:2.4rem 1fr auto;gap:10px 12px;align-items:baseline;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px}
+ol.plan>li::before{content:counter(pl);font-family:var(--f-display);font-weight:700;font-size:1.4rem;color:var(--pen);line-height:1}
+ol.plan>li>div{min-width:0}
+ol.plan .time{font-family:var(--f-mono);font-size:var(--s-1);color:var(--muted);white-space:nowrap}
+ol.plan .cover{display:block;font-size:var(--s-1);color:var(--ok);font-weight:600;margin-top:2px}
+
+/* formulas */
+.fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:12px}
+.fgrid>div{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;display:grid;gap:6px;min-width:0;align-content:start}
+.fgrid b{font-size:var(--s-1);text-transform:uppercase;letter-spacing:.06em;color:var(--pen)}
+
+/* figures: синие кривые — сторона покупателя (D, MR, MV), красные — издержки (MC, S, MBC), бирюзовые — мировая цена и второй вариант */
+.fig{margin:4px 0 2px;display:grid;gap:8px;justify-items:start;min-width:0}
+.fig svg{display:block;width:100%;max-width:460px;height:auto;background:var(--card);border:1px solid var(--line);border-radius:8px}
+.fig .panels{display:flex;flex-wrap:wrap;gap:10px;width:100%}
+.fig .panels svg{flex:1 1 250px;max-width:360px}
+.fig figcaption{font-size:var(--s-1);color:var(--muted);max-width:68ch}
+.fig polyline{fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.fig .c-d{stroke:var(--cv-buy)}
+.fig .c-mr{stroke:var(--cv-buy);stroke-dasharray:7 4}
+.fig .c-mc{stroke:var(--cv-cost)}
+.fig .c-mbc{stroke:var(--cv-cost);stroke-dasharray:7 4}
+.fig .c-pw{stroke:var(--cv-third)}
+.fig .c-ac{stroke:var(--muted);stroke-width:1.5;stroke-dasharray:2 3}
+.fig .c-ind{stroke:var(--muted);stroke-width:1.5;stroke-dasharray:5 4}
+.fig .c-jump{stroke:var(--muted);stroke-width:1.5;stroke-dasharray:2 3}
+.fig .bold{stroke-width:3.4}
+.fig .thin{stroke-width:1.5;stroke-dasharray:5 4;opacity:.75}
+.fig .a-cs{fill:var(--cv-buy);fill-opacity:.15}
+.fig .a-ps{fill:var(--cv-third);fill-opacity:.2}
+.fig .a-dwl{fill:var(--cv-cost);fill-opacity:.25}
+.fig .a-hi{fill:var(--cv-third);fill-opacity:.12}
+.fig .guide{stroke:var(--muted);stroke-width:1;stroke-dasharray:3 3}
+.fig .leader{stroke:var(--muted);stroke-width:1}
+.fig .ax{stroke:var(--ink);stroke-width:1.2}
+.fig .ax-head{fill:var(--ink)}
+.fig .pt{fill:var(--ink);stroke:var(--card);stroke-width:2}
+.fig .pt-open{fill:var(--card);stroke:var(--ink);stroke-width:1.6}
+.fig text{font-family:var(--f-body);font-size:12px;fill:var(--ink)}
+.fig .tk{font-family:var(--f-mono);font-size:10.5px;fill:var(--muted)}
+.fig .axl{font-style:italic;font-size:13px;font-weight:600}
+.fig .t{font-weight:600}
+.fig .tm{fill:var(--muted);font-size:11px}
+.fig .tl{font-size:11px;font-weight:600}
+mjx-container[display="true"]{overflow-x:auto;overflow-y:hidden;max-width:100%;padding-block:2px}
+mjx-container{color:inherit}
+mjx-container.wide-math{display:block!important;overflow-x:auto;overflow-y:hidden;max-width:100%;padding-block:2px}
+.card p,.plain p,.recipe li,.tbl.text td{overflow-wrap:anywhere}
+.foot{margin-top:56px;font-size:var(--s-1);color:var(--muted);border-top:1px solid var(--line);padding-top:14px}
+@media (max-width:520px){
+  .num{font-size:1.8rem}
+  .card,.recipe-box{padding:14px}
+  .trap{font-size:1.3rem}
+  ol.plan>li{grid-template-columns:2rem 1fr}
+  ol.plan .time{grid-column:2}
+}
+/* game matrices */
+.topic>*,.recipe-box>*,.card>*,.step>*,.grid2>*{min-width:0}
+.topic-head>*{min-width:0}
+.recipe-box p{overflow-wrap:anywhere}
+@media (max-width:520px){.topic h2{font-size:1.25rem;overflow-wrap:anywhere}}
+.tbl.game td{text-align:center;font-family:var(--f-mono)}
+.tbl.game th{min-width:2.4em}
+.tbl.game td.ne{background:var(--ok-soft);color:var(--ok);font-weight:700}
+.tbl.game caption{caption-side:top;font-size:var(--s-1);color:var(--muted);text-align:left;padding-bottom:4px}
+.tbl.game u{text-decoration-thickness:2px;text-underline-offset:3px}
+.fig .a-cs-r{fill:var(--cv-buy);fill-opacity:.15}
+.fig .a-ps-r{fill:var(--cv-third);fill-opacity:.2}
+.fig .c-jump-l{stroke:var(--ink);stroke-width:1.5;stroke-dasharray:3 3}
+</style>
+
+<div class="page">
+
+<header class="hero">
+  <p class="eyebrow">Микроэкономика 2 · Баранов · Offline Test 2</p>
+  <h1>Тест 2 по микре с нуля</h1>
+  <p class="lead">Тест 2 про теорию игр и олигополию. Как и в первом тесте: одна задача из части A, одна из части B, 35 минут, без шпаргалок. Сначала прочитай «Азбуку»: там все понятия с нуля на маленьких примерах. Потом иди по приёмам: в каждом рецепт и разбор задач банка по шагам.</p>
+  <div class="howto">
+    <div><b>Если времени мало</b>Азбука, затем <a href="#b1">Курно</a>, <a href="#a1">матричные игры</a> и <a href="#a4">лучшие ответы</a>. Это 7 из 20 задач плюс основа для остальных.</div>
+    <div><b>Как читать разбор</b>Один шаг разбора равен одному пункту (a), (b) или (c). Сначала подумай сам, потом открывай.</div>
+    <div><b>За что дают баллы</b>Лучшие ответы, выписанные формулой, проверка каждого отклонения и подписанный график, если его просят.</div>
+  </div>
+</header>
+
+<div class="bar">
+  <div class="progress"><span>Разобрано задач банка: <strong id="done-count">0</strong> из <strong id="total-count">20</strong></span><div class="track"><div class="fill" id="fill"></div></div></div>
+  <nav class="nav" aria-label="Разделы">
+    <a href="#abc">Азбука</a>
+    <a href="#plan">План</a>
+    <a href="#a1"><span>A·1</span>Матрицы</a>
+    <a href="#a2"><span>A·2</span>Угадай число</a>
+    <a href="#a3"><span>A·3</span>Пробки</a>
+    <a href="#a4"><span>A·4</span>Лучшие ответы</a>
+    <a href="#a5"><span>A·5</span>Последовательные</a>
+    <a href="#a6"><span>A·6</span>Повторение</a>
+    <a href="#b1"><span>B·1</span>Курно</a>
+    <a href="#b2"><span>B·2</span>Бертран</a>
+    <a href="#b3"><span>B·3</span>Штакельберг</a>
+    <a href="#b4"><span>B·4</span>Хотеллинг</a>
+  </nav>
+</div>
+
+<!-- ============ ABC ============ -->
+<section class="topic" id="abc">
+  <div class="topic-head"><div class="num">0</div><div><h2>Азбука</h2><p class="src">Все понятия теста, каждое на маленьком примере</p></div></div>
+
+  <div class="recipe-box">
+    <span class="label">Игра и лучший ответ</span>
+    <p>Игра: несколько игроков, у каждого набор стратегий, и выигрыш каждого зависит от выбора всех. В матрице первое число в клетке — выигрыш игрока по строкам, второе — игрока по столбцам.</p>
+    <p><b>Лучший ответ (BR)</b> — стратегия, которая даёт максимальный выигрыш при фиксированном выборе остальных. В матрице: для каждого столбца найди максимум первого числа в этом столбце (лучший ответ строчного игрока), для каждой строки — максимум второго числа в строке (лучший ответ столбцового).</p>
+  </div>
+
+  <div class="recipe-box">
+    <span class="label">Равновесие Нэша (NE)</span>
+    <p>Набор стратегий, в котором каждый играет лучший ответ на остальных: никому не выгодно отклониться в одиночку.</p>
+    <p><b>Как искать в матрице:</b> подчеркни лучшие ответы обоих игроков. Клетка, где подчёркнуты оба числа, — равновесие Нэша в чистых стратегиях.</p>
+    <div class="scroll"><table class="tbl game"><thead><tr><th></th><th>Л</th><th>П</th></tr></thead><tbody>
+      <tr><th>В</th><td><u>3</u>, <u>3</u></td><td>0, 2</td></tr>
+      <tr><th>Н</th><td>2, 0</td><td><u>1</u>, <u>1</u></td></tr>
+    </tbody></table></div>
+    <p>Здесь два равновесия: (В, Л) и (Н, П).</p>
+  </div>
+
+  <div class="recipe-box">
+    <span class="label">Доминирование</span>
+    <ul class="dense">
+      <li><b>Строго доминируемая</b> стратегия: есть другая, которая даёт <i>строго больше</i> при <i>любых</i> действиях остальных. Рациональный игрок её никогда не играет.</li>
+      <li><b>Слабо доминируемая</b>: есть другая, которая даёт не меньше всегда и строго больше хотя бы в одном случае.</li>
+      <li><b>Смешанной стратегией</b> доминировать тоже можно: смесь «с вероятностью β строка x, иначе строка z» даёт в каждом столбце β·(выигрыш x) + (1 − β)·(выигрыш z). Если для какого-то β это строго больше выигрышей строки y во всех столбцах, то y строго доминируема.</li>
+      <li><b>IESDS</b>: вычёркиваешь строго доминируемые стратегии, потом смотришь заново на уменьшенную игру и снова вычёркиваешь, пока можно. Порядок не важен, равновесия Нэша не теряются.</li>
+      <li><b>IEWDS</b>: то же для слабого доминирования. Здесь порядок может влиять, и можно потерять равновесие Нэша.</li>
+    </ul>
+  </div>
+
+  <div class="recipe-box">
+    <span class="label">Непрерывные стратегии</span>
+    <p>Если стратегия — число (часы, количество, цена), лучший ответ ищется производной: возьми производную своего выигрыша по своей переменной, приравняй к нулю, вырази свою переменную через чужую. Это и есть функция лучшего ответа. Равновесие Нэша — пересечение функций лучших ответов (решаешь систему).</p>
+    <p>Стратегия строго доминируема, если она не является лучшим ответом ни на что: при вогнутом выигрыше это всё, что лежит вне диапазона значений функции лучшего ответа.</p>
+  </div>
+
+  <div class="recipe-box">
+    <span class="label">Последовательные игры и SPNE</span>
+    <ul class="dense">
+      <li>Игра рисуется деревом: узлы — кто ходит, ветви — действия, на листьях выигрыши.</li>
+      <li><b>Стратегия</b> второго игрока — полный план: что он сделает в <i>каждом</i> своём узле. Если у него два узла по два действия, у него 4 стратегии (например, «A после x, B после y» = AB).</li>
+      <li><b>Обратная индукция</b>: решаешь с конца. В последних узлах игрок выбирает лучшее, подставляешь это наверх, и так до корня.</li>
+      <li><b>SPNE</b> (совершенное в подыграх равновесие) — то, что даёт обратная индукция. Это равновесие Нэша без невыполнимых угроз.</li>
+    </ul>
+  </div>
+
+  <div class="recipe-box">
+    <span class="label">Повторяющиеся игры</span>
+    <p>Игра повторяется бесконечно, будущие выигрыши дисконтируются множителем δ. <b>Триггерная стратегия</b>: играем договорённость, пока все её соблюдают; если кто-то отклонился, навсегда переходим на равновесие Нэша статической игры (наказание).</p>
+    <p>Условие, что отклоняться невыгодно:</p>\[\frac{u_{\text{дог}}}{1-\delta}\ \ge\ u_{\text{откл}}+\frac{\delta\,u_{\text{нак}}}{1-\delta}\iff u_{\text{дог}}\ge(1-\delta)\,u_{\text{откл}}+\delta\,u_{\text{нак}}\]<p>Проверяешь для каждого игрока, ответ — δ не меньше самого большого из порогов.</p>
+  </div>
+
+  <div class="recipe-box">
+    <span class="label">Олигополия за минуту</span>
+    <ul class="dense">
+      <li><b>Курно</b>: фирмы одновременно выбирают количества. Каждая максимизирует \((p(Q)-c_i)\,q_i\), BR из производной, равновесие на пересечении.</li>
+      <li><b>Бертран</b>: фирмы одновременно выбирают цены. Однородный товар: все покупают у самой дешёвой, при равных ценах рынок делится пополам. Ключевое отклонение — чуть-чуть снизить цену и забрать весь рынок.</li>
+      <li><b>Штакельберг</b>: лидер выбирает количество первым, последователь видит и отвечает своим BR. Лидер подставляет BR последователя в свою прибыль и максимизирует.</li>
+      <li><b>Хотеллинг</b>: покупатели равномерно на отрезке [0; 1], фирмы на концах. Покупатель платит цену плюс дорогу. Безразличный покупатель делит рынок: всё левее идёт к фирме 1.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ PLAN ============ -->
+<section class="topic" id="plan">
+  <div class="topic-head"><div class="num">↓</div><div><h2>План подготовки</h2><p class="src">Порядок по отдаче: сначала механические приёмы, которые закрывают несколько задач</p></div></div>
+  <ol class="plan">
+    <li><div><a href="#abc">Азбука</a>: прочитать целиком.<span class="cover">Нужно для всего</span></div><span class="time">20 мин</span></li>
+    <li><div><a href="#b1">B·1 Курно</a>: производная, система из двух уравнений, график.<span class="cover">B.1, B.2, B.5</span></div><span class="time">20 мин</span></li>
+    <li><div><a href="#a1">A·1 Матричные игры</a>: подчёркивание и вычёркивание.<span class="cover">A.1, A.2 и пункт (a) A.10</span></div><span class="time">20 мин</span></li>
+    <li><div><a href="#a4">A·4 Лучшие ответы</a> и <a href="#a5">A·5 Последовательные игры</a>.<span class="cover">A.6, A.9, A.7, A.8</span></div><span class="time">30 мин</span></li>
+    <li><div><a href="#b2">B·2 Бертран</a> и <a href="#b3">B·3 Штакельберг</a>.<span class="cover">B.3, B.4, B.6, B.7, B.8</span></div><span class="time">30 мин</span></li>
+    <li><div><a href="#a3">A·3 Пробки</a>, <a href="#a2">A·2 Угадай число</a>, <a href="#a6">A·6 Повторение</a>, <a href="#b4">B·4 Хотеллинг</a>.<span class="cover">A.3, A.4, A.5, A.10, B.9, B.10</span></div><span class="time">35 мин</span></li>
+  </ol>
+</section>
+
+<!-- ============ A1 ============ -->
+<section class="topic" id="a1">
+  <div class="topic-head"><div class="num">A·1</div><div><h2>Матричные игры</h2><p class="src">Задачи банка A.1, A.2 (и пункт (a) задачи A.10)</p></div></div>
+  <div class="recipe-box">
+    <span class="label">Рецепт</span>
+    <ol class="recipe">
+      <li><div><b>Строго доминируемые:</b> сравни стратегию попарно с каждой другой по всем клеткам. Если ни одна чистая не доминирует, попробуй смесь двух других: подбери β.</div></li>
+      <li><div><b>IESDS:</b> вычеркни, перепиши уменьшенную матрицу, повтори для другого игрока. Пиши каждый шаг: «C строго доминируется B: 9 &gt; 5, 10 &gt; 5, 6 &gt; 5».</div></li>
+      <li><div><b>IEWDS:</b> после строгих вычёркивай и слабые (≥ везде, &gt; хотя бы где-то).</div></li>
+      <li><div><b>NE:</b> подчеркни лучшие ответы в исходной матрице, а не в урезанной: слабое вычёркивание может удалить равновесие.</div></li>
+      <li><div><b>Три игрока:</b> стратегии игрока III сравнивай в одинаковых клетках двух матриц. Отклонение III — переход в соседнюю матрицу.</div></li>
+    </ol>
+  </div>
+  <p class="trap">смешанная доминирующая стратегия должна быть строго лучше в КАЖДОМ столбце, проверь все.</p>
+
+  <article class="card ex task" data-id="A1">
+    <div class="card-head"><span class="chip ex">Банк A.1</span><span class="card-title">Matrix Game</span></div>
+    <div class="scroll"><table class="tbl game"><thead><tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th></tr></thead><tbody>
+      <tr><th>x</th><td>10, 10</td><td>6, 9</td><td>4, 5</td><td>10, 8</td></tr>
+      <tr><th>y</th><td>7, 4</td><td>7, 10</td><td>4, 5</td><td>10, 9</td></tr>
+      <tr><th>z</th><td>6, 6</td><td>8, 6</td><td>8, 5</td><td>10, 4</td></tr>
+    </tbody></table></div>
+    <p class="cond">(a) IESDS. (b) IEWDS. (c) Все равновесия Нэша в чистых стратегиях.</p>
+    <ol class="steps">
+      <li class="step"><b>(a) IESDS</b>
+        <p>Игрок 2: столбец C = (5, 5, 5), столбец B = (9, 10, 6): строго больше везде, C вычёркиваем. Столбец D = (8, 9, 4) тоже строго хуже B. Вычёркиваем D.</p>
+        <p>Игрок 1 в игре со столбцами A, B: x = (10, 6), y = (7, 7), z = (6, 8). Чистой доминирующей нет. Смесь β·x + (1 − β)·z: в A даёт 6 + 4β &gt; 7 при β &gt; ¼, в B даёт 8 − 2β &gt; 7 при β &lt; ½. Например, β = ⅓ даёт (7⅓; 7⅓) &gt; (7; 7). Вычёркиваем y.</p>
+        <p>Игрок 2 в строках x, z: A = (10, 6), B = (9, 6). A не хуже, но в строке z равенство, поэтому строгого доминирования нет. Стоп.</p>
+        <p class="answer">Остаются x, z у игрока 1 и A, B у игрока 2.</p></li>
+      <li class="step"><b>(b) IEWDS</b>
+        <p>Продолжаем из (a): A слабо доминирует B (10 &gt; 9, 6 = 6), вычёркиваем B. Остался столбец A: x даёт 10, z даёт 6, вычёркиваем z.</p>
+        <p class="answer">Остаётся (x, A).</p></li>
+      <li class="step"><b>(c) Равновесия Нэша</b>
+        <div class="scroll"><table class="tbl game"><thead><tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th></tr></thead><tbody>
+          <tr><th>x</th><td class="ne"><u>10</u>, <u>10</u></td><td>6, 9</td><td>4, <u>5</u></td><td><u>10</u>, 8</td></tr>
+          <tr><th>y</th><td>7, 4</td><td>7, <u>10</u></td><td>4, 5</td><td><u>10</u>, 9</td></tr>
+          <tr><th>z</th><td>6, <u>6</u></td><td class="ne"><u>8</u>, <u>6</u></td><td><u>8</u>, 5</td><td><u>10</u>, 4</td></tr>
+        </tbody></table></div>
+        <p>Подчёркнуты лучшие ответы. В строке z у игрока 2 ничья A и B (по 6), подчёркиваем обе.</p>
+        <p class="answer">NE: (x, A) и (z, B). Равновесие (z, B) пропало при IEWDS: слабое вычёркивание может удалять равновесия.</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Показать первый шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+    <button class="done-btn" type="button">Отметить: решил сам</button>
+  </article>
+
+  <article class="card ex task" data-id="A2">
+    <div class="card-head"><span class="chip ex">Банк A.2</span><span class="card-title">Three-Person Matrix Game</span></div>
+    <div class="grid2">
+      <div class="scroll"><table class="tbl game"><caption>III выбирает U</caption><thead><tr><th></th><th>L</th><th>R</th></tr></thead><tbody>
+        <tr><th>T</th><td>2, 3, 2</td><td>0, 2, 1</td></tr><tr><th>B</th><td>0, 1, 1</td><td>3, 1, 3</td></tr></tbody></table></div>
+      <div class="scroll"><table class="tbl game"><caption>III выбирает D</caption><thead><tr><th></th><th>L</th><th>R</th></tr></thead><tbody>
+        <tr><th>T</th><td>3, 4, 1</td><td>1, 1, 0</td></tr><tr><th>B</th><td>2, 5, 0</td><td>5, 3, 1</td></tr></tbody></table></div>
+    </div>
+    <p class="cond">(a) Строго доминируемые стратегии каждого игрока. (b) Слабо (но не строго) доминируемые. (c) NE в чистых стратегиях.</p>
+    <ol class="steps">
+      <li class="step"><b>(a) Строго доминируемые</b>
+        <p>Игрок III: в одинаковых клетках U против D: 2 &gt; 1, 1 &gt; 0, 1 &gt; 0, 3 &gt; 1. U всегда строго лучше.</p>
+        <p>Игрок I: T даёт (2, 0, 3, 1), B даёт (0, 3, 2, 5) в клетках (L,U), (R,U), (L,D), (R,D). Ни одна не доминирует. Игрок II: см. (b).</p>
+        <p class="answer">Только D у игрока III.</p></li>
+      <li class="step"><b>(b) Слабо доминируемые</b>
+        <p>Игрок II, L против R: (T,U) 3 &gt; 2, (B,U) 1 = 1, (T,D) 4 &gt; 1, (B,D) 5 &gt; 3. L не хуже везде и строго лучше почти везде, но в (B,U) равенство.</p>
+        <p class="answer">R у игрока II слабо, но не строго доминируема.</p></li>
+      <li class="step"><b>(c) Равновесия Нэша</b>
+        <p>D строго доминируема, поэтому в равновесии III играет U. Проверяем 4 клетки левой матрицы:</p>
+        <ul class="dense">
+          <li>(T, L, U): I получает 2 против 0 при B; II получает 3 против 2 при R; III получает 2 против 1 при D. Равновесие.</li>
+          <li>(B, R, U): I: 3 против 0; II: 1 против 1 (не хуже); III: 3 против 1. Равновесие.</li>
+          <li>(T, R, U): I отклонится в B (3 &gt; 0). (B, L, U): I отклонится в T (2 &gt; 0).</li>
+        </ul>
+        <p class="answer">NE: (T, L, U) и (B, R, U).</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Показать первый шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+    <button class="done-btn" type="button">Отметить: решил сам</button>
+  </article>
+</section>
+
+<!-- ============ A2 ============ -->
+<section class="topic" id="a2">
+  <div class="topic-head"><div class="num">A·2</div><div><h2>Угадай число</h2><p class="src">Задача банка A.3 (на лекции была игра «2/3 от среднего»)</p></div></div>
+  <div class="recipe-box">
+    <span class="label">Рецепт</span>
+    <ol class="recipe">
+      <li><div>Игроков очень много, поэтому один игрок не влияет на среднее A. Найди, какие цели T вообще возможны: подставь крайние A.</div></li>
+      <li><div>Числа, которые никогда не совпадут с целью, всегда дают 0: они слабо доминируемы (любое возможное число иногда выигрывает).</div></li>
+      <li><div>Каждый раунд IEWDS: подставь новые границы в формулу цели и округли.</div></li>
+      <li><div>Симметричное NE: все называют s, тогда A = s. Нужно T(s) = s. Если T ≠ s, любой выиграет, назвав T, значит это не равновесие.</div></li>
+    </ol>
+  </div>
+
+  <article class="card ex task" data-id="A3">
+    <div class="card-head"><span class="chip ex">Банк A.3</span><span class="card-title">“Guess a Target” Game</span></div>
+    <p class="cond">\(s_i\in\{1,\dots,100\}\), цель \(T=\text{round}\!\left(2+\frac23A\right)\), A — среднее. Выигрывает угадавший. (a) Слабо доминируемые. (b) Что остаётся после трёх раундов IEWDS. (c) Симметричные NE.</p>
+    <ol class="steps">
+      <li class="step"><b>(a) Слабо доминируемые</b>
+        <p>A ∈ [1; 100], значит \(2+\frac23A\in[2{,}67;\,68{,}67]\), и после округления T ∈ {3, …, 69}. Числа 1, 2 и 70…100 никогда не выигрывают, их слабо доминирует, например, 3.</p>
+        <p class="answer">Слабо доминируемы {1, 2} ∪ {70, …, 100}.</p></li>
+      <li class="step"><b>(b) Три раунда</b>
+        <p>Раунд 1: остаются {3, …, 69}. Раунд 2: A ∈ [3; 69], T ∈ [round 4; round 48] = {4, …, 48}. Раунд 3: A ∈ [4; 48], \(2+\frac83=4{,}67\to5\), \(2+32=34\).</p>
+        <p class="answer">После трёх раундов {5, …, 34}.</p></li>
+      <li class="step"><b>(c) Симметричные NE</b>
+        <p>Все называют s, тогда T = round(2 + 2s/3), и нужно T = s. Это верно, когда \(|s-2-\frac23s|\lt\frac12\iff s\in(4{,}5;\,7{,}5)\). Проверка: s = 5 даёт 5,33 → 5; s = 6 даёт 6; s = 7 даёт 6,67 → 7.</p>
+        <p class="answer">Все называют 5, все называют 6 или все называют 7.</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Показать первый шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+    <button class="done-btn" type="button">Отметить: решил сам</button>
+  </article>
+</section>
+
+<!-- ============ A3 ============ -->
+<section class="topic" id="a3">
+  <div class="topic-head"><div class="num">A·3</div><div><h2>Пробки</h2><p class="src">Задачи банка A.4, A.5</p></div></div>
+  <div class="recipe-box">
+    <span class="label">Рецепт</span>
+    <ol class="recipe">
+      <li><div>В равновесии время на всех используемых дорогах одинаковое, а на неиспользуемых не меньше.</div></li>
+      <li><div>Предположи, что используются все дороги. Постоянная дорога задаёт общее время: приравняй к нему время каждой «пробочной» и найди число машин на ней. Остальные едут по постоянной.</div></li>
+      <li><div>Проверь: если на постоянной получилось отрицательное число, её никто не использует. Тогда делишь машины между пробочными: равенство времён плюс сумма машин.</div></li>
+      <li><div>Платная дорога: переведи плату в минуты (X рублей = X/10 минут) и прибавь ко времени.</div></li>
+    </ol>
+  </div>
+  <p class="trap">в A.4 центральная дорога односторонняя: из B в A по ней ехать нельзя.</p>
+
+  <article class="card ex task" data-id="A4">
+    <div class="card-head"><span class="chip ex">Банк A.4</span><span class="card-title">Traffic Game I</span></div>
+    <p class="cond">Верхняя дорога: 10 + z/10, центральная: 40 (только A → B), нижняя: 20 + z/10; z — машины в обе стороны. (a) 1000 машин из A в B. (b) 1000 из B в A. (c) 500 туда и 500 обратно.</p>
+    <ol class="steps">
+      <li class="step"><b>(a) 1000 из A в B</b>
+        <p>Пусть все три дороги заняты, общее время 40: верх 10 + u/10 = 40 ⇒ u = 300; низ 20 + l/10 = 40 ⇒ l = 200; центр 1000 − 500 = 500 ≥ 0.</p>
+        <p class="answer">300 сверху, 500 по центру, 200 снизу; время у всех 40 минут.</p></li>
+      <li class="step"><b>(b) 1000 из B в A</b>
+        <p>Центр недоступен. u + l = 1000 и 10 + u/10 = 20 + l/10 ⇒ u − l = 100. Отсюда u = 550, l = 450.</p>
+        <p class="answer">550 сверху, 450 снизу; время 65 минут.</p></li>
+      <li class="step"><b>(c) По 500 в каждую сторону</b>
+        <p>Едущие из B в A могут только сверху или снизу. Если пробочные дороги быстрее 40, все 1000 машин едут по ним, и время 65 &gt; 40, противоречие. Значит время на них ровно 40: сверху 300, снизу 200, это как раз 500 машин из B в A.</p>
+        <p class="answer">Из A в B все 500 по центру; из B в A 300 сверху и 200 снизу. Время у всех 40 минут.</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Показать первый шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+    <button class="done-btn" type="button">Отметить: решил сам</button>
+  </article>
+
+  <article class="card ex task" data-id="A5">
+    <div class="card-head"><span class="chip ex">Банк A.5</span><span class="card-title">Traffic Game II</span></div>
+    <p class="cond">Верх: 15 + z/10, центр: 30 минут и плата X рублей, низ: 25 + z/10; минута = 10 рублей; 1000 машин. (a) X = 100. (b) X = 400. (c) X, максимизирующий выручку.</p>
+    <ol class="steps">
+      <li class="step"><b>(a) X = 100</b>
+        <p>Центр стоит 30 + 100/10 = 40 «минут». Верх: 15 + u/10 = 40 ⇒ u = 250. Низ: 25 + l/10 = 40 ⇒ l = 150. Центр: 600.</p>
+        <p class="answer">250 / 600 / 150, выручка 600 · 100 = 60 000 рублей.</p></li>
+      <li class="step"><b>(b) X = 400</b>
+        <p>Центр: 30 + 40 = 70. Без центра: u − l = 100, u + l = 1000 ⇒ u = 550, l = 450, время 70. Ровно столько же, сколько центр, поэтому на центр никто не переходит.</p>
+        <p class="answer">550 сверху, 450 снизу, 0 по центру; выручка 0.</p></li>
+      <li class="step"><b>(c) Оптимальная плата</b>
+        <p>Центр стоит M = 30 + X/10. Тогда u = 10(M − 15), l = 10(M − 25), m = 1000 − u − l = 1400 − 20M = 800 − 2X (при 0 ≤ X ≤ 400).</p>
+        <p>Выручка R = X(800 − 2X), максимум при X = 200: m = 400, R = 80 000.</p>
+        <p class="answer">X = 200 рублей, 400 машин по центру, выручка 80 000.</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Показать первый шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+    <button class="done-btn" type="button">Отметить: решил сам</button>
+  </article>
+</section>
+
+<!-- ============ A4 ============ -->
+<section class="topic" id="a4">
+  <div class="topic-head"><div class="num">A·4</div><div><h2>Лучшие ответы через производную</h2><p class="src">Задачи банка A.6, A.9</p></div></div>
+  <div class="recipe-box">
+    <span class="label">Рецепт</span>
+    <ol class="recipe">
+      <li><div>Выпиши выигрыш каждого: его доля прибыли минус его издержки.</div></li>
+      <li><div>Производная по своей переменной = 0 ⇒ функция лучшего ответа. Учти границы стратегий (например, [0; 8]).</div></li>
+      <li><div>Строго доминируемые: всё, что вне диапазона значений лучшего ответа (такая стратегия хуже ближайшего края диапазона при любом выборе соперника).</div></li>
+      <li><div>NE: реши систему из двух BR.</div></li>
+      <li><div>Если ходят по очереди: последователь отвечает своим BR, лидер подставляет его в свою прибыль и максимизирует.</div></li>
+    </ol>
+  </div>
+
+  <article class="card ex task" data-id="A6">
+    <div class="card-head"><span class="chip ex">Банк A.6</span><span class="card-title">Partnership Game</span></div>
+    <p class="cond">Том и Джерри владеют фирмой пополам, выбирают часы s ∈ [0; 8]. Издержки \(c_T=s^2\), \(c_J=2s^2\). Прибыль фирмы \(4(s_T+s_J+s_Ts_J)\). (a) Выигрыши и BR. (b) Строго доминируемые. (c) NE.</p>
+    <ol class="steps">
+      <li class="step"><b>(a) Выигрыши и BR</b>
+        <p>\(u_T=2(s_T+s_J+s_Ts_J)-s_T^2\), \(u_J=2(s_T+s_J+s_Ts_J)-2s_J^2\).</p>
+        <p>\(\partial u_T/\partial s_T=2+2s_J-2s_T=0\Rightarrow s_T=\min(1+s_J,\,8)\). \(\partial u_J/\partial s_J=2+2s_T-4s_J=0\Rightarrow s_J=\frac{1+s_T}2\).</p>
+        <!--FIG:A6--><figure class="fig"><svg viewBox="0 0 360 250" role="img" aria-label="Лучшие ответы Тома и Джерри пересекаются в точке sJ=2, sT=3" xmlns="http://www.w3.org/2000/svg"><defs><clipPath id="clip-t2A6"><rect x="40" y="20" width="294" height="200"/></clipPath></defs><g clip-path="url(#clip-t2A6)"><line class="guide" x1="108.4" y1="150.2" x2="108.4" y2="220"/><line class="guide" x1="108.4" y1="150.2" x2="40" y2="150.2"/><polyline class="c-d" points="40,196.7 279.3,34 313.5,34"/><polyline class="c-mc" points="57.1,220 193.8,34"/></g><line class="ax" x1="40" y1="220" x2="346" y2="220"/><polygon class="ax-head" points="352,220 346,216.5 346,223.5"/><line class="ax" x1="40" y1="220" x2="40" y2="10"/><polygon class="ax-head" points="40,4 36.5,10 43.5,10"/><text class="axl" x="350" y="237" text-anchor="end">s<tspan dy="3.5" font-size="9">J</tspan></text><text class="axl" x="48" y="9">s<tspan dy="3.5" font-size="9">T</tspan></text><circle class="pt" cx="108.4" cy="150.2" r="4"/><line class="ax" x1="57.1" y1="220" x2="57.1" y2="224"/><text class="tk" x="57.1" y="236" text-anchor="middle">0,5</text><line class="ax" x1="108.4" y1="220" x2="108.4" y2="224"/><text class="tk" x="108.4" y="236" text-anchor="middle">2</text><line class="ax" x1="193.8" y1="220" x2="193.8" y2="224"/><text class="tk" x="193.8" y="236" text-anchor="middle">4,5</text><line class="ax" x1="279.3" y1="220" x2="279.3" y2="224"/><text class="tk" x="279.3" y="236" text-anchor="middle">7</text><line class="ax" x1="36" y1="196.7" x2="40" y2="196.7"/><text class="tk" x="33" y="200.7" text-anchor="end">1</text><line class="ax" x1="36" y1="150.2" x2="40" y2="150.2"/><text class="tk" x="33" y="154.2" text-anchor="end">3</text><line class="ax" x1="36" y1="34" x2="40" y2="34"/><text class="tk" x="33" y="38" text-anchor="end">8</text><text class="t" x="231.4" y="96.7" text-anchor="start">BR<tspan dy="3.5" font-size="9">T</tspan><tspan dy="-3.5">: s</tspan><tspan dy="3.5" font-size="9">T</tspan><tspan dy="-3.5">=1+s</tspan><tspan dy="3.5" font-size="9">J</tspan></text><text class="t" x="190.4" y="47.9" text-anchor="end">BR<tspan dy="3.5" font-size="9">J</tspan></text><text class="tm" x="116.4" y="164.2" text-anchor="start">NE (2; 3)</text></svg><figcaption>Синяя — лучший ответ Тома (\(s_T=1+s_J\), упирается в 8), красная — лучший ответ Джерри (\(s_J=\frac{1+s_T}2\), от 0,5 до 4,5). Пересечение — равновесие.</figcaption></figure><!--/FIG:A6--></li>
+      <li class="step"><b>(b) Строго доминируемые</b>
+        <p>BR Тома принимает значения от 1 (при \(s_J=0\)) до 8. Если \(s_T\lt1\), производная \(2+2s_J-2s_T\gt0\), и переход к 1 строго лучше при любом \(s_J\).</p>
+        <p>BR Джерри: от 0,5 до 4,5. При \(s_J\lt0{,}5\) выгоднее 0,5, при \(s_J\gt4{,}5\) выгоднее 4,5.</p>
+        <p class="answer">Том: [0; 1). Джерри: [0; 0,5) и (4,5; 8].</p></li>
+      <li class="step"><b>(c) Равновесие</b>
+        <p>\(s_T=1+s_J\), \(s_J=\frac{1+s_T}2=\frac{2+s_J}2\Rightarrow s_J=2\), \(s_T=3\).</p>
+        <p class="answer">NE: \(s_T=3\), \(s_J=2\); прибыль фирмы 44, выигрыши Тома 13, Джерри 14.</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Показать первый шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+    <button class="done-btn" type="button">Отметить: решил сам</button>
+  </article>
+
+  <article class="card ex task" data-id="A9">
+    <div class="card-head"><span class="chip ex">Банк A.9</span><span class="card-title">Advertising Game</span></div>
+    <p class="cond">\(\pi_c=(8+N)C-2C^2\), \(\pi_n=(4+C)N-\frac12N^2\). (a) Одновременно. (b) Кафе первым. (c) Клуб первым.</p>
+    <ol class="steps">
+      <li class="step"><b>(a) Одновременно</b>
+        <p>BR кафе: \(8+N-4C=0\Rightarrow C=\frac{8+N}4\). BR клуба: \(4+C-N=0\Rightarrow N=4+C\).</p>
+        <p>\(C=\frac{12+C}4\Rightarrow C=4\), \(N=8\). \(\pi_c=(8+8)\cdot4-2\cdot16=32\), \(\pi_n=(4+4)\cdot8-\frac12\cdot64=32\).</p>
+        <p class="answer">C = 4, N = 8; прибыли 32 и 32.</p></li>
+      <li class="step"><b>(b) Кафе первым</b>
+        <p>Клуб отвечает N = 4 + C. Кафе: \(\pi_c=(12+C)C-2C^2=12C-C^2\Rightarrow C=6\), N = 10.</p>
+        <p class="answer">C = 6, N = 10; \(\pi_c=72-36=36\), \(\pi_n=(4+6)\cdot10-50=50\).</p></li>
+      <li class="step"><b>(c) Клуб первым</b>
+        <p>Кафе отвечает \(C=\frac{8+N}4\). Клуб: \(\pi_n=\left(6+\frac N4\right)N-\frac{N^2}2=6N-\frac{N^2}4\Rightarrow N=12\), C = 5.</p>
+        <p class="answer">N = 12, C = 5; \(\pi_n=36\), \(\pi_c=20\cdot5-50=50\).</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Показать первый шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+    <button class="done-btn" type="button">Отметить: решил сам</button>
+  </article>
+</section>
+
+<!-- ============ A5 ============ -->
+<section class="topic" id="a5">
+  <div class="topic-head"><div class="num">A·5</div><div><h2>Последовательные игры</h2><p class="src">Задачи банка A.7, A.8</p></div></div>
+  <div class="recipe-box">
+    <span class="label">Рецепт</span>
+    <ol class="recipe">
+      <li><div>Нарисуй дерево: корень — первый игрок, после каждого его действия отдельный узел второго, на листьях выигрыши.</div></li>
+      <li><div>Нормальная форма: стратегии второго — планы на каждый узел (AA, AB, BA, BB). Построй матрицу и подчеркни лучшие ответы.</div></li>
+      <li><div>SPNE: обратная индукция. Выбери лучшее действие в каждом последнем узле, подставь, реши выше.</div></li>
+      <li><div>Равновесия Нэша, которых нет среди SPNE, держатся на невыполнимой угрозе.</div></li>
+    </ol>
+  </div>
+
+  <article class="card ex task" data-id="A7">
+    <div class="card-head"><span class="chip ex">Банк A.7</span><span class="card-title">Matrix Game played Sequentially</span></div>
+    <div class="scroll"><table class="tbl game"><thead><tr><th></th><th>A</th><th>B</th></tr></thead><tbody>
+      <tr><th>x</th><td>8, 10</td><td>2, 0</td></tr><tr><th>y</th><td>12, 0</td><td>6, 10</td></tr><tr><th>z</th><td colspan="2">8, 5 (игра заканчивается)</td></tr></tbody></table></div>
+    <p class="cond">Игрок 1 выбирает x, y или z; после x или y игрок 2 видит выбор и выбирает A или B. (a) Дерево. (b) Нормальная форма и NE. (c) SPNE.</p>
+    <ol class="steps">
+      <li class="step"><b>(a) Дерево</b>
+        <!--FIG:A7--><figure class="fig"><svg viewBox="0 0 360 230" role="img" aria-label="Дерево игры: игрок 1 выбирает x, y или z, после x и y ходит игрок 2" xmlns="http://www.w3.org/2000/svg"><line class="ax" x1="180" y1="30" x2="80" y2="110"/><text class="t" x="120.0" y="70.0" text-anchor="end">x</text><line class="ax" x1="180" y1="30" x2="220" y2="110"/><text class="t" x="206.0" y="70.0" text-anchor="start">y</text><line class="ax" x1="180" y1="30" x2="320" y2="110"/><text class="t" x="258" y="64">z</text><text class="t" x="320" y="130" text-anchor="middle">8, 5</text><line class="ax" x1="80" y1="110" x2="40" y2="185"/><text class="tm" x="52.0" y="151.5" text-anchor="end">A</text><text class="t" x="40" y="205" text-anchor="middle">8, 10</text><line class="ax" x1="80" y1="110" x2="120" y2="185"/><text class="tm" x="108.0" y="151.5" text-anchor="start">B</text><text class="t" x="120" y="205" text-anchor="middle">2, 0</text><line class="ax" x1="220" y1="110" x2="180" y2="185"/><text class="tm" x="192.0" y="151.5" text-anchor="end">A</text><text class="t" x="180" y="205" text-anchor="middle">12, 0</text><line class="ax" x1="220" y1="110" x2="260" y2="185"/><text class="tm" x="248.0" y="151.5" text-anchor="start">B</text><text class="t" x="260" y="205" text-anchor="middle">6, 10</text><circle class="pt" cx="180" cy="30" r="5"/><circle class="pt" cx="80" cy="110" r="5"/><circle class="pt" cx="220" cy="110" r="5"/><text class="tm" x="192" y="26">игрок 1</text><text class="tm" x="68" y="106" text-anchor="end">игрок 2</text><text class="tm" x="232" y="106">игрок 2</text></svg><figcaption>Корень — игрок 1. После x и после y у игрока 2 два разных узла (он видит выбор), z сразу заканчивает игру. На листьях выигрыши (игрок 1, игрок 2).</figcaption></figure><!--/FIG:A7--></li>
+      <li class="step"><b>(b) Нормальная форма</b>
+        <p>Стратегия игрока 2 = (ответ на x, ответ на y).</p>
+        <div class="scroll"><table class="tbl game"><thead><tr><th></th><th>AA</th><th>AB</th><th>BA</th><th>BB</th></tr></thead><tbody>
+          <tr><th>x</th><td>8, <u>10</u></td><td class="ne"><u>8</u>, <u>10</u></td><td>2, 0</td><td>2, 0</td></tr>
+          <tr><th>y</th><td><u>12</u>, 0</td><td>6, <u>10</u></td><td><u>12</u>, 0</td><td>6, <u>10</u></td></tr>
+          <tr><th>z</th><td>8, <u>5</u></td><td class="ne"><u>8</u>, <u>5</u></td><td>8, <u>5</u></td><td class="ne"><u>8</u>, <u>5</u></td></tr>
+        </tbody></table></div>
+        <p class="answer">NE: (x, AB), (z, AB), (z, BB).</p></li>
+      <li class="step"><b>(c) SPNE</b>
+        <p>После x игрок 2 выбирает A (10 &gt; 0), после y выбирает B (10 &gt; 0): стратегия AB. Игрок 1 тогда получает: x → 8, y → 6, z → 8.</p>
+        <p class="answer">SPNE: (x, AB) и (z, AB). Равновесие (z, BB) держится на угрозе «после x сыграю B», которую игрок 2 не выполнит.</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Показать первый шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+    <button class="done-btn" type="button">Отметить: решил сам</button>
+  </article>
+
+  <article class="card ex task" data-id="A8">
+    <div class="card-head"><span class="chip ex">Банк A.8</span><span class="card-title">Chipping In Game</span></div>
+    <p class="cond">Ремонт стоит 4. Ценности: Том 3, Джерри 2, Спайк 1. Каждый называет \(s_i\in\{0,\dots,4\}\). Если сумма S ≥ 4, крышу чинят и i платит \(4s_i/S\); иначе никто не платит. При безразличии все предпочитают ремонт. (a) NE без ремонта. (b) NE с ремонтом. (c) Ходят по очереди: Том, Джерри, Спайк.</p>
+    <ol class="steps">
+      <li class="step"><b>(a) Без ремонта</b>
+        <p>Если остальные назвали в сумме \(S_{-i}\lt4\), игрок i может добавить ровно \(4-S_{-i}\) и заплатить столько же. Он это сделает, если \(4-S_{-i}\le v_i\). Значит, нужно \(S_{-i}\lt4-v_i\) для всех: \(s_J+s_S\lt1\), \(s_T+s_S\lt2\), \(s_T+s_J\lt3\).</p>
+        <p class="answer">(0, 0, 0) и (1, 0, 0).</p></li>
+      <li class="step"><b>(b) С ремонтом</b>
+        <p>Если S &gt; 4, кто-то с \(0\lt s_i\lt S\) может назвать на 1 меньше и платить меньше. Значит S = 4 ровно, и тогда каждый платит \(p_i=s_i\). Нужно \(s_i\le v_i\) (иначе выгоднее назвать 0 и сорвать ремонт).</p>
+        <p class="answer">Суммы 4 с \(s_T\le3\), \(s_J\le2\), \(s_S\le1\): (3, 1, 0), (2, 2, 0), (3, 0, 1), (2, 1, 1), (1, 2, 1).</p></li>
+      <li class="step"><b>(c) По очереди</b>
+        <p>Спайк: если \(s_1+s_2\ge4\), называет 0; если сумма 3, называет 1 (платит 1 = своей ценности, предпочитает ремонт); если сумма ≤ 2, ремонта не будет.</p>
+        <p>Джерри хочет довести сумму до 3 как можно дешевле: при \(s_1=1\) называет 2 (платит 2, выигрыш 0, но предпочитает ремонт); при \(s_1=2\) называет 1; при \(s_1=3\) называет 0; при \(s_1=0\) ремонт ему не по карману.</p>
+        <p>Том: \(s_1=1\) даёт ему 3 − 1 = 2, \(s_1=2\) даёт 1, \(s_1=3\) даёт 0.</p>
+        <p class="answer">Том 1, Джерри 2, Спайк 1. Крышу чинят, выигрыши 2, 0, 0.</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Показать первый шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+    <button class="done-btn" type="button">Отметить: решил сам</button>
+  </article>
+</section>
+
+<!-- ============ A6 ============ -->
+<section class="topic" id="a6">
+  <div class="topic-head"><div class="num">A·6</div><div><h2>Повторяющаяся игра</h2><p class="src">Задача банка A.10</p></div></div>
+  <div class="recipe-box">
+    <span class="label">Рецепт</span>
+    <ol class="recipe">
+      <li><div>Единственность NE статической игры доказывай через IESDS: если остаётся одна клетка, равновесие единственное (даже среди смешанных).</div></li>
+      <li><div>Для каждой договорённости найди: выигрыш от договора, лучший выигрыш от отклонения при неизменном ходе соперника, выигрыш в наказании (статическое NE).</div></li>
+      <li><div>Условие \(u_{\text{дог}}\ge(1-\delta)u_{\text{откл}}+\delta u_{\text{нак}}\) реши относительно δ для каждого игрока. Если игроку отклоняться невыгодно (договор уже его лучший ответ), условия нет.</div></li>
+    </ol>
+  </div>
+
+  <article class="card ex task" data-id="A10">
+    <div class="card-head"><span class="chip ex">Банк A.10</span><span class="card-title">Collusion Game</span></div>
+    <div class="scroll"><table class="tbl game"><thead><tr><th></th><th>L</th><th>C</th><th>R</th></tr></thead><tbody>
+      <tr><th>T</th><td>11, 11</td><td>3, 15</td><td>5, 6</td></tr><tr><th>M</th><td>8, 9</td><td>8, 8</td><td>5, 2</td></tr><tr><th>B</th><td>12, 5</td><td>4, 3</td><td>6, 6</td></tr></tbody></table></div>
+    <p class="cond">Игра повторяется бесконечно с дисконтом δ. (a) Докажи, что у статической игры одно NE. (b) Триггер для (T, L). (c) Триггер для (M, C).</p>
+    <ol class="steps">
+      <li class="step"><b>(a) Единственное NE</b>
+        <p>B строго доминирует T (12 &gt; 11, 4 &gt; 3, 6 &gt; 5), вычёркиваем T. Для игрока 2 в строках M, B: L (9, 5) строго лучше C (8, 3), вычёркиваем C. Для игрока 1 в столбцах L, R: B (12, 6) строго лучше M (8, 5). Для игрока 2 в строке B: R (6) лучше L (5).</p>
+        <p class="answer">IESDS оставляет одну клетку (B, R), значит это единственное равновесие Нэша. Выигрыши (6, 6).</p></li>
+      <li class="step"><b>(b) Договор (T, L)</b>
+        <p>Играем (T, L), после любого отклонения навсегда (B, R). Игрок 1: лучшее отклонение B даёт 12. \(11\ge12(1-\delta)+6\delta\Rightarrow\delta\ge\frac16\). Игрок 2: отклонение C даёт 15. \(11\ge15(1-\delta)+6\delta\Rightarrow\delta\ge\frac49\). Наказание — NE каждого периода, поэтому угроза выполнима и это SPNE.</p>
+        <p class="answer">\(\delta\ge\frac49\).</p></li>
+      <li class="step"><b>(c) Договор (M, C)</b>
+        <p>Игроку 1 отклоняться незачем: на C его лучший ответ и так M. Игрок 2: отклонение в L даёт 9. \(8\ge9(1-\delta)+6\delta\Rightarrow\delta\ge\frac13\).</p>
+        <p class="answer">\(\delta\ge\frac13\).</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Показать первый шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+    <button class="done-btn" type="button">Отметить: решил сам</button>
+  </article>
+</section>
+
+<!-- ============ B1 ============ -->
+<section class="topic" id="b1">
+  <div class="topic-head"><div class="num">B·1</div><div><h2>Курно</h2><p class="src">Задачи банка B.1, B.2, B.5</p></div></div>
+  <div class="recipe-box">
+    <span class="label">Рецепт</span>
+    <ol class="recipe">
+      <li><div>Обратный спрос: из D(p) = 22 − 2p получаем p = 11 − Q/2.</div></li>
+      <li><div>Прибыль фирмы i: \(\pi_i=(p(Q)-c_i)\,q_i\). Производная по \(q_i\) = 0 ⇒ \(q_i=BR_i(q_j)\). Не забудь max(0, …).</div></li>
+      <li><div>График: \(q_1\) по горизонтали, \(q_2\) по вертикали. Каждую прямую рисуй по двум пересечениям с осями и подписывай.</div></li>
+      <li><div>NE: пересечение BR. Потом цена, прибыли.</div></li>
+      <li><div>Если издержки параметрические: проверь, при каких c у слабой фирмы выходит \(q_2\le0\). Тогда она не производит, а сильная — монополист.</div></li>
+    </ol>
+    <p>Формула для линейного случая \(p=a-bQ\): \(q_i=\frac{a-c_i-b\,q_j}{2b}\).</p>
+  </div>
+  <p class="trap">BR фирмы 1 выражает q₁ через q₂. На графике (q₁ по горизонтали) она пересекает ось q₁ в точке монопольного объёма.</p>
+
+  <article class="card ex task" data-id="B1">
+    <div class="card-head"><span class="chip ex">Банк B.1</span><span class="card-title">Asymmetric Cournot Competition I</span></div>
+    <p class="cond">D(p) = 22 − 2p, \(C_1=q\), \(C_2=3q\). (a) BR. (b) График. (c) NE и прибыли.</p>
+    <ol class="steps">
+      <li class="step"><b>(a) Лучшие ответы</b>
+        <p>\(p=11-\frac{q_1+q_2}2\). \(\pi_1=\left(10-\frac{q_1+q_2}2\right)q_1\Rightarrow 10-q_1-\frac{q_2}2=0\).</p>
+        <p class="answer">\(BR_1=\max\!\left(0,\,10-\frac{q_2}2\right)\), \(BR_2=\max\!\left(0,\,8-\frac{q_1}2\right)\).</p></li>
+      <li class="step"><b>(b) График</b>
+        <!--FIG:B1--><figure class="fig"><svg viewBox="0 0 360 250" role="img" aria-label="Лучшие ответы Курно: BR1 от 20 на оси q2 до 10 на оси q1, BR2 от 8 до 16, пересечение (8; 4)" xmlns="http://www.w3.org/2000/svg"><defs><clipPath id="clip-t2B1"><rect x="40" y="20" width="294" height="200"/></clipPath></defs><g clip-path="url(#clip-t2B1)"><line class="guide" x1="152" y1="181.9" x2="152" y2="220"/><line class="guide" x1="152" y1="181.9" x2="40" y2="181.9"/><polyline class="c-d" points="40,29.5 180,220"/><polyline class="c-mc" points="40,143.8 264,220"/></g><line class="ax" x1="40" y1="220" x2="346" y2="220"/><polygon class="ax-head" points="352,220 346,216.5 346,223.5"/><line class="ax" x1="40" y1="220" x2="40" y2="10"/><polygon class="ax-head" points="40,4 36.5,10 43.5,10"/><text class="axl" x="350" y="237" text-anchor="end">q<tspan dy="3.5" font-size="9">1</tspan></text><text class="axl" x="48" y="9">q<tspan dy="3.5" font-size="9">2</tspan></text><circle class="pt" cx="152" cy="181.9" r="4"/><line class="ax" x1="152" y1="220" x2="152" y2="224"/><text class="tk" x="152" y="236" text-anchor="middle">8</text><line class="ax" x1="180" y1="220" x2="180" y2="224"/><text class="tk" x="180" y="236" text-anchor="middle">10</text><line class="ax" x1="264" y1="220" x2="264" y2="224"/><text class="tk" x="264" y="236" text-anchor="middle">16</text><line class="ax" x1="36" y1="181.9" x2="40" y2="181.9"/><text class="tk" x="33" y="185.9" text-anchor="end">4</text><line class="ax" x1="36" y1="143.8" x2="40" y2="143.8"/><text class="tk" x="33" y="147.8" text-anchor="end">8</text><line class="ax" x1="36" y1="29.5" x2="40" y2="29.5"/><text class="tk" x="33" y="33.5" text-anchor="end">20</text><text class="t" x="98.8" y="96.2" text-anchor="start">BR<tspan dy="3.5" font-size="9">1</tspan></text><text class="t" x="222" y="199" text-anchor="start">BR<tspan dy="3.5" font-size="9">2</tspan></text><text class="tm" x="160" y="173.9" text-anchor="start">NE (8; 4)</text></svg><figcaption>\(q_1\) по горизонтали, \(q_2\) по вертикали. \(BR_1\) пересекает оси в точках \(q_2=20\) и \(q_1=10\) (монопольный объём фирмы 1), \(BR_2\) — в точках \(q_2=8\) и \(q_1=16\). Пересечение — равновесие (8; 4).</figcaption></figure><!--/FIG:B1--></li>
+      <li class="step"><b>(c) Равновесие</b>
+        <p>\(q_1=10-\frac12\left(8-\frac{q_1}2\right)=6+\frac{q_1}4\Rightarrow q_1=8\), \(q_2=4\). Q = 12, p = 5.</p>
+        <p class="answer">(8; 4), p = 5, \(\pi_1=4\cdot8=32\), \(\pi_2=2\cdot4=8\).</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Показать первый шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+    <button class="done-btn" type="button">Отметить: решил сам</button>
+  </article>
+
+  <article class="card ex task" data-id="B2">
+    <div class="card-head"><span class="chip ex">Банк B.2</span><span class="card-title">Asymmetric Cournot Competition II</span></div>
+    <p class="cond">D(p) = 22 − 2p, \(C_1=q\), \(C_2=cq\), c ≥ 1. (a) BR. (b) NE, где производит одна фирма, и условие на c. (c) NE, где производят обе.</p>
+    <ol class="steps">
+      <li class="step"><b>(a) Лучшие ответы</b>
+        <p class="answer">\(BR_1=\max\!\left(0,\,10-\frac{q_2}2\right)\), \(BR_2=\max\!\left(0,\,11-c-\frac{q_1}2\right)\).</p></li>
+      <li class="step"><b>(b) Производит одна</b>
+        <p>Фирма 1 одна: \(q_2=0\Rightarrow q_1=10\). Фирма 2 при этом не хочет входить: \(11-c-5\le0\iff c\ge6\). Фирма 2 одна быть не может: для \(q_1=0\) нужно \(q_2\ge20\), а она больше 10 не произведёт.</p>
+        <p class="answer">При c ≥ 6: (10; 0), p = 6, \(\pi_1=50\), \(\pi_2=0\).</p></li>
+      <li class="step"><b>(c) Производят обе</b>
+        <p>\(q_1=10-\frac{q_2}2\), \(q_2=11-c-\frac{q_1}2\) ⇒ \(q_1=\frac{18+2c}3\), \(q_2=\frac{24-4c}3\). Положительно при c &lt; 6. Цена \(p=\frac{12+c}3\).</p>
+        <p class="answer">При 1 ≤ c &lt; 6: \(q_1=\frac{18+2c}3\), \(q_2=\frac{24-4c}3\); \(\pi_1=\frac{2(9+c)^2}9\), \(\pi_2=\frac{8(6-c)^2}9\). Проверка: c = 3 даёт (8; 4), как в B.1.</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Показать первый шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+    <button class="done-btn" type="button">Отметить: решил сам</button>
+  </article>
+
+  <article class="card ex task" data-id="B5">
+    <div class="card-head"><span class="chip ex">Банк B.5</span><span class="card-title">Cournot with Differentiated Products</span></div>
+    <p class="cond">\(p_1=11-q_1-Q\), \(p_2=11-q_2-Q\), \(Q=q_1+q_2\), \(C_i=q\). (a) BR. (b) График. (c) NE и прибыли.</p>
+    <ol class="steps">
+      <li class="step"><b>(a) Лучшие ответы</b>
+        <p>\(p_1=11-2q_1-q_2\). \(\pi_1=(10-2q_1-q_2)\,q_1\Rightarrow10-4q_1-q_2=0\).</p>
+        <p class="answer">\(q_1=\frac{10-q_2}4\), \(q_2=\frac{10-q_1}4\) (и 0, если выходит отрицательно).</p></li>
+      <li class="step"><b>(b) График</b>
+        <!--FIG:B5--><figure class="fig"><svg viewBox="0 0 360 250" role="img" aria-label="Лучшие ответы: BR1 от 10 на оси q2 до 2,5 на оси q1, BR2 симметрично, пересечение (2; 2)" xmlns="http://www.w3.org/2000/svg"><defs><clipPath id="clip-t2B5"><rect x="40" y="20" width="294" height="200"/></clipPath></defs><g clip-path="url(#clip-t2B5)"><line class="guide" x1="94.4" y1="183" x2="94.4" y2="220"/><line class="guide" x1="94.4" y1="183" x2="40" y2="183"/><polyline class="c-d" points="40,34.8 108.1,220"/><polyline class="c-mc" points="40,173.7 312.2,220"/></g><line class="ax" x1="40" y1="220" x2="346" y2="220"/><polygon class="ax-head" points="352,220 346,216.5 346,223.5"/><line class="ax" x1="40" y1="220" x2="40" y2="10"/><polygon class="ax-head" points="40,4 36.5,10 43.5,10"/><text class="axl" x="350" y="237" text-anchor="end">q<tspan dy="3.5" font-size="9">1</tspan></text><text class="axl" x="48" y="9">q<tspan dy="3.5" font-size="9">2</tspan></text><circle class="pt" cx="94.4" cy="183" r="4"/><line class="ax" x1="108.1" y1="220" x2="108.1" y2="224"/><text class="tk" x="108.1" y="236" text-anchor="middle">2,5</text><line class="ax" x1="312.2" y1="220" x2="312.2" y2="224"/><text class="tk" x="312.2" y="236" text-anchor="middle">10</text><line class="ax" x1="36" y1="173.7" x2="40" y2="173.7"/><text class="tk" x="33" y="177.7" text-anchor="end">2,5</text><line class="ax" x1="36" y1="34.8" x2="40" y2="34.8"/><text class="tk" x="33" y="38.8" text-anchor="end">10</text><text class="t" x="83.6" y="83" text-anchor="start">BR<tspan dy="3.5" font-size="9">1</tspan></text><text class="t" x="244.2" y="195.9" text-anchor="start">BR<tspan dy="3.5" font-size="9">2</tspan></text><text class="tm" x="104.4" y="173" text-anchor="start">NE (2; 2)</text></svg><figcaption>\(BR_1\): \(q_1=\frac{10-q_2}4\), пересечения с осями 2,5 (по \(q_1\)) и 10 (по \(q_2\)). \(BR_2\) симметрична. Пересечение — (2; 2).</figcaption></figure><!--/FIG:B5--></li>
+      <li class="step"><b>(c) Равновесие</b>
+        <p>Симметрично: \(q=\frac{10-q}4\Rightarrow q=2\). \(p_i=11-4-2=5\).</p>
+        <p class="answer">\(q_1=q_2=2\), цены 5, прибыли по \(4\cdot2=8\).</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Показать первый шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+    <button class="done-btn" type="button">Отметить: решил сам</button>
+  </article>
+</section>
+
+<!-- ============ B2 ============ -->
+<section class="topic" id="b2">
+  <div class="topic-head"><div class="num">B·2</div><div><h2>Бертран</h2><p class="src">Задачи банка B.3, B.4, B.6</p></div></div>
+  <div class="recipe-box">
+    <span class="label">Рецепт</span>
+    <h3>Однородный товар (B.3, B.4)</h3>
+    <ol class="recipe">
+      <li><div>В симметричном равновесии обе ставят p и делят спрос: каждая продаёт D(p)/2.</div></li>
+      <li><div>Условие 1: прибыль ≥ 0 (иначе выгодно поднять цену и ничего не продавать).</div></li>
+      <li><div>Условие 2: снижение цены невыгодно. Чуть ниже p фирма забирает весь спрос D(p). В дискретной версии снижаешь на 1 рубль: прибыль \((p-1-c)\,D(p-1)\).</div></li>
+      <li><div>Множество равновесий — пересечение условий.</div></li>
+    </ol>
+    <h3>Дифференцированный товар (B.6)</h3>
+    <ol class="recipe">
+      <li><div>У каждой фирмы свой спрос. \(\pi_i=(p_i-c)\,D_i(p_1,p_2)\), производная по \(p_i\) ⇒ BR. Пересечение BR ⇒ NE.</div></li>
+    </ol>
+  </div>
+  <p class="trap">при снижении цены фирма получает ВЕСЬ спрос, а не половину. С выпуклыми издержками (q²) это дорого, поэтому снижение может быть невыгодным.</p>
+
+  <article class="card ex task" data-id="B3">
+    <div class="card-head"><span class="chip ex">Банк B.3</span><span class="card-title">Bertrand Duopoly</span></div>
+    <p class="cond">D(p) = 6 − 2p, \(C_i=q^2\). Симметричные равновесия \(p_1=p_2=p^*\). (a) Неотрицательная прибыль. (b) Снижение цены невыгодно. (c) Всё множество; конкурентный исход.</p>
+    <ol class="steps">
+      <li class="step"><b>(a) Прибыль ≥ 0</b>
+        <p>Каждая продаёт \(q=\frac{6-2p}2=3-p\). \(\pi=p(3-p)-(3-p)^2=(3-p)(2p-3)\ge0\).</p>
+        <p class="answer">\(1{,}5\le p^*\le3\).</p></li>
+      <li class="step"><b>(b) Снижение невыгодно</b>
+        <p>При снижении фирма продаёт \(6-2p=2q\): прибыль \(2pq-4q^2\). Условие \(pq-q^2\ge2pq-4q^2\iff3q\ge p\iff3(3-p)\ge p\).</p>
+        <p class="answer">\(p^*\le\frac94=2{,}25\).</p></li>
+      <li class="step"><b>(c) Множество и конкурентный исход</b>
+        <p>Поднимать цену бессмысленно (продажи 0, прибыль 0 ≤ π). Значит равновесия — все \(p^*\in[1{,}5;\,2{,}25]\).</p>
+        <p>Конкурентный исход: каждая фирма — price-taker с предложением p = 2q, рыночное предложение S = p, и S = D ⇒ p = 6 − 2p ⇒ p = 2. Это внутри интервала.</p>
+        <p class="answer">\(p^*\in[1{,}5;\,2{,}25]\); конкурентная цена 2 (по 1 единице, MC = 2 = p) — одно из равновесий.</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Показать первый шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+    <button class="done-btn" type="button">Отметить: решил сам</button>
+  </article>
+
+  <article class="card ex task" data-id="B4">
+    <div class="card-head"><span class="chip ex">Банк B.4</span><span class="card-title">Discrete Bertrand Duopoly</span></div>
+    <p class="cond">D(p) = 20 − 2p, цены только целые, MC = c. (a) c = 3,2: симметричные NE. (b) c = 3 + δ: (6, 6) не NE. (c) Все симметричные NE при δ ∈ (0; 1).</p>
+    <ol class="steps">
+      <li class="step"><b>(a) c = 3,2</b>
+        <p>В (p, p) каждая получает \((p-c)(10-p)\); снижение на 1 рубль даёт \((p-1-c)(22-2p)\).</p>
+        <div class="scroll"><table class="tbl"><thead><tr><th>p</th><th>делим рынок</th><th>снизить до p − 1</th><th>NE?</th></tr></thead><tbody>
+          <tr class="best"><td>4</td><td>0,8 · 6 = 4,8</td><td>−0,2 · 14 &lt; 0</td><td>да</td></tr>
+          <tr><td>5</td><td>1,8 · 5 = 9</td><td>0,8 · 12 = 9,6</td><td>нет</td></tr>
+          <tr><td>6</td><td>2,8 · 4 = 11,2</td><td>1,8 · 10 = 18</td><td>нет</td></tr>
+          <tr><td>7</td><td>3,8 · 3 = 11,4</td><td>2,8 · 8 = 22,4</td><td>нет</td></tr>
+        </tbody></table></div>
+        <p>p ≤ 3 ниже издержек (убыток), выше 7 снижение тем более выгодно.</p>
+        <p class="answer">Единственное симметричное NE: (4, 4).</p></li>
+      <li class="step"><b>(b) (6, 6) не NE</b>
+        <p>Делим: (3 − δ) · 4 = 12 − 4δ. Снизить до 5: (2 − δ) · 10 = 20 − 10δ. Разница 8 − 6δ &gt; 0 при δ &lt; 1.</p>
+        <p class="answer">Снижение до 5 всегда выгодно, (6, 6) не равновесие.</p></li>
+      <li class="step"><b>(c) Все δ</b>
+        <p>(4, 4): делим (1 − δ) · 6 &gt; 0, снижение до 3 даёт убыток. Всегда NE.</p>
+        <p>(5, 5): делим (2 − δ) · 5 = 10 − 5δ, снижение до 4 даёт (1 − δ) · 12 = 12 − 12δ. NE, если 10 − 5δ ≥ 12 − 12δ ⇔ δ ≥ 2/7.</p>
+        <p>p ≥ 6: снижение выгодно всегда.</p>
+        <p class="answer">(4, 4) при любом δ; (5, 5) ещё и при δ ≥ 2/7. (В (a) δ = 0,2 &lt; 2/7, поэтому только (4, 4).)</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Показать первый шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+    <button class="done-btn" type="button">Отметить: решил сам</button>
+  </article>
+
+  <article class="card ex task" data-id="B6">
+    <div class="card-head"><span class="chip ex">Банк B.6</span><span class="card-title">Bertrand with Differentiated Products</span></div>
+    <p class="cond">\(D_1=10-p_1+(p_2-p_1)\), \(D_2=10-p_2+(p_1-p_2)\), \(C_i=4q\). (a) BR. (b) График. (c) NE и прибыли.</p>
+    <ol class="steps">
+      <li class="step"><b>(a) Лучшие ответы</b>
+        <p>\(D_1=10-2p_1+p_2\). \(\pi_1=(p_1-4)(10-2p_1+p_2)\). Производная: \(10-2p_1+p_2-2(p_1-4)=18-4p_1+p_2=0\).</p>
+        <p class="answer">\(p_1=\frac{18+p_2}4\), \(p_2=\frac{18+p_1}4\).</p></li>
+      <li class="step"><b>(b) График</b>
+        <!--FIG:B6--><figure class="fig"><svg viewBox="0 0 360 250" role="img" aria-label="Лучшие ответы по ценам растут: BR1 от 4,5 на оси p1, BR2 от 4,5 на оси p2, пересечение (6; 6)" xmlns="http://www.w3.org/2000/svg"><defs><clipPath id="clip-t2B6"><rect x="40" y="20" width="294" height="200"/></clipPath></defs><g clip-path="url(#clip-t2B6)"><line class="guide" x1="236" y1="86.7" x2="236" y2="220"/><line class="guide" x1="236" y1="86.7" x2="40" y2="86.7"/><polyline class="c-d" points="187,220 260.5,20"/><polyline class="c-mc" points="40,120 334,70"/></g><line class="ax" x1="40" y1="220" x2="346" y2="220"/><polygon class="ax-head" points="352,220 346,216.5 346,223.5"/><line class="ax" x1="40" y1="220" x2="40" y2="10"/><polygon class="ax-head" points="40,4 36.5,10 43.5,10"/><text class="axl" x="350" y="237" text-anchor="end">p<tspan dy="3.5" font-size="9">1</tspan></text><text class="axl" x="48" y="9">p<tspan dy="3.5" font-size="9">2</tspan></text><circle class="pt" cx="236" cy="86.7" r="4"/><line class="ax" x1="187" y1="220" x2="187" y2="224"/><text class="tk" x="187" y="236" text-anchor="middle">4,5</text><line class="ax" x1="236" y1="220" x2="236" y2="224"/><text class="tk" x="236" y="236" text-anchor="middle">6</text><line class="ax" x1="36" y1="120" x2="40" y2="120"/><text class="tk" x="33" y="124" text-anchor="end">4,5</text><line class="ax" x1="36" y1="86.7" x2="40" y2="86.7"/><text class="tk" x="33" y="90.7" text-anchor="end">6</text><text class="t" x="252.3" y="33.3" text-anchor="end">BR<tspan dy="3.5" font-size="9">1</tspan></text><text class="t" x="327.5" y="62.2" text-anchor="end">BR<tspan dy="3.5" font-size="9">2</tspan></text><text class="tm" x="246" y="100.7" text-anchor="start">NE (6; 6)</text></svg><figcaption>В ценовой конкуренции лучшие ответы растут: соперник дороже — и мне можно дороже. \(BR_1\) начинается с 4,5 на оси \(p_1\), \(BR_2\) — с 4,5 на оси \(p_2\). Пересечение (6; 6).</figcaption></figure><!--/FIG:B6--></li>
+      <li class="step"><b>(c) Равновесие</b>
+        <p>\(p=\frac{18+p}4\Rightarrow p=6\). Спрос \(10-12+6=4\).</p>
+        <p class="answer">\(p_1=p_2=6\), по 4 единицы, прибыли по \(2\cdot4=8\).</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Показать первый шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+    <button class="done-btn" type="button">Отметить: решил сам</button>
+  </article>
+</section>
+
+<!-- ============ B3 ============ -->
+<section class="topic" id="b3">
+  <div class="topic-head"><div class="num">B·3</div><div><h2>Штакельберг и сдерживание входа</h2><p class="src">Задачи банка B.7, B.8</p></div></div>
+  <div class="recipe-box">
+    <span class="label">Рецепт</span>
+    <ol class="recipe">
+      <li><div>BR последователя, как в Курно, с порогом: при каком \(q_1\) ему выгоднее ничего не производить.</div></li>
+      <li><div>Лидер рассматривает два участка. Где последователь производит: подставь его BR в прибыль лидера и максимизируй. Где последователь молчит: лидер — монополист.</div></li>
+      <li><div>Если максимум участка лежит вне участка, бери границу. Сравни прибыли участков.</div></li>
+      <li><div>Сдерживание входа (B.8): лидер может произвести ровно столько, чтобы входить стало невыгодно, если это прибыльнее, чем делить рынок.</div></li>
+    </ol>
+  </div>
+
+  <article class="card ex task" data-id="B7">
+    <div class="card-head"><span class="chip ex">Банк B.7</span><span class="card-title">Asymmetric Stackelberg Model</span></div>
+    <p class="cond">D(p) = 12 − p, \(C_1=0\), \(C_2=cq\), фирма 1 — лидер. (a) BR фирмы 2. (b) \(q_1\) при c = 5. (c) \(q_1\) при всех c ≥ 0.</p>
+    <ol class="steps">
+      <li class="step"><b>(a) BR фирмы 2</b>
+        <p>\(\pi_2=(12-q_1-q_2-c)\,q_2\Rightarrow q_2=\frac{12-c-q_1}2\).</p>
+        <p class="answer">\(q_2=\frac{12-c-q_1}2\) при \(q_1\lt12-c\), иначе 0.</p></li>
+      <li class="step"><b>(b) c = 5</b>
+        <p>При \(q_1\lt7\): \(\pi_1=\left(12-q_1-\frac{7-q_1}2\right)q_1=\frac{17-q_1}2q_1\), растёт до 8,5, значит на участке растёт до самого 7. При \(q_1\ge7\): фирма 2 молчит, \(\pi_1=(12-q_1)q_1\), убывает после 6. Оба участка сходятся в \(q_1=7\).</p>
+        <!--FIG:B7--><figure class="fig"><svg viewBox="0 0 360 250" role="img" aria-label="Прибыль лидера от q1 при c=5: растёт до 7, потом падает, максимум 35 при q1=7" xmlns="http://www.w3.org/2000/svg"><defs><clipPath id="clip-t2B7"><rect x="40" y="20" width="294" height="200"/></clipPath></defs><g clip-path="url(#clip-t2B7)"><line class="guide" x1="198.3" y1="45" x2="198.3" y2="220"/><line class="guide" x1="198.3" y1="45" x2="40" y2="45"/><polyline class="c-d" points="40,220 41,218.1 42,216.3 43,214.5 44,212.6 44.9,210.8 45.9,209 46.9,207.2 47.9,205.4 48.9,203.7 49.9,201.9 50.9,200.1 51.9,198.4 52.9,196.6 53.9,194.9 54.8,193.2 55.8,191.5 56.8,189.8 57.8,188.1 58.8,186.4 59.8,184.7 60.8,183.1 61.8,181.4 62.8,179.8 63.7,178.1 64.7,176.5 65.7,174.9 66.7,173.3 67.7,171.7 68.7,170.1 69.7,168.5 70.7,167 71.7,165.4 72.7,163.9 73.6,162.3 74.6,160.8 75.6,159.3 76.6,157.8 77.6,156.3 78.6,154.8 79.6,153.3 80.6,151.8 81.6,150.3 82.5,148.9 83.5,147.5 84.5,146 85.5,144.6 86.5,143.2 87.5,141.8 88.5,140.4 89.5,139 90.5,137.6 91.4,136.3 92.4,134.9 93.4,133.5 94.4,132.2 95.4,130.9 96.4,129.6 97.4,128.3 98.4,127 99.4,125.7 100.4,124.4 101.3,123.1 102.3,121.9 103.3,120.6 104.3,119.4 105.3,118.1 106.3,116.9 107.3,115.7 108.3,114.5 109.3,113.3 110.2,112.1 111.2,110.9 112.2,109.8 113.2,108.6 114.2,107.5 115.2,106.3 116.2,105.2 117.2,104.1 118.2,103 119.2,101.9 120.1,100.8 121.1,99.7 122.1,98.6 123.1,97.6 124.1,96.5 125.1,95.5 126.1,94.5 127.1,93.4 128.1,92.4 129,91.4 130,90.4 131,89.4 132,88.5 133,87.5 134,86.5 135,85.6 136,84.7 137,83.7 138,82.8 138.9,81.9 139.9,81 140.9,80.1 141.9,79.3 142.9,78.4 143.9,77.5 144.9,76.7 145.9,75.8 146.9,75 147.8,74.2 148.8,73.4 149.8,72.6 150.8,71.8 151.8,71 152.8,70.2 153.8,69.5 154.8,68.7 155.8,68 156.8,67.2 157.7,66.5 158.7,65.8 159.7,65.1 160.7,64.4 161.7,63.7 162.7,63 163.7,62.3 164.7,61.7 165.7,61 166.6,60.4 167.6,59.8 168.6,59.2 169.6,58.5 170.6,57.9 171.6,57.3 172.6,56.8 173.6,56.2 174.6,55.6 175.6,55.1 176.5,54.5 177.5,54 178.5,53.5 179.5,53 180.5,52.5 181.5,52 182.5,51.5 183.5,51 184.5,50.5 185.4,50.1 186.4,49.6 187.4,49.2 188.4,48.8 189.4,48.3 190.4,47.9 191.4,47.5 192.4,47.1 193.4,46.8 194.3,46.4 195.3,46 196.3,45.7 197.3,45.3 198.3,45"/><polyline class="c-mc" points="198.3,45 199,45.3 199.7,45.6 200.4,46 201.1,46.3 201.8,46.7 202.5,47.1 203.3,47.4 204,47.8 204.7,48.2 205.4,48.6 206.1,49 206.8,49.5 207.5,49.9 208.2,50.3 208.9,50.8 209.6,51.2 210.3,51.7 211,52.2 211.7,52.7 212.4,53.2 213.1,53.7 213.9,54.2 214.6,54.8 215.3,55.3 216,55.9 216.7,56.4 217.4,57 218.1,57.6 218.8,58.2 219.5,58.8 220.2,59.4 220.9,60 221.6,60.6 222.3,61.3 223,61.9 223.8,62.6 224.5,63.2 225.2,63.9 225.9,64.6 226.6,65.3 227.3,66 228,66.7 228.7,67.5 229.4,68.2 230.1,69 230.8,69.7 231.5,70.5 232.2,71.2 232.9,72 233.6,72.8 234.4,73.6 235.1,74.5 235.8,75.3 236.5,76.1 237.2,77 237.9,77.8 238.6,78.7 239.3,79.6 240,80.4 240.7,81.3 241.4,82.2 242.1,83.1 242.8,84.1 243.5,85 244.2,85.9 245,86.9 245.7,87.9 246.4,88.8 247.1,89.8 247.8,90.8 248.5,91.8 249.2,92.8 249.9,93.8 250.6,94.9 251.3,95.9 252,97 252.7,98 253.4,99.1 254.1,100.2 254.8,101.2 255.6,102.3 256.3,103.5 257,104.6 257.7,105.7 258.4,106.8 259.1,108 259.8,109.1 260.5,110.3 261.2,111.5 261.9,112.7 262.6,113.9 263.3,115.1 264,116.3 264.7,117.5 265.4,118.8 266.2,120 266.9,121.3 267.6,122.5 268.3,123.8 269,125.1 269.7,126.4 270.4,127.7 271.1,129 271.8,130.3 272.5,131.6 273.2,133 273.9,134.3 274.6,135.7 275.3,137.1 276,138.5 276.8,139.8 277.5,141.2 278.2,142.7 278.9,144.1 279.6,145.5 280.3,147 281,148.4 281.7,149.9 282.4,151.3 283.1,152.8 283.8,154.3 284.5,155.8 285.2,157.3 285.9,158.8 286.6,160.4 287.4,161.9 288.1,163.4 288.8,165 289.5,166.6 290.2,168.1 290.9,169.7 291.6,171.3 292.3,172.9 293,174.6 293.7,176.2 294.4,177.8 295.1,179.5 295.8,181.1 296.5,182.8 297.2,184.5 298,186.1 298.7,187.8 299.4,189.5 300.1,191.2 300.8,193 301.5,194.7 302.2,196.5 302.9,198.2 303.6,200 304.3,201.7 305,203.5 305.7,205.3 306.4,207.1 307.1,208.9 307.9,210.7 308.6,212.6 309.3,214.4 310,216.3 310.7,218.1 311.4,220"/></g><line class="ax" x1="40" y1="220" x2="346" y2="220"/><polygon class="ax-head" points="352,220 346,216.5 346,223.5"/><line class="ax" x1="40" y1="220" x2="40" y2="10"/><polygon class="ax-head" points="40,4 36.5,10 43.5,10"/><text class="axl" x="350" y="237" text-anchor="end">q<tspan dy="3.5" font-size="9">1</tspan></text><text class="axl" x="48" y="9">π<tspan dy="3.5" font-size="9">1</tspan></text><circle class="pt" cx="198.3" cy="45" r="4"/><line class="ax" x1="175.7" y1="220" x2="175.7" y2="224"/><text class="tk" x="175.7" y="236" text-anchor="middle">6</text><line class="ax" x1="198.3" y1="220" x2="198.3" y2="224"/><text class="tk" x="198.3" y="236" text-anchor="middle">7</text><line class="ax" x1="311.4" y1="220" x2="311.4" y2="224"/><text class="tk" x="311.4" y="236" text-anchor="middle">12</text><line class="ax" x1="36" y1="45" x2="40" y2="45"/><text class="tk" x="33" y="49" text-anchor="end">35</text><text class="t" x="89.8" y="110" text-anchor="start">фирма 2 производит</text><text class="t" x="230" y="70" text-anchor="start">фирма 2 = 0</text></svg><figcaption>Слева от 7 фирма 2 производит, и прибыль лидера растёт. Справа фирма 2 молчит, лидер — монополист, но после 6 прибыль уже падает. Максимум в точке стыка \(q_1=7\).</figcaption></figure><!--/FIG:B7-->
+        <p class="answer">\(q_1=7\), \(q_2=0\), p = 5, \(\pi_1=35\).</p></li>
+      <li class="step"><b>(c) Все c</b>
+        <p>Внутренний максимум первого участка \(q_1=\frac{12+c}2\) лежит внутри, если \(\frac{12+c}2\lt12-c\iff c\lt4\). Монопольный объём 6 лежит во втором участке, если \(6\ge12-c\iff c\ge6\).</p>
+        <p class="answer">c &lt; 4: \(q_1=6+\frac c2\), \(q_2=3-\frac{3c}4\). 4 ≤ c &lt; 6: \(q_1=12-c\), \(q_2=0\) (лидер вытесняет). c ≥ 6: \(q_1=6\) (монополия), \(q_2=0\).</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Показать первый шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+    <button class="done-btn" type="button">Отметить: решил сам</button>
+  </article>
+
+  <article class="card ex task" data-id="B8">
+    <div class="card-head"><span class="chip ex">Банк B.8</span><span class="card-title">Entry Deterrence Game</span></div>
+    <p class="cond">p = 12 − Q, \(C_1=0\), у фирмы 2 только вход стоит F. Фирма 1 — лидер; при безразличии фирма 2 не входит. (a) BR фирмы 2. (b) F = 0. (c) F = 4.</p>
+    <ol class="steps">
+      <li class="step"><b>(a) BR фирмы 2</b>
+        <p>Если входит: \(q_2=\frac{12-q_1}2\), прибыль \(\left(\frac{12-q_1}2\right)^2-F\). Входит, если это &gt; 0 ⇔ \(q_1\lt12-2\sqrt F\).</p>
+        <p class="answer">\(q_2=\frac{12-q_1}2\) при \(q_1\lt12-2\sqrt F\), иначе 0.</p></li>
+      <li class="step"><b>(b) F = 0</b>
+        <p>Обычный Штакельберг: \(\pi_1=\frac{12-q_1}2q_1\Rightarrow q_1=6\), \(q_2=3\), p = 3.</p>
+        <p class="answer">\(\pi_1=18\), \(\pi_2=9\).</p></li>
+      <li class="step"><b>(c) F = 4</b>
+        <p>Порог \(12-2\cdot2=8\). Пустить: \(q_1=6\), \(\pi_1=18\). Не пустить: \(q_1=8\), p = 4, \(\pi_1=32\).</p>
+        <!--FIG:B8--><figure class="fig"><svg viewBox="0 0 360 250" role="img" aria-label="Прибыль лидера при F=4: 18 если пустить, 32 при q1=8 если не пустить" xmlns="http://www.w3.org/2000/svg"><defs><clipPath id="clip-t2B8"><rect x="40" y="20" width="294" height="200"/></clipPath></defs><g clip-path="url(#clip-t2B8)"><line class="guide" x1="175.7" y1="130" x2="175.7" y2="220"/><line class="guide" x1="175.7" y1="130" x2="40" y2="130"/><line class="guide" x1="220.9" y1="60" x2="220.9" y2="220"/><line class="guide" x1="220.9" y1="60" x2="40" y2="60"/><polyline class="c-d" points="40,220 41.1,218.5 42.3,217 43.4,215.6 44.5,214.1 45.7,212.7 46.8,211.2 47.9,209.8 49,208.4 50.2,207 51.3,205.6 52.4,204.3 53.6,202.9 54.7,201.6 55.8,200.2 57,198.9 58.1,197.6 59.2,196.3 60.4,195 61.5,193.8 62.6,192.5 63.7,191.3 64.9,190 66,188.8 67.1,187.6 68.3,186.4 69.4,185.2 70.5,184.1 71.7,182.9 72.8,181.8 73.9,180.6 75.1,179.5 76.2,178.4 77.3,177.3 78.4,176.2 79.6,175.2 80.7,174.1 81.8,173.1 83,172 84.1,171 85.2,170 86.4,169 87.5,168 88.6,167.1 89.8,166.1 90.9,165.2 92,164.2 93.1,163.3 94.3,162.4 95.4,161.5 96.5,160.6 97.7,159.8 98.8,158.9 99.9,158.1 101.1,157.2 102.2,156.4 103.3,155.6 104.5,154.8 105.6,154 106.7,153.3 107.8,152.5 109,151.8 110.1,151 111.2,150.3 112.4,149.6 113.5,148.9 114.6,148.2 115.8,147.6 116.9,146.9 118,146.3 119.2,145.6 120.3,145 121.4,144.4 122.5,143.8 123.7,143.2 124.8,142.7 125.9,142.1 127.1,141.6 128.2,141 129.3,140.5 130.5,140 131.6,139.5 132.7,139 133.9,138.6 135,138.1 136.1,137.7 137.2,137.2 138.4,136.8 139.5,136.4 140.6,136 141.8,135.6 142.9,135.3 144,134.9 145.2,134.6 146.3,134.2 147.4,133.9 148.6,133.6 149.7,133.3 150.8,133 151.9,132.8 153.1,132.5 154.2,132.3 155.3,132 156.5,131.8 157.6,131.6 158.7,131.4 159.9,131.2 161,131.1 162.1,130.9 163.3,130.8 164.4,130.6 165.5,130.5 166.6,130.4 167.8,130.3 168.9,130.2 170,130.2 171.2,130.1 172.3,130.1 173.4,130 174.6,130 175.7,130 176.8,130 178,130 179.1,130.1 180.2,130.1 181.3,130.2 182.5,130.2 183.6,130.3 184.7,130.4 185.9,130.5 187,130.6 188.1,130.8 189.3,130.9 190.4,131.1 191.5,131.2 192.7,131.4 193.8,131.6 194.9,131.8 196,132 197.2,132.3 198.3,132.5 199.4,132.8 200.6,133 201.7,133.3 202.8,133.6 204,133.9 205.1,134.2 206.2,134.6 207.4,134.9 208.5,135.3 209.6,135.6 210.7,136 211.9,136.4 213,136.8 214.1,137.2 215.3,137.7 216.4,138.1 217.5,138.6 218.7,139 219.8,139.5 220.9,140"/><polyline class="c-mc" points="220.9,60 221.5,60.5 222.1,61 222.6,61.5 223.2,62.1 223.8,62.6 224.3,63.1 224.9,63.7 225.4,64.2 226,64.8 226.6,65.3 227.1,65.9 227.7,66.5 228.3,67 228.8,67.6 229.4,68.2 230,68.8 230.5,69.4 231.1,70 231.7,70.6 232.2,71.2 232.8,71.9 233.4,72.5 233.9,73.2 234.5,73.8 235.1,74.5 235.6,75.1 236.2,75.8 236.8,76.4 237.3,77.1 237.9,77.8 238.5,78.5 239,79.2 239.6,79.9 240.1,80.6 240.7,81.3 241.3,82.1 241.8,82.8 242.4,83.5 243,84.3 243.5,85 244.1,85.8 244.7,86.5 245.2,87.3 245.8,88 246.4,88.8 246.9,89.6 247.5,90.4 248.1,91.2 248.6,92 249.2,92.8 249.8,93.6 250.3,94.5 250.9,95.3 251.5,96.1 252,97 252.6,97.8 253.2,98.7 253.7,99.5 254.3,100.4 254.8,101.2 255.4,102.1 256,103 256.5,103.9 257.1,104.8 257.7,105.7 258.2,106.6 258.8,107.5 259.4,108.4 259.9,109.4 260.5,110.3 261.1,111.3 261.6,112.2 262.2,113.2 262.8,114.1 263.3,115.1 263.9,116.1 264.5,117 265,118 265.6,119 266.2,120 266.7,121 267.3,122 267.8,123 268.4,124 269,125.1 269.5,126.1 270.1,127.2 270.7,128.2 271.2,129.3 271.8,130.3 272.4,131.4 272.9,132.5 273.5,133.5 274.1,134.6 274.6,135.7 275.2,136.8 275.8,137.9 276.3,139 276.9,140.1 277.5,141.2 278,142.4 278.6,143.5 279.2,144.7 279.7,145.8 280.3,147 280.9,148.1 281.4,149.3 282,150.4 282.5,151.6 283.1,152.8 283.7,154 284.2,155.2 284.8,156.4 285.4,157.6 285.9,158.8 286.5,160.1 287.1,161.3 287.6,162.5 288.2,163.8 288.8,165 289.3,166.3 289.9,167.5 290.5,168.8 291,170 291.6,171.3 292.2,172.6 292.7,173.9 293.3,175.2 293.9,176.5 294.4,177.8 295,179.1 295.6,180.5 296.1,181.8 296.7,183.1 297.2,184.5 297.8,185.8 298.4,187.2 298.9,188.5 299.5,189.9 300.1,191.2 300.6,192.6 301.2,194 301.8,195.4 302.3,196.8 302.9,198.2 303.5,199.6 304,201 304.6,202.4 305.2,203.9 305.7,205.3 306.3,206.8 306.9,208.2 307.4,209.7 308,211.1 308.6,212.6 309.1,214.1 309.7,215.5 310.3,217 310.8,218.5 311.4,220"/><polyline class="c-jump" points="220.9,140 220.9,60"/></g><line class="ax" x1="40" y1="220" x2="346" y2="220"/><polygon class="ax-head" points="352,220 346,216.5 346,223.5"/><line class="ax" x1="40" y1="220" x2="40" y2="10"/><polygon class="ax-head" points="40,4 36.5,10 43.5,10"/><text class="axl" x="350" y="237" text-anchor="end">q<tspan dy="3.5" font-size="9">1</tspan></text><text class="axl" x="48" y="9">π<tspan dy="3.5" font-size="9">1</tspan></text><circle class="pt" cx="175.7" cy="130" r="4"/><circle class="pt" cx="220.9" cy="60" r="4"/><circle class="pt-open" cx="220.9" cy="140" r="4"/><line class="ax" x1="175.7" y1="220" x2="175.7" y2="224"/><text class="tk" x="175.7" y="236" text-anchor="middle">6</text><line class="ax" x1="220.9" y1="220" x2="220.9" y2="224"/><text class="tk" x="220.9" y="236" text-anchor="middle">8</text><line class="ax" x1="311.4" y1="220" x2="311.4" y2="224"/><text class="tk" x="311.4" y="236" text-anchor="middle">12</text><line class="ax" x1="36" y1="130" x2="40" y2="130"/><text class="tk" x="33" y="134" text-anchor="end">18</text><line class="ax" x1="36" y1="60" x2="40" y2="60"/><text class="tk" x="33" y="64" text-anchor="end">32</text><text class="t" x="62.6" y="170" text-anchor="start">пустить фирму 2</text><text class="t" x="230" y="50" text-anchor="start">не пустить</text></svg><figcaption>До \(q_1=8\) фирма 2 входит и прибыль лидера не выше 18 (при \(q_1=6\)). С \(q_1=8\) вход невыгоден, прибыль скачком растёт до 32. Лидер выбирает 8.</figcaption></figure><!--/FIG:B8-->
+        <p class="answer">\(q_1=8\), фирма 2 не входит; \(\pi_1=32\), \(\pi_2=0\).</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Показать первый шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+    <button class="done-btn" type="button">Отметить: решил сам</button>
+  </article>
+</section>
+
+<!-- ============ B4 ============ -->
+<section class="topic" id="b4">
+  <div class="topic-head"><div class="num">B·4</div><div><h2>Хотеллинг</h2><p class="src">Задачи банка B.9, B.10</p></div></div>
+  <div class="recipe-box">
+    <span class="label">Рецепт</span>
+    <ol class="recipe">
+      <li><div>Покупатель в точке x идёт к фирме 1 с затратами \(p_1+\) дорога до 0, к фирме 2 с затратами \(p_2+\) дорога до 1. Приравняй и найди безразличного \(\hat x\).</div></li>
+      <li><div>Фирма 1 продаёт \(\hat x\), фирма 2 продаёт \(1-\hat x\). Условие «обе продают»: \(0\lt\hat x\lt1\).</div></li>
+      <li><div>Прибыли \((p_i-c)\cdot\)доля, производная по своей цене ⇒ BR.</div></li>
+      <li><div>Одновременно: пересечение BR. Последовательно: подставь BR второй в прибыль первой.</div></li>
+    </ol>
+    <p>Стандартный результат с ценой дороги t: одновременно \(p=c+t\), прибыли по t/2.</p>
+  </div>
+  <p class="trap">в ценовой конкуренции ходить вторым выгоднее: последователь чуть дешевле лидера и забирает больше рынка.</p>
+
+  <article class="card ex task" data-id="B9">
+    <div class="card-head"><span class="chip ex">Банк B.9</span><span class="card-title">Sequential Hotelling Model</span></div>
+    <p class="cond">Улица [0; 1], фирма 1 в 0, фирма 2 в 1, t = 20 за километр, MC = c. Фирма 1 назначает цену первой. (a) Безразличный покупатель. (b) BR фирмы 2 и прибыль фирмы 1. (c) Цены и кто зарабатывает больше.</p>
+    <ol class="steps">
+      <li class="step"><b>(a) Безразличный покупатель</b>
+        <p>\(p_1+20x=p_2+20(1-x)\Rightarrow\hat x=\frac12+\frac{p_2-p_1}{40}\). Обе продают при \(|p_2-p_1|\lt20\).</p>
+        <!--FIG:B9--><figure class="fig"><svg viewBox="0 0 360 110" role="img" aria-label="Улица от 0 до 1, безразличный покупатель в точке 3/8" xmlns="http://www.w3.org/2000/svg"><rect class="a-cs-r" x="30" y="48" width="112.5" height="24"/><rect class="a-ps-r" x="142.5" y="48" width="187.5" height="24"/><line class="ax" x1="30" y1="60" x2="330" y2="60"/><circle class="pt" cx="30" cy="60" r="5"/><circle class="pt" cx="330" cy="60" r="5"/><line class="c-jump-l" x1="142.5" y1="38" x2="142.5" y2="82"/><text class="t" x="30" y="40" text-anchor="middle">фирма 1</text><text class="t" x="330" y="40" text-anchor="middle">фирма 2</text><text class="tm" x="142.5" y="98" text-anchor="middle">x̂ = 3/8</text><text class="tk" x="30" y="98" text-anchor="middle">0</text><text class="tk" x="330" y="98" text-anchor="middle">1</text><text class="tl" x="86.25" y="64" text-anchor="middle">к фирме 1</text><text class="tl" x="236.25" y="64" text-anchor="middle">к фирме 2</text></svg><figcaption>Покупатели левее \(\hat x\) идут к фирме 1, правее — к фирме 2. В равновесии B.9 \(\hat x=3/8\): лидер дороже и получает меньшую часть улицы.</figcaption></figure><!--/FIG:B9--></li>
+      <li class="step"><b>(b) BR и прибыль лидера</b>
+        <p>\(\pi_2=(p_2-c)\frac{20+p_1-p_2}{40}\Rightarrow p_2=\frac{20+p_1+c}2\). Подставляем: \(\hat x=\frac{60+c-p_1}{80}\), \(\pi_1=(p_1-c)\frac{60+c-p_1}{80}\).</p></li>
+      <li class="step"><b>(c) Равновесие</b>
+        <p>\(60+c-p_1-(p_1-c)=0\Rightarrow p_1=c+30\), \(p_2=c+25\), \(\hat x=\frac38\).</p>
+        <p class="answer">\(p_1^*=c+30\), \(p_2^*=c+25\). \(\pi_1=30\cdot\frac38=11{,}25\), \(\pi_2=25\cdot\frac58=15{,}625\): больше зарабатывает фирма 2, ходящая второй.</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Показать первый шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+    <button class="done-btn" type="button">Отметить: решил сам</button>
+  </article>
+
+  <article class="card ex task" data-id="B10">
+    <div class="card-head"><span class="chip ex">Банк B.10</span><span class="card-title">Price Competition in the Mountains</span></div>
+    <p class="cond">Фирма 1 внизу (0), фирма 2 наверху (1). Вниз идти бесплатно, вверх t = 3 за километр. Цены одновременно, MC = c. (a) Безразличный покупатель. (b) BR. (c) NE и прибыли.</p>
+    <ol class="steps">
+      <li class="step"><b>(a) Безразличный покупатель</b>
+        <p>К фирме 1 вниз: затраты \(p_1\). К фирме 2 вверх на \(1-x\): \(p_2+3(1-x)\). Равенство: \(\hat x=1-\frac{p_1-p_2}3\). Левее \(\hat x\) идут к фирме 1.</p>
+        <p class="answer">Доли: фирма 1 \(1-\frac{p_1-p_2}3\), фирма 2 \(\frac{p_1-p_2}3\). Обе продают при \(0\lt p_1-p_2\lt3\).</p></li>
+      <li class="step"><b>(b) Лучшие ответы</b>
+        <p>\(\pi_1=(p_1-c)\frac{3-p_1+p_2}3\Rightarrow p_1=\frac{3+p_2+c}2\). \(\pi_2=(p_2-c)\frac{p_1-p_2}3\Rightarrow p_2=\frac{p_1+c}2\).</p></li>
+      <li class="step"><b>(c) Равновесие</b>
+        <p>\(p_1=\frac{3+c+\frac{p_1+c}2}2\Rightarrow p_1=c+2\), \(p_2=c+1\), \(\hat x=\frac23\).</p>
+        <p class="answer">\(p_1^*=c+2\), \(p_2^*=c+1\); \(\pi_1=2\cdot\frac23=\frac43\), \(\pi_2=1\cdot\frac13=\frac13\).</p></li>
+    </ol>
+    <div class="controls"><button class="btn" type="button" data-act="next">Показать первый шаг</button><button class="btn ghost" type="button" data-act="all">Показать всё</button><button class="btn ghost" type="button" data-act="reset">Скрыть</button><span class="counter"></span></div>
+    <button class="done-btn" type="button">Отметить: решил сам</button>
+  </article>
+</section>
+
+<p class="foot">Источник: Question Bank II (2026) курса «Микроэкономика 2» (О. Баранов). Ответы проверены численным перебором. Отметки «решил сам» хранятся только в этом браузере.</p>
+</div>
+
+
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] },
+  svg: { fontCache: 'global' },
+  startup: { pageReady: function(){ return MathJax.startup.defaultPageReady().then(function(){ if (window.fixWideMath) window.fixWideMath(document); }); } }
+};
+(function(){
+  var s = document.createElement('script');
+  s.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.js';
+  s.async = true;
+  s.onerror = function(){
+    var f = document.createElement('script');
+    f.src = 'https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js';
+    f.async = true;
+    document.head.appendChild(f);
+  };
+  document.head.appendChild(s);
+})();
+</script>
+<script>
+(function(){
+  /* Long inline formulas: let them scroll inside the column instead of widening the page */
+  window.fixWideMath = function(root){
+    root.querySelectorAll('mjx-container:not([display="true"])').forEach(function(m){
+      if (m.offsetParent === null) return;
+      m.classList.remove('wide-math');
+      if (m.getBoundingClientRect().width > m.parentElement.clientWidth + 1) m.classList.add('wide-math');
+    });
+  };
+  var rt;
+  window.addEventListener('resize', function(){ clearTimeout(rt); rt = setTimeout(function(){ window.fixWideMath(document); }, 150); });
+  document.addEventListener('toggle', function(e){ window.fixWideMath(e.target); }, true);
+
+  /* Step-by-step reveal */
+  document.querySelectorAll('.card.ex').forEach(function(card){
+    var steps = Array.prototype.slice.call(card.querySelectorAll('.step'));
+    var next = card.querySelector('[data-act="next"]');
+    var all = card.querySelector('[data-act="all"]');
+    var reset = card.querySelector('[data-act="reset"]');
+    var counter = card.querySelector('.counter');
+    var shown = 0;
+    function update(){
+      steps.forEach(function(s, i){ s.hidden = i >= shown; });
+      counter.textContent = shown === 0 ? 'Шагов в разборе: ' + steps.length : 'Показано ' + shown + ' из ' + steps.length;
+      next.disabled = shown >= steps.length;
+      next.textContent = shown === 0 ? 'Показать первый шаг' : (shown >= steps.length ? 'Разбор окончен' : 'Следующий шаг');
+      reset.hidden = shown === 0;
+    }
+    next.addEventListener('click', function(){
+      if (shown < steps.length){
+        var s = steps[shown]; shown++; update();
+        s.classList.remove('fresh'); void s.offsetWidth; s.classList.add('fresh');
+        window.fixWideMath(card);
+      }
+    });
+    all.addEventListener('click', function(){ shown = steps.length; update(); window.fixWideMath(card); });
+    reset.addEventListener('click', function(){ shown = 0; update(); });
+    update();
+  });
+
+  /* Solved-task tracking, kept in this browser only */
+  var KEY = 'micro2-test2-solved-v1';
+  var solved = {};
+  try { solved = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { solved = {}; }
+  var tasks = Array.prototype.slice.call(document.querySelectorAll('.task[data-id]'));
+  var doneEl = document.getElementById('done-count');
+  var totalEl = document.getElementById('total-count');
+  var fill = document.getElementById('fill');
+  function save(){ try { localStorage.setItem(KEY, JSON.stringify(solved)); } catch (e) {} }
+  function render(){
+    var n = 0;
+    tasks.forEach(function(t){
+      var on = !!solved[t.dataset.id];
+      if (on) n++;
+      t.classList.toggle('is-done', on);
+      var b = t.querySelector('.done-btn');
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      b.textContent = on ? 'Решено ✓' : 'Отметить: решил сам';
+    });
+    doneEl.textContent = n;
+    totalEl.textContent = tasks.length;
+    fill.style.width = (tasks.length ? (n / tasks.length * 100) : 0) + '%';
+  }
+  tasks.forEach(function(t){
+    t.querySelector('.done-btn').addEventListener('click', function(){
+      var id = t.dataset.id;
+      if (solved[id]) delete solved[id]; else solved[id] = true;
+      save(); render();
+    });
+  });
+  render();
+})();
+</script>
