@@ -455,10 +455,21 @@ p,li{overflow-wrap:anywhere}
     <section class="quest" data-q="A6-a">
       <div class="q-head"><span class="q-tag">(a)</span><span class="q-pts">10 очков</span><h3>Очки и лучшие ответы</h3></div>
       <ol class="moves">
-        <li>Половина прибыли: 2·(s<sub>T</sub> + s<sub>J</sub> + s<sub>T</sub>s<sub>J</sub>).</li>
-        <li>Очки Тома: u<sub>T</sub> = 2s<sub>T</sub> + 2s<sub>J</sub> + 2s<sub>T</sub>s<sub>J</sub> − s<sub>T</sub>². Очки Джерри: то же, но минус 2s<sub>J</sub>².</li>
-        <li>Том ищет вершину холма: производная по s<sub>T</sub>: 2 + 2s<sub>J</sub> − 2s<sub>T</sub> = 0 → <b>s<sub>T</sub> = 1 + s<sub>J</sub></b> (но не больше 8).</li>
-        <li>Джерри: 2 + 2s<sub>T</sub> − 4s<sub>J</sub> = 0 → <b>s<sub>J</sub> = (1 + s<sub>T</sub>) / 2</b>.</li>
+        <li><b>Откуда очки.</b> Прибыль фирмы 4·(s<sub>T</sub> + s<sub>J</sub> + s<sub>T</sub>s<sub>J</sub>). Каждому достаётся половина: 4 : 2 = 2, значит каждый получает 2·(s<sub>T</sub> + s<sub>J</sub> + s<sub>T</sub>s<sub>J</sub>).</li>
+        <li>Раскрываем скобки (умножаем 2 на каждое слагаемое): 2s<sub>T</sub> + 2s<sub>J</sub> + 2s<sub>T</sub>s<sub>J</sub>.</li>
+        <li>Из этого вычитаем усталость. У Тома она s<sub>T</sub>². Очки Тома: <b>u<sub>T</sub> = 2s<sub>T</sub> + 2s<sub>J</sub> + 2s<sub>T</sub>s<sub>J</sub> − s<sub>T</sub>²</b>.</li>
+        <li>У Джерри усталость 2s<sub>J</sub>². Очки Джерри: <b>u<sub>J</sub> = 2s<sub>T</sub> + 2s<sub>J</sub> + 2s<sub>T</sub>s<sub>J</sub> − 2s<sub>J</sub>²</b>.</li>
+        <li><b>Лучший ответ Тома.</b> Том управляет только своим s<sub>T</sub>, а s<sub>J</sub> для него — просто какое-то число. Берём производную по s<sub>T</sub> по каждому кусочку:
+          <ul>
+            <li>2s<sub>T</sub> → 2;</li>
+            <li>2s<sub>J</sub> → 0 (это не s<sub>T</sub>, а просто число);</li>
+            <li>2s<sub>T</sub>s<sub>J</sub> → 2s<sub>J</sub> (s<sub>J</sub> — как число перед s<sub>T</sub>);</li>
+            <li>−s<sub>T</sub>² → −2s<sub>T</sub>.</li>
+          </ul>
+          Вместе: 2 + 2s<sub>J</sub> − 2s<sub>T</sub>.</li>
+        <li>Вершина холма — там, где производная равна 0: 2 + 2s<sub>J</sub> − 2s<sub>T</sub> = 0. Переносим 2s<sub>T</sub> вправо: 2 + 2s<sub>J</sub> = 2s<sub>T</sub>. Делим на 2: <b>s<sub>T</sub> = 1 + s<sub>J</sub></b>. Часов не может быть больше 8, поэтому пишем min(1 + s<sub>J</sub>, 8).</li>
+        <li><b>Лучший ответ Джерри</b> — то же самое, но по s<sub>J</sub>: 2s<sub>T</sub> → 0, 2s<sub>J</sub> → 2, 2s<sub>T</sub>s<sub>J</sub> → 2s<sub>T</sub>, −2s<sub>J</sub>² → −4s<sub>J</sub>. Вместе 2 + 2s<sub>T</sub> − 4s<sub>J</sub> = 0 → 4s<sub>J</sub> = 2 + 2s<sub>T</sub> → <b>s<sub>J</sub> = (1 + s<sub>T</sub>) / 2</b>.</li>
+        <li>Смысл: чем больше работает Джерри, тем больше выгодно работать Тому. Его часы «умножают» прибыль через s<sub>T</sub>s<sub>J</sub>.</li>
       </ol>
       <p class="answer"><b>Ответ:</b> BR Тома: s<sub>T</sub> = min(1 + s<sub>J</sub>, 8). BR Джерри: s<sub>J</sub> = (1 + s<sub>T</sub>)/2.</p>
       <button class="claim" type="button">Забрать 10 очков</button>
