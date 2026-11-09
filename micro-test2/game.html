@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="ru">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Тест 2: игра на очки</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: «игровой экран» — липкая панель счёта сверху, уровни-карточки по одному, внутри квесты по 10 очков. Крупный Lexend, короткие блоки, без курсива */
+:root{
+  --bg:#f4f1ea; --card:#fffdf8; --ink:#25242c; --muted:#5f5b68; --line:#e0d8c6;
+  --quest:#3651a3; --quest-soft:#e7ecf8; --coin:#8a5a00; --coin-soft:#fbefcf; --win:#1d7a4c; --win-soft:#e1f2e8;
+  --f:"Lexend","Verdana","Tahoma",system-ui,sans-serif;
+  --size:19px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#1b1a20; --card:#24232b; --ink:#ebe6db; --muted:#aca69a; --line:#3a3843;
+  --quest:#a9bcf2; --quest-soft:#2b3148; --coin:#f0c66e; --coin-soft:#3a3020; --win:#6fd3a0; --win-soft:#173225; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1b1a20; --card:#24232b; --ink:#ebe6db; --muted:#aca69a; --line:#3a3843;
+  --quest:#a9bcf2; --quest-soft:#2b3148; --coin:#f0c66e; --coin-soft:#3a3020; --win:#6fd3a0; --win-soft:#173225; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{font-size:var(--size)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f);font-size:1rem;line-height:1.75;letter-spacing:.01em;word-spacing:.06em}
+.page{max-width:38rem;margin:0 auto;padding-inline:16px;padding-block:20px 90px;display:grid;gap:1.4rem}
+h1{font-size:1.5rem;line-height:1.3;margin:0;font-weight:700;text-wrap:balance}
+h2{font-size:1.15rem;line-height:1.4;margin:0;font-weight:600;text-wrap:balance}
+h3{font-size:1rem;margin:0;font-weight:600}
+p,ul,ol{margin:0}
+ul,ol{padding-left:1.35em;display:grid;gap:.55rem}
+b{font-weight:600}
+.muted{color:var(--muted)}
+
+/* score bar */
+.hud{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line);margin-inline:-16px;padding:10px 16px;display:grid;gap:6px}
+.hud-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.score{font-weight:700;font-variant-numeric:tabular-nums;color:var(--coin);background:var(--coin-soft);border-radius:999px;padding:2px 12px}
+.track{flex:1;min-width:120px;height:8px;border-radius:4px;background:var(--line);overflow:hidden}
+.fill{height:100%;width:0;background:var(--win);transition:width .3s}
+.rank{font-size:.85rem;color:var(--muted)}
+.tools{display:flex;gap:8px;align-items:center}
+.tools button,.btn{font:inherit;font-size:.85rem;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:5px 12px;cursor:pointer}
+button:focus-visible,summary:focus-visible,a:focus-visible{outline:3px solid var(--quest);outline-offset:2px}
+
+/* intro boxes */
+.box{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.1rem 1.1rem;display:grid;gap:.9rem}
+.rule{background:var(--quest-soft);border-radius:12px;padding:.75rem 1rem;display:grid;gap:.4rem}
+.rule b{color:var(--quest)}
+
+/* levels */
+details.level{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+details.level>summary{list-style:none;cursor:pointer;padding:1rem 1.1rem;display:grid;grid-template-columns:auto 1fr auto;gap:.8rem;align-items:center}
+details.level>summary::-webkit-details-marker{display:none}
+.lvl{font-weight:700;font-size:.85rem;color:var(--card);background:var(--quest);border-radius:8px;padding:2px 8px;white-space:nowrap}
+.got{font-size:.85rem;font-weight:600;color:var(--coin);white-space:nowrap;font-variant-numeric:tabular-nums}
+details.level[open]>summary{border-bottom:1px solid var(--line)}
+details.level.done>summary .lvl{background:var(--win)}
+.lvl-body{padding:1rem 1.1rem 1.2rem;display:grid;gap:1.1rem}
+.story{border-left:4px solid var(--coin);padding-left:.9rem;display:grid;gap:.5rem}
+.quest{border:1.5px solid var(--line);border-radius:14px;padding:.9rem 1rem;display:grid;gap:.8rem}
+.quest.claimed{border-color:var(--win);background:linear-gradient(var(--win-soft),var(--win-soft)) top/100% 5px no-repeat}
+.q-head{display:flex;gap:.6rem;align-items:baseline;flex-wrap:wrap}
+.q-tag{font-weight:700;color:var(--quest)}
+.q-pts{font-size:.8rem;font-weight:700;color:var(--coin);background:var(--coin-soft);border-radius:999px;padding:0 9px}
+.ask{font-weight:500}
+ol.moves>li::marker{color:var(--quest);font-weight:700}
+.tbl-wrap{overflow-x:auto;max-width:100%}
+table{border-collapse:collapse;font-size:.9rem;font-variant-numeric:tabular-nums}
+th,td{border:1px solid var(--line);padding:4px 10px;text-align:center;white-space:nowrap}
+th{background:var(--quest-soft);font-weight:600}
+td.hit{background:var(--win-soft);color:var(--win);font-weight:700}
+.answer{background:var(--win-soft);color:var(--ink);border-radius:10px;padding:.6rem .9rem}
+.answer b{color:var(--win)}
+.check{background:var(--coin-soft);border-radius:10px;padding:.6rem .9rem;display:grid;gap:.35rem}
+.check>b{color:var(--coin)}
+.claim{justify-self:start;font:inherit;font-size:.9rem;font-weight:600;border:2px solid var(--coin);background:transparent;color:var(--coin);border-radius:12px;padding:6px 14px;cursor:pointer}
+.claim[aria-pressed="true"]{border-color:var(--win);background:var(--win-soft);color:var(--win)}
+.trap{border:2px dashed var(--coin);border-radius:12px;padding:.6rem .9rem}
+.trap b{color:var(--coin)}
+.section-title{font-size:.85rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-top:.6rem}
+.toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--win);color:var(--card);font-weight:600;border-radius:999px;padding:6px 16px;opacity:0;transition:opacity .25s;pointer-events:none}
+.toast.show{opacity:1}
+@media (prefers-reduced-motion: reduce){.fill,.toast{transition:none}}
+p,li{overflow-wrap:anywhere}
+</style>
+
+<div class="page">
+
+<header style="display:grid;gap:.9rem">
+  <h1>Тест 2: игра на очки</h1>
+  <p>Завтра тест. Здесь всё объяснено с нуля и устроено как игра.</p>
+  <p>На тесте ты получишь <b>2 задачи по 30 очков</b>. В каждой задаче три пункта: (a), (b), (c). <b>Каждый пункт — 10 очков.</b> Здесь каждый пункт — отдельный квест на 10 очков.</p>
+  <p>Прочитал квест, понял — жми «Забрать 10 очков». Счёт сверху растёт. Читать можно в любом порядке.</p>
+</header>
+
+<div class="hud" role="region" aria-label="Счёт">
+  <div class="hud-row">
+    <span class="score" id="score">0 / 660</span>
+    <div class="track" aria-hidden="true"><div class="fill" id="fill"></div></div>
+    <div class="tools" role="group" aria-label="Размер текста">
+      <button type="button" id="smaller" aria-label="Уменьшить текст">A−</button>
+      <button type="button" id="bigger" aria-label="Увеличить текст">A+</button>
+    </div>
+  </div>
+  <span class="rank" id="rank">Ранг: новичок. Начни с уровня 0.</span>
+</div>
+
+<!-- ============ LEVEL 0 ============ -->
+<details class="level" data-level="L0" open>
+  <summary><span class="lvl">Уровень 0</span><h2>Правила игры: как вообще устроены эти задачи</h2><span class="got" data-got></span></summary>
+  <div class="lvl-body">
+
+    <div class="story">
+      <p>Почти все задачи теста — это <b>игры</b>. В игре есть <b>игроки</b>, у каждого есть <b>ходы</b>, и за каждый исход игроки получают <b>очки</b>.</p>
+      <p>Каждый игрок хочет набрать <b>себе</b> как можно больше очков. Про чужие очки он не думает.</p>
+      <p>Фирмы в части B — тоже игроки. Их очки — это прибыль.</p>
+    </div>
+
+    <section class="quest" data-q="L0-1">
+      <div class="q-head"><span class="q-tag">Квест 0.1</span><span class="q-pts">10 очков</span><h3>Как читать таблицу</h3></div>
+      <div class="tbl-wrap"><table><thead><tr><th></th><th>Лево</th><th>Право</th></tr></thead><tbody>
+        <tr><th>Верх</th><td>3, 3</td><td>0, 2</td></tr>
+        <tr><th>Низ</th><td>2, 0</td><td>1, 1</td></tr></tbody></table></div>
+      <ol class="moves">
+        <li>Игрок 1 выбирает <b>строку</b> (Верх или Низ). Игрок 2 выбирает <b>столбец</b> (Лево или Право).</li>
+        <li>Они попадают в одну клетку. В клетке два числа.</li>
+        <li><b>Первое число — очки игрока 1. Второе — очки игрока 2.</b></li>
+        <li>Пример: Верх и Право — клетка «0, 2». Игрок 1 получает 0 очков, игрок 2 получает 2.</li>
+      </ol>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+
+    <section class="quest" data-q="L0-2">
+      <div class="q-head"><span class="q-tag">Квест 0.2</span><span class="q-pts">10 очков</span><h3>Лучший ответ</h3></div>
+      <p class="ask"><b>Лучший ответ</b> — это ход, который даёт мне больше всего очков, если я уже знаю ход соперника.</p>
+      <ol class="moves">
+        <li>Представь: игрок 2 точно играет «Лево». Смотрим только столбец Лево.</li>
+        <li>Игрок 1 сравнивает свои очки (первые числа): Верх даёт 3, Низ даёт 2.</li>
+        <li>3 больше, значит лучший ответ игрока 1 на «Лево» — <b>Верх</b>. Подчеркни это 3.</li>
+        <li>Для игрока 2 то же самое, только он смотрит строку и вторые числа. Если игрок 1 играет Верх: Лево даёт 3, Право даёт 2. Лучший ответ — Лево. Подчеркни это 3.</li>
+      </ol>
+      <div class="check"><b>Правило подчёркивания</b><p>Игрок 1: в каждом <b>столбце</b> подчеркни самое большое <b>первое</b> число. Игрок 2: в каждой <b>строке</b> подчеркни самое большое <b>второе</b> число. Если поровну — подчёркивай оба.</p></div>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+
+    <section class="quest" data-q="L0-3">
+      <div class="q-head"><span class="q-tag">Квест 0.3</span><span class="q-pts">10 очков</span><h3>Равновесие Нэша (NE)</h3></div>
+      <p class="ask">Равновесие Нэша — клетка, из которой <b>никто не хочет уходить</b>. Если поменять только свой ход, очков не станет больше.</p>
+      <ol class="moves">
+        <li>Подчеркни все лучшие ответы, как в квесте 0.2.</li>
+        <li>Найди клетки, где подчёркнуты <b>оба</b> числа.</li>
+        <li>Это и есть равновесия Нэша.</li>
+      </ol>
+      <div class="tbl-wrap"><table><thead><tr><th></th><th>Лево</th><th>Право</th></tr></thead><tbody>
+        <tr><th>Верх</th><td class="hit"><u>3</u>, <u>3</u></td><td>0, 2</td></tr>
+        <tr><th>Низ</th><td>2, 0</td><td class="hit"><u>1</u>, <u>1</u></td></tr></tbody></table></div>
+      <p>Здесь два равновесия: (Верх, Лево) и (Низ, Право).</p>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+
+    <section class="quest" data-q="L0-4">
+      <div class="q-head"><span class="q-tag">Квест 0.4</span><span class="q-pts">10 очков</span><h3>Доминирование: «этот ход всегда хуже»</h3></div>
+      <ol class="moves">
+        <li><b>Строго доминируемый</b> ход: есть другой ход, который даёт <b>больше очков всегда</b>, что бы ни сделал соперник. Такой ход никто не сыграет.</li>
+        <li><b>Слабо доминируемый</b>: другой ход даёт <b>не меньше</b> всегда и <b>больше</b> хотя бы в одном месте. Где-то может быть поровну.</li>
+        <li>Как проверять: поставь две строки рядом и сравни числа попарно, столбец за столбцом.</li>
+        <li><b>Смесь</b>: иногда одна строка не хуже другой, а хуже «половинки» двух других. Например, «с шансом 1/3 играю x, иначе z». Очки смеси в столбце = 1/3 · очки x + 2/3 · очки z. Если смесь везде строго больше — строка строго доминируема.</li>
+        <li><b>IESDS</b> — вычёркиваем строго доминируемые ходы по кругу: вычеркнул, посмотрел на маленькую таблицу, вычеркнул ещё. <b>IEWDS</b> — то же, но со слабыми.</li>
+      </ol>
+      <div class="trap"><b>Ловушка.</b> Равновесия Нэша ищи в <b>исходной</b> таблице. Слабое вычёркивание может стереть равновесие.</div>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+
+    <section class="quest" data-q="L0-5">
+      <div class="q-head"><span class="q-tag">Квест 0.5</span><span class="q-pts">10 очков</span><h3>Ход — это число: лучший ответ через производную</h3></div>
+      <ol class="moves">
+        <li>Иногда ход — не «Верх/Низ», а число: сколько часов работать, сколько товара выпустить, какую цену поставить.</li>
+        <li>Очки тогда — формула. Например: очки = 10q − q² − q·(ход соперника).</li>
+        <li>Очки сначала растут, потом падают — как холм. Лучший ход — <b>вершина холма</b>. На вершине наклон равен нулю.</li>
+        <li>Поэтому: <b>производная очков по своему ходу = 0</b>. Отсюда выражаешь свой ход через ход соперника. Это и есть «функция лучшего ответа» (BR).</li>
+        <li>Равновесие Нэша: оба играют лучший ответ. Решаешь систему из двух уравнений.</li>
+      </ol>
+      <div class="check"><b>Производные, которые нужны</b><p>(q²)′ = 2q. (a·q)′ = a. (число)′ = 0. (a·q·x)′ по q = a·x.</p></div>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+
+    <section class="quest" data-q="L0-6">
+      <div class="q-head"><span class="q-tag">Квест 0.6</span><span class="q-pts">10 очков</span><h3>Игра по очереди: решаем с конца</h3></div>
+      <ol class="moves">
+        <li>Если игроки ходят по очереди, рисуют <b>дерево</b>: сверху первый игрок, от него ветки-ходы, потом второй, внизу очки.</li>
+        <li><b>Обратная индукция</b>: начинаем снизу. Последний игрок выбирает ветку с наибольшими своими очками.</li>
+        <li>Первый игрок это знает заранее и выбирает ход, зная, чем ответит второй.</li>
+        <li>То, что получилось, называется <b>SPNE</b>. Это равновесие без пустых угроз: никто не обещает сделать то, что ему же невыгодно.</li>
+      </ol>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+  </div>
+</details>
+
+<p class="section-title">Часть A</p>
+
+<!-- ============ A.1 ============ -->
+<details class="level" data-level="A1">
+  <summary><span class="lvl">A.1</span><h2>Таблица 3 × 4: вычёркивание и равновесия</h2><span class="got" data-got></span></summary>
+  <div class="lvl-body">
+    <div class="story"><p>Игрок 1 выбирает строку x, y или z. Игрок 2 выбирает столбец A, B, C или D. В клетке: (очки игрока 1, очки игрока 2).</p></div>
+    <div class="tbl-wrap"><table><thead><tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th></tr></thead><tbody>
+      <tr><th>x</th><td>10, 10</td><td>6, 9</td><td>4, 5</td><td>10, 8</td></tr>
+      <tr><th>y</th><td>7, 4</td><td>7, 10</td><td>4, 5</td><td>10, 9</td></tr>
+      <tr><th>z</th><td>6, 6</td><td>8, 6</td><td>8, 5</td><td>10, 4</td></tr></tbody></table></div>
+
+    <section class="quest" data-q="A1-a">
+      <div class="q-head"><span class="q-tag">(a)</span><span class="q-pts">10 очков</span><h3>Вычеркни строго худшие ходы (IESDS)</h3></div>
+      <ol class="moves">
+        <li>Начнём с игрока 2. Выпиши его очки по столбцам (вторые числа сверху вниз): A = (10, 4, 6), B = (9, 10, 6), C = (5, 5, 5), D = (8, 9, 4).</li>
+        <li>Сравни C и B: 9 &gt; 5, 10 &gt; 5, 6 &gt; 5. B всегда лучше. <b>Вычёркиваем C.</b></li>
+        <li>Сравни D и B: 9 &gt; 8, 10 &gt; 9, 6 &gt; 4. <b>Вычёркиваем D.</b></li>
+        <li>Остались столбцы A и B. Теперь игрок 1 (первые числа): x = (10, 6), y = (7, 7), z = (6, 8).</li>
+        <li>Ни одна строка не лучше y везде. Пробуем смесь: «1/3 играю x, 2/3 играю z». В A: 1/3·10 + 2/3·6 = 7,33. В B: 1/3·6 + 2/3·8 = 7,33. Обе больше 7. <b>Вычёркиваем y.</b></li>
+        <li>Игрок 2 в строках x, z: A = (10, 6), B = (9, 6). В строке z поровну (6 = 6), значит строгого нет. Стоп.</li>
+      </ol>
+      <p class="answer"><b>Ответ:</b> остаются x, z у игрока 1 и A, B у игрока 2.</p>
+      <div class="check"><b>Чтобы забрать 10 очков, на листе должно быть:</b><ul><li>каждое вычёркивание с числами: «C хуже B: 9 &gt; 5, 10 &gt; 5, 6 &gt; 5»;</li><li>смесь с вероятностью и посчитанными числами;</li><li>фраза, почему остановился.</li></ul></div>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+
+    <section class="quest" data-q="A1-b">
+      <div class="q-head"><span class="q-tag">(b)</span><span class="q-pts">10 очков</span><h3>Вычеркни и слабо худшие (IEWDS)</h3></div>
+      <ol class="moves">
+        <li>Продолжаем с того места, где остановились: строки x, z, столбцы A, B.</li>
+        <li>У игрока 2 A = (10, 6) не хуже B = (9, 6) и где-то лучше. Это слабое доминирование. <b>Вычёркиваем B.</b></li>
+        <li>Остался столбец A. Игрок 1: x даёт 10, z даёт 6. <b>Вычёркиваем z.</b></li>
+      </ol>
+      <p class="answer"><b>Ответ:</b> остаётся одна клетка (x, A).</p>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+
+    <section class="quest" data-q="A1-c">
+      <div class="q-head"><span class="q-tag">(c)</span><span class="q-pts">10 очков</span><h3>Найди все равновесия Нэша</h3></div>
+      <ol class="moves">
+        <li>Берём <b>исходную</b> таблицу.</li>
+        <li>Игрок 1, по столбцам: в A больше всего 10 (x). В B — 8 (z). В C — 8 (z). В D — 10 у всех.</li>
+        <li>Игрок 2, по строкам: в x больше всего 10 (A). В y — 10 (B). В z — 6 у A и у B.</li>
+        <li>Где подчёркнуты оба числа? В (x, A) и в (z, B).</li>
+      </ol>
+      <div class="tbl-wrap"><table><thead><tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th></tr></thead><tbody>
+        <tr><th>x</th><td class="hit"><u>10</u>, <u>10</u></td><td>6, 9</td><td>4, <u>5</u></td><td><u>10</u>, 8</td></tr>
+        <tr><th>y</th><td>7, 4</td><td>7, <u>10</u></td><td>4, 5</td><td><u>10</u>, 9</td></tr>
+        <tr><th>z</th><td>6, <u>6</u></td><td class="hit"><u>8</u>, <u>6</u></td><td><u>8</u>, 5</td><td><u>10</u>, 4</td></tr></tbody></table></div>
+      <p class="answer"><b>Ответ:</b> (x, A) и (z, B). Заметь: (z, B) пропало в пункте (b). Так бывает при слабом вычёркивании.</p>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+  </div>
+</details>
+
+<!-- ============ A.2 ============ -->
+<details class="level" data-level="A2">
+  <summary><span class="lvl">A.2</span><h2>Игра трёх игроков</h2><span class="got" data-got></span></summary>
+  <div class="lvl-body">
+    <div class="story">
+      <p>Игрок I выбирает строку (T или B), игрок II — столбец (L или R), игрок III — <b>какую таблицу</b> (U — левая, D — правая).</p>
+      <p>В клетке три числа: очки I, очки II, очки III.</p>
+    </div>
+    <div class="tbl-wrap"><table><thead><tr><th>III = U</th><th>L</th><th>R</th></tr></thead><tbody>
+      <tr><th>T</th><td>2, 3, 2</td><td>0, 2, 1</td></tr><tr><th>B</th><td>0, 1, 1</td><td>3, 1, 3</td></tr></tbody></table></div>
+    <div class="tbl-wrap"><table><thead><tr><th>III = D</th><th>L</th><th>R</th></tr></thead><tbody>
+      <tr><th>T</th><td>3, 4, 1</td><td>1, 1, 0</td></tr><tr><th>B</th><td>2, 5, 0</td><td>5, 3, 1</td></tr></tbody></table></div>
+
+    <section class="quest" data-q="A2-a">
+      <div class="q-head"><span class="q-tag">(a)</span><span class="q-pts">10 очков</span><h3>Строго худшие ходы каждого</h3></div>
+      <ol class="moves">
+        <li>Игрок III: сравниваем <b>одинаковые клетки</b> двух таблиц, третьи числа. (T,L): 2 против 1. (T,R): 1 против 0. (B,L): 1 против 0. (B,R): 3 против 1.</li>
+        <li>U всегда больше. Значит <b>D строго хуже U</b>.</li>
+        <li>Игрок I: T даёт (2, 0, 3, 1), B даёт (0, 3, 2, 5) в тех же четырёх ситуациях. Где-то больше одно, где-то другое. Строгого нет.</li>
+        <li>Игрок II: см. пункт (b), там равенство.</li>
+      </ol>
+      <p class="answer"><b>Ответ:</b> строго доминируема только D у игрока III.</p>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+
+    <section class="quest" data-q="A2-b">
+      <div class="q-head"><span class="q-tag">(b)</span><span class="q-pts">10 очков</span><h3>Слабо (но не строго) худшие</h3></div>
+      <ol class="moves">
+        <li>Игрок II: L против R, вторые числа. (T,U): 3 и 2. (B,U): 1 и 1. (T,D): 4 и 1. (B,D): 5 и 3.</li>
+        <li>L нигде не хуже, почти везде лучше, но в (B,U) поровну.</li>
+      </ol>
+      <p class="answer"><b>Ответ:</b> R у игрока II слабо, но не строго доминируема.</p>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+
+    <section class="quest" data-q="A2-c">
+      <div class="q-head"><span class="q-tag">(c)</span><span class="q-pts">10 очков</span><h3>Равновесия Нэша</h3></div>
+      <ol class="moves">
+        <li>D всегда хуже, значит в равновесии III играет U. Смотрим только левую таблицу.</li>
+        <li>(T, L, U): I получает 2, а если уйдёт в B — 0. II получает 3, а в R — 2. III получает 2, а в D — 1. Никто не уходит. <b>Равновесие.</b></li>
+        <li>(B, R, U): I: 3 против 0. II: 1 против 1 (не больше — не уходит). III: 3 против 1. <b>Равновесие.</b></li>
+        <li>(T, R, U): I уйдёт в B и получит 3 вместо 0. Не равновесие. (B, L, U): I уйдёт в T. Не равновесие.</li>
+      </ol>
+      <p class="answer"><b>Ответ:</b> (T, L, U) и (B, R, U).</p>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+  </div>
+</details>
+
+<!-- ============ A.3 ============ -->
+<details class="level" data-level="A3">
+  <summary><span class="lvl">A.3</span><h2>Угадай число</h2><span class="got" data-got></span></summary>
+  <div class="lvl-body">
+    <div class="story">
+      <p>Очень много игроков. Каждый пишет число от 1 до 100. Считают среднее A. Цель T = округлённое (2 + ⅔·A).</p>
+      <p><b>Очки:</b> угадал цель — 1 очко, не угадал — 0.</p>
+      <p>Игроков очень много, поэтому твоё число среднее почти не меняет.</p>
+    </div>
+
+    <section class="quest" data-q="A3-a">
+      <div class="q-head"><span class="q-tag">(a)</span><span class="q-pts">10 очков</span><h3>Какие числа слабо доминируемы</h3></div>
+      <ol class="moves">
+        <li>Какой может быть цель? Самое маленькое среднее 1: 2 + ⅔ = 2,67, округляем до 3. Самое большое 100: 2 + 66,67 = 68,67, округляем до 69.</li>
+        <li>Значит цель всегда от 3 до 69.</li>
+        <li>Числа 1, 2 и 70…100 <b>никогда</b> не дают очко. Число 3 иногда даёт. Значит 3 не хуже никогда и иногда лучше — слабо доминирует.</li>
+      </ol>
+      <p class="answer"><b>Ответ:</b> слабо доминируемы 1, 2 и 70, …, 100.</p>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+
+    <section class="quest" data-q="A3-b">
+      <div class="q-head"><span class="q-tag">(b)</span><span class="q-pts">10 очков</span><h3>Три раунда вычёркивания</h3></div>
+      <ol class="moves">
+        <li>Раунд 1: остались числа 3…69.</li>
+        <li>Раунд 2: теперь среднее от 3 до 69. Цель от 2 + 2 = 4 до 2 + 46 = 48. Остались 4…48.</li>
+        <li>Раунд 3: среднее от 4 до 48. Цель от 2 + 2,67 = 4,67 → 5 до 2 + 32 = 34. Остались 5…34.</li>
+      </ol>
+      <p class="answer"><b>Ответ:</b> после трёх раундов остаются 5, …, 34.</p>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+
+    <section class="quest" data-q="A3-c">
+      <div class="q-head"><span class="q-tag">(c)</span><span class="q-pts">10 очков</span><h3>Симметричные равновесия</h3></div>
+      <ol class="moves">
+        <li>«Симметричное» значит: все пишут одно и то же число s. Тогда среднее тоже s.</li>
+        <li>Если цель равна s, все получают по очку. Уйти на другое число — потерять очко. Это равновесие.</li>
+        <li>Если цель не равна s, все получают 0, и любой может написать цель и забрать очко. Не равновесие.</li>
+        <li>Проверяем: s = 5: 2 + 3,33 = 5,33 → 5. Да. s = 6: 2 + 4 = 6. Да. s = 7: 2 + 4,67 = 6,67 → 7. Да. s = 4 даёт 5, s = 8 даёт 7 — нет.</li>
+      </ol>
+      <p class="answer"><b>Ответ:</b> все пишут 5, или все 6, или все 7.</p>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+  </div>
+</details>
+
+<!-- ============ A.4 ============ -->
+<details class="level" data-level="A4">
+  <summary><span class="lvl">A.4</span><h2>Пробки</h2><span class="got" data-got></span></summary>
+  <div class="lvl-body">
+    <div class="story">
+      <p>Игроки — водители. Их «очки» — это <b>минус время в пути</b>: чем быстрее доехал, тем лучше.</p>
+      <p>Три дороги из A в B. Верх: 10 + z/10 минут (z — машин на дороге). Середина: всегда 40, но только из A в B. Низ: 20 + z/10.</p>
+      <p><b>Главное правило:</b> в равновесии на всех дорогах, где кто-то едет, время одинаковое. Иначе кто-то перестроится на более быструю.</p>
+    </div>
+
+    <section class="quest" data-q="A4-a">
+      <div class="q-head"><span class="q-tag">(a)</span><span class="q-pts">10 очков</span><h3>1000 машин из A в B</h3></div>
+      <ol class="moves">
+        <li>Середина всегда 40. Значит общее время будет 40.</li>
+        <li>Верх: 10 + z/10 = 40 → z/10 = 30 → z = <b>300</b>.</li>
+        <li>Низ: 20 + z/10 = 40 → z = <b>200</b>.</li>
+        <li>Середина: 1000 − 300 − 200 = <b>500</b>.</li>
+      </ol>
+      <p class="answer"><b>Ответ:</b> 300 сверху, 500 по середине, 200 снизу. Все едут 40 минут.</p>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+
+    <section class="quest" data-q="A4-b">
+      <div class="q-head"><span class="q-tag">(b)</span><span class="q-pts">10 очков</span><h3>1000 машин из B в A</h3></div>
+      <ol class="moves">
+        <li>Середина односторонняя: обратно по ней нельзя. Только верх и низ.</li>
+        <li>Пусть сверху u, снизу l. Тогда u + l = 1000.</li>
+        <li>Время равно: 10 + u/10 = 20 + l/10 → u − l = 100.</li>
+        <li>Складываем: 2u = 1100 → u = <b>550</b>, l = <b>450</b>. Время 10 + 55 = 65.</li>
+      </ol>
+      <p class="answer"><b>Ответ:</b> 550 сверху, 450 снизу, 65 минут.</p>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+
+    <section class="quest" data-q="A4-c">
+      <div class="q-head"><span class="q-tag">(c)</span><span class="q-pts">10 очков</span><h3>500 туда и 500 обратно</h3></div>
+      <ol class="moves">
+        <li>Пробки считаются по всем машинам на дороге, в обе стороны.</li>
+        <li>Едущие из B в A могут только верх или низ. Едущие из A в B могут ещё и середину (40).</li>
+        <li>Если бы все 1000 ехали по верху и низу, время было бы 65 (как в (b)). Это хуже 40 — едущие из A в B уйдут на середину.</li>
+        <li>Время на верху и низу станет ровно 40, когда там 300 + 200 = 500 машин. Это как раз 500 едущих из B в A.</li>
+      </ol>
+      <p class="answer"><b>Ответ:</b> из A в B все 500 по середине. Из B в A 300 сверху и 200 снизу. Все едут 40 минут.</p>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+  </div>
+</details>
+
+<!-- ============ A.5 ============ -->
+<details class="level" data-level="A5">
+  <summary><span class="lvl">A.5</span><h2>Платная дорога</h2><span class="got" data-got></span></summary>
+  <div class="lvl-body">
+    <div class="story">
+      <p>Верх: 15 + z/10. Середина: 30 минут, но платная, X рублей. Низ: 25 + z/10. Едут 1000 машин.</p>
+      <p>Для водителя <b>10 рублей = 1 минута</b>. Значит плата X — это ещё X/10 минут. Тогда середина «стоит» 30 + X/10 минут.</p>
+    </div>
+
+    <section class="quest" data-q="A5-a">
+      <div class="q-head"><span class="q-tag">(a)</span><span class="q-pts">10 очков</span><h3>Плата 100 рублей</h3></div>
+      <ol class="moves">
+        <li>Середина: 30 + 100/10 = 40 минут. Общее время 40.</li>
+        <li>Верх: 15 + z/10 = 40 → z = 250. Низ: 25 + z/10 = 40 → z = 150.</li>
+        <li>Середина: 1000 − 250 − 150 = 600.</li>
+        <li>Выручка дороги: 600 машин × 100 рублей = 60 000.</li>
+      </ol>
+      <p class="answer"><b>Ответ:</b> 250 / 600 / 150, выручка 60 000 рублей.</p>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+
+    <section class="quest" data-q="A5-b">
+      <div class="q-head"><span class="q-tag">(b)</span><span class="q-pts">10 очков</span><h3>Плата 400 рублей</h3></div>
+      <ol class="moves">
+        <li>Середина: 30 + 40 = 70 минут.</li>
+        <li>Без середины: u + l = 1000, 15 + u/10 = 25 + l/10 → u − l = 100 → u = 550, l = 450. Время 15 + 55 = 70.</li>
+        <li>Время ровно 70 — как у середины. Переходить туда нет смысла. На середине 0 машин.</li>
+      </ol>
+      <p class="answer"><b>Ответ:</b> 550 сверху, 450 снизу, 0 по середине, выручка 0.</p>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+
+    <section class="quest" data-q="A5-c">
+      <div class="q-head"><span class="q-tag">(c)</span><span class="q-pts">10 очков</span><h3>Лучшая плата для дороги</h3></div>
+      <ol class="moves">
+        <li>Пусть середина стоит M = 30 + X/10 минут. Тогда сверху 10(M − 15), снизу 10(M − 25).</li>
+        <li>По середине: 1000 − 10(M − 15) − 10(M − 25) = 1400 − 20M. Подставляем M: 1400 − 600 − 2X = <b>800 − 2X</b>.</li>
+        <li>Выручка = X · (800 − 2X). Это парабола вниз. Производная: 800 − 4X = 0 → <b>X = 200</b>.</li>
+        <li>Тогда по середине 400 машин, выручка 200 · 400 = 80 000.</li>
+      </ol>
+      <p class="answer"><b>Ответ:</b> плата 200 рублей, выручка 80 000.</p>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+  </div>
+</details>
+
+<!-- ============ A.6 ============ -->
+<details class="level" data-level="A6">
+  <summary><span class="lvl">A.6</span><h2>Партнёры Том и Джерри</h2><span class="got" data-got></span></summary>
+  <div class="lvl-body">
+    <div class="story">
+      <p>Фирма пополам. Ход каждого — сколько часов работать, от 0 до 8. Прибыль фирмы 4·(s<sub>T</sub> + s<sub>J</sub> + s<sub>T</sub>·s<sub>J</sub>).</p>
+      <p><b>Очки игрока</b> = половина прибыли минус его усталость. Усталость Тома s², Джерри 2s².</p>
+    </div>
+
+    <section class="quest" data-q="A6-a">
+      <div class="q-head"><span class="q-tag">(a)</span><span class="q-pts">10 очков</span><h3>Очки и лучшие ответы</h3></div>
+      <ol class="moves">
+        <li>Половина прибыли: 2·(s<sub>T</sub> + s<sub>J</sub> + s<sub>T</sub>s<sub>J</sub>).</li>
+        <li>Очки Тома: u<sub>T</sub> = 2s<sub>T</sub> + 2s<sub>J</sub> + 2s<sub>T</sub>s<sub>J</sub> − s<sub>T</sub>². Очки Джерри: то же, но минус 2s<sub>J</sub>².</li>
+        <li>Том ищет вершину холма: производная по s<sub>T</sub>: 2 + 2s<sub>J</sub> − 2s<sub>T</sub> = 0 → <b>s<sub>T</sub> = 1 + s<sub>J</sub></b> (но не больше 8).</li>
+        <li>Джерри: 2 + 2s<sub>T</sub> − 4s<sub>J</sub> = 0 → <b>s<sub>J</sub> = (1 + s<sub>T</sub>) / 2</b>.</li>
+      </ol>
+      <p class="answer"><b>Ответ:</b> BR Тома: s<sub>T</sub> = min(1 + s<sub>J</sub>, 8). BR Джерри: s<sub>J</sub> = (1 + s<sub>T</sub>)/2.</p>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+
+    <section class="quest" data-q="A6-b">
+      <div class="q-head"><span class="q-tag">(b)</span><span class="q-pts">10 очков</span><h3>Строго худшие ходы</h3></div>
+      <ol class="moves">
+        <li>Ход строго хуже, если он <b>никогда</b> не бывает лучшим ответом.</li>
+        <li>Лучший ответ Тома: при s<sub>J</sub> = 0 это 1, при s<sub>J</sub> = 7 и больше — 8. Значит он всегда от 1 до 8. Меньше 1 Тому работать невыгодно никогда.</li>
+        <li>Лучший ответ Джерри: при s<sub>T</sub> = 0 это 0,5, при s<sub>T</sub> = 8 — 4,5. Значит от 0,5 до 4,5.</li>
+      </ol>
+      <p class="answer"><b>Ответ:</b> у Тома всё меньше 1. У Джерри всё меньше 0,5 и больше 4,5.</p>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+
+    <section class="quest" data-q="A6-c">
+      <div class="q-head"><span class="q-tag">(c)</span><span class="q-pts">10 очков</span><h3>Равновесие</h3></div>
+      <ol class="moves">
+        <li>Подставь BR Тома в BR Джерри: s<sub>J</sub> = (1 + 1 + s<sub>J</sub>)/2 → 2s<sub>J</sub> = 2 + s<sub>J</sub> → s<sub>J</sub> = 2.</li>
+        <li>Тогда s<sub>T</sub> = 1 + 2 = 3.</li>
+      </ol>
+      <p class="answer"><b>Ответ:</b> Том 3 часа, Джерри 2 часа.</p>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+  </div>
+</details>
+
+<!-- ============ A.7 ============ -->
+<details class="level" data-level="A7">
+  <summary><span class="lvl">A.7</span><h2>Игра по очереди: дерево</h2><span class="got" data-got></span></summary>
+  <div class="lvl-body">
+    <div class="story">
+      <p>Игрок 1 выбирает x, y или z. Если z — игра кончается, очки (8, 5). Если x или y — игрок 2 <b>видит</b> выбор и отвечает A или B.</p>
+      <p>Очки: x-A (8, 10), x-B (2, 0), y-A (12, 0), y-B (6, 10).</p>
+    </div>
+
+    <section class="quest" data-q="A7-a">
+      <div class="q-head"><span class="q-tag">(a)</span><span class="q-pts">10 очков</span><h3>Нарисуй дерево</h3></div>
+      <ol class="moves">
+        <li>Сверху точка «Игрок 1». От неё три линии: x, y, z.</li>
+        <li>Линия z кончается сразу. Внизу пиши (8, 5).</li>
+        <li>В конце линии x ставь точку «Игрок 2». От неё две линии A и B. Внизу (8, 10) и (2, 0).</li>
+        <li>В конце линии y ещё одна точка «Игрок 2». Линии A и B, внизу (12, 0) и (6, 10).</li>
+      </ol>
+      <div class="check"><b>За 10 очков проверь:</b><p>у игрока 2 две <b>разные</b> точки (он знает, x было или y); подписаны все ветки; внизу пары очков.</p></div>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+
+    <section class="quest" data-q="A7-b">
+      <div class="q-head"><span class="q-tag">(b)</span><span class="q-pts">10 очков</span><h3>Таблица и равновесия Нэша</h3></div>
+      <ol class="moves">
+        <li>У игрока 2 ход — это план: «что после x, что после y». Четыре плана: AA, AB, BA, BB. Например, AB = «после x играю A, после y играю B».</li>
+        <li>Строим таблицу 3 × 4 и подчёркиваем лучшие ответы.</li>
+      </ol>
+      <div class="tbl-wrap"><table><thead><tr><th></th><th>AA</th><th>AB</th><th>BA</th><th>BB</th></tr></thead><tbody>
+        <tr><th>x</th><td>8, <u>10</u></td><td class="hit"><u>8</u>, <u>10</u></td><td>2, 0</td><td>2, 0</td></tr>
+        <tr><th>y</th><td><u>12</u>, 0</td><td>6, <u>10</u></td><td><u>12</u>, 0</td><td>6, <u>10</u></td></tr>
+        <tr><th>z</th><td>8, <u>5</u></td><td class="hit"><u>8</u>, <u>5</u></td><td>8, <u>5</u></td><td class="hit"><u>8</u>, <u>5</u></td></tr></tbody></table></div>
+      <p class="answer"><b>Ответ:</b> равновесия Нэша: (x, AB), (z, AB), (z, BB).</p>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+
+    <section class="quest" data-q="A7-c">
+      <div class="q-head"><span class="q-tag">(c)</span><span class="q-pts">10 очков</span><h3>SPNE: решаем с конца</h3></div>
+      <ol class="moves">
+        <li>Внизу. После x игрок 2: A даёт ему 10, B даёт 0. Берёт <b>A</b>.</li>
+        <li>После y: A даёт 0, B даёт 10. Берёт <b>B</b>. Его план: AB.</li>
+        <li>Теперь игрок 1 знает ответы: x → 8 очков, y → 6 очков, z → 8 очков. Лучше всего x или z.</li>
+      </ol>
+      <p class="answer"><b>Ответ:</b> SPNE: (x, AB) и (z, AB). Вариант (z, BB) — пустая угроза: «после x сыграю B» второму невыгодно.</p>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+  </div>
+</details>
+
+<!-- ============ A.8 ============ -->
+<details class="level" data-level="A8">
+  <summary><span class="lvl">A.8</span><h2>Скидываемся на крышу</h2><span class="got" data-got></span></summary>
+  <div class="lvl-body">
+    <div class="story">
+      <p>Три соседа. Ремонт стоит 4. Крыша «стоит» для Тома 3 очка, для Джерри 2, для Спайка 1.</p>
+      <p>Каждый называет число 0…4. Если сумма хотя бы 4 — чинят, и каждый платит 4 · (его число / сумма). Если меньше 4 — не чинят, никто не платит.</p>
+      <p><b>Очки игрока</b> = ценность крыши − платёж (если починили) или 0. Если поровну — все хотят, чтобы починили.</p>
+    </div>
+
+    <section class="quest" data-q="A8-a">
+      <div class="q-head"><span class="q-tag">(a)</span><span class="q-pts">10 очков</span><h3>Равновесия без ремонта</h3></div>
+      <ol class="moves">
+        <li>Сейчас у всех 0 очков. Может ли кто-то один «добить» сумму до 4 и не уйти в минус?</li>
+        <li>Если остальные назвали в сумме S, игроку надо добавить 4 − S и заплатить ровно 4 − S. Он это сделает, если 4 − S не больше его ценности.</li>
+        <li>Чтобы никто не захотел: у Тома (ценность 3) остальные дали меньше 1, то есть 0. У Джерри (2) — Том и Спайк меньше 2. У Спайка (1) — Том и Джерри меньше 3.</li>
+        <li>Джерри и Спайк называют 0, а Том 0 или 1.</li>
+      </ol>
+      <p class="answer"><b>Ответ:</b> (0, 0, 0) и (1, 0, 0).</p>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+
+    <section class="quest" data-q="A8-b">
+      <div class="q-head"><span class="q-tag">(b)</span><span class="q-pts">10 очков</span><h3>Равновесия с ремонтом</h3></div>
+      <ol class="moves">
+        <li>Если сумма больше 4, кто-то назовёт на 1 меньше — крышу всё равно починят, а платить меньше. Значит сумма <b>ровно 4</b>.</li>
+        <li>При сумме 4 каждый платит ровно своё число.</li>
+        <li>Платить больше ценности никто не будет: Том ≤ 3, Джерри ≤ 2, Спайк ≤ 1.</li>
+        <li>Перебираем суммы 4 с этими ограничениями.</li>
+      </ol>
+      <p class="answer"><b>Ответ:</b> (3, 1, 0), (2, 2, 0), (3, 0, 1), (2, 1, 1), (1, 2, 1).</p>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+
+    <section class="quest" data-q="A8-c">
+      <div class="q-head"><span class="q-tag">(c)</span><span class="q-pts">10 очков</span><h3>По очереди: Том, Джерри, Спайк</h3></div>
+      <ol class="moves">
+        <li>С конца. Спайк: если двое дали 4 — он даёт 0. Если дали 3 — добавит 1 (заплатит 1, это его ценность, а он хочет крышу). Если 2 и меньше — ему пришлось бы платить больше 1, он не станет.</li>
+        <li>Джерри знает это. Ему выгодно довести сумму до 3, Спайк добьёт остальное. Если Том дал 1 — Джерри даёт 2. Если Том дал 2 — Джерри даёт 1. Если 3 — Джерри даёт 0.</li>
+        <li>Том знает всё это. Дал 1 — заплатит 1, очков 3 − 1 = 2. Дал 2 — очков 1. Дал 3 — очков 0. Лучше дать 1.</li>
+      </ol>
+      <p class="answer"><b>Ответ:</b> Том 1, Джерри 2, Спайк 1. Крышу чинят. Очки: Том 2, Джерри 0, Спайк 0.</p>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+  </div>
+</details>
+
+<!-- ============ A.9 ============ -->
+<details class="level" data-level="A9">
+  <summary><span class="lvl">A.9</span><h2>Реклама: кафе и клуб</h2><span class="got" data-got></span></summary>
+  <div class="lvl-body">
+    <div class="story">
+      <p>Ход кафе — C (деньги на рекламу), ход клуба — N.</p>
+      <p>Очки кафе: (8 + N)·C − 2C². Очки клуба: (4 + C)·N − N²/2.</p>
+    </div>
+
+    <section class="quest" data-q="A9-a">
+      <div class="q-head"><span class="q-tag">(a)</span><span class="q-pts">10 очков</span><h3>Ходят одновременно</h3></div>
+      <ol class="moves">
+        <li>Кафе: производная по C: 8 + N − 4C = 0 → C = (8 + N)/4.</li>
+        <li>Клуб: производная по N: 4 + C − N = 0 → N = 4 + C.</li>
+        <li>Подставь второе в первое: C = (12 + C)/4 → 4C = 12 + C → C = 4. Тогда N = 8.</li>
+        <li>Очки: кафе (8 + 8)·4 − 2·16 = 32. Клуб (4 + 4)·8 − 32 = 32.</li>
+      </ol>
+      <p class="answer"><b>Ответ:</b> C = 4, N = 8, по 32 очка.</p>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+
+    <section class="quest" data-q="A9-b">
+      <div class="q-head"><span class="q-tag">(b)</span><span class="q-pts">10 очков</span><h3>Кафе ходит первым</h3></div>
+      <ol class="moves">
+        <li>Клуб увидит C и ответит N = 4 + C.</li>
+        <li>Кафе подставляет это в свои очки: (8 + 4 + C)·C − 2C² = 12C − C².</li>
+        <li>Вершина: 12 − 2C = 0 → C = 6. Клуб: N = 10.</li>
+        <li>Очки: кафе 72 − 36 = 36. Клуб (4 + 6)·10 − 50 = 50.</li>
+      </ol>
+      <p class="answer"><b>Ответ:</b> C = 6, N = 10. Кафе 36, клуб 50.</p>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+
+    <section class="quest" data-q="A9-c">
+      <div class="q-head"><span class="q-tag">(c)</span><span class="q-pts">10 очков</span><h3>Клуб ходит первым</h3></div>
+      <ol class="moves">
+        <li>Кафе ответит C = (8 + N)/4.</li>
+        <li>Клуб подставляет: (4 + 2 + N/4)·N − N²/2 = 6N − N²/4.</li>
+        <li>Вершина: 6 − N/2 = 0 → N = 12. Кафе: C = 20/4 = 5.</li>
+        <li>Очки: клуб 72 − 36 = 36. Кафе 20·5 − 50 = 50.</li>
+      </ol>
+      <p class="answer"><b>Ответ:</b> N = 12, C = 5. Клуб 36, кафе 50.</p>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+  </div>
+</details>
+
+<!-- ============ A.10 ============ -->
+<details class="level" data-level="A10">
+  <summary><span class="lvl">A.10</span><h2>Сговор: игра каждый день</h2><span class="got" data-got></span></summary>
+  <div class="lvl-body">
+    <div class="story">
+      <p>Двое играют эту таблицу каждый день, бесконечно. Очки завтрашнего дня весят меньше: умножаются на δ (от 0 до 1). δ — насколько игрок ценит будущее.</p>
+    </div>
+    <div class="tbl-wrap"><table><thead><tr><th></th><th>L</th><th>C</th><th>R</th></tr></thead><tbody>
+      <tr><th>T</th><td>11, 11</td><td>3, 15</td><td>5, 6</td></tr><tr><th>M</th><td>8, 9</td><td>8, 8</td><td>5, 2</td></tr><tr><th>B</th><td>12, 5</td><td>4, 3</td><td>6, 6</td></tr></tbody></table></div>
+
+    <section class="quest" data-q="A10-a">
+      <div class="q-head"><span class="q-tag">(a)</span><span class="q-pts">10 очков</span><h3>Докажи: равновесие одно</h3></div>
+      <ol class="moves">
+        <li>B лучше T у игрока 1: 12 &gt; 11, 4 &gt; 3, 6 &gt; 5. Вычёркиваем T.</li>
+        <li>У игрока 2 (строки M, B): L = (9, 5), C = (8, 3). L лучше. Вычёркиваем C.</li>
+        <li>У игрока 1 (столбцы L, R): B = (12, 6), M = (8, 5). Вычёркиваем M.</li>
+        <li>Осталась строка B: L даёт 5, R даёт 6. Вычёркиваем L.</li>
+      </ol>
+      <p class="answer"><b>Ответ:</b> осталась одна клетка (B, R) с очками (6, 6). Раз вычёркивание оставило одну клетку, равновесие только одно.</p>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+
+    <section class="quest" data-q="A10-b">
+      <div class="q-head"><span class="q-tag">(b)</span><span class="q-pts">10 очков</span><h3>Договор «играем (T, L)»</h3></div>
+      <ol class="moves">
+        <li>Правило «триггер»: каждый день играем (T, L) и получаем по 11. Если кто-то обманул — навсегда переходим на (B, R), по 6. Это наказание.</li>
+        <li>Обман невыгоден, если: <b>договор ≥ (1 − δ)·обман + δ·наказание</b>.</li>
+        <li>Игрок 1: лучший обман против L — B, 12 очков. 11 ≥ 12(1 − δ) + 6δ → 11 ≥ 12 − 6δ → δ ≥ 1/6.</li>
+        <li>Игрок 2: лучший обман против T — C, 15 очков. 11 ≥ 15 − 9δ → δ ≥ 4/9.</li>
+        <li>Нужно, чтобы держались оба. Берём больший порог.</li>
+      </ol>
+      <p class="answer"><b>Ответ:</b> δ ≥ 4/9.</p>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+
+    <section class="quest" data-q="A10-c">
+      <div class="q-head"><span class="q-tag">(c)</span><span class="q-pts">10 очков</span><h3>Договор «играем (M, C)»</h3></div>
+      <ol class="moves">
+        <li>По договору по 8. Наказание по 6.</li>
+        <li>Игрок 1 против C: M даёт 8, T даёт 3, B даёт 4. Обманывать незачем, условия нет.</li>
+        <li>Игрок 2 против M: L даёт 9. 8 ≥ 9(1 − δ) + 6δ → 8 ≥ 9 − 3δ → δ ≥ 1/3.</li>
+      </ol>
+      <p class="answer"><b>Ответ:</b> δ ≥ 1/3.</p>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+  </div>
+</details>
+
+<p class="section-title">Часть B: фирмы — тоже игроки, их очки — прибыль</p>
+
+<!-- ============ B.1 ============ -->
+<details class="level" data-level="B1">
+  <summary><span class="lvl">B.1</span><h2>Курно: две фирмы выбирают, сколько выпустить</h2><span class="got" data-got></span></summary>
+  <div class="lvl-body">
+    <div class="story">
+      <p>Ход фирмы — количество товара q. Цена зависит от того, сколько выпустили обе: чем больше товара, тем ниже цена.</p>
+      <p>Спрос D(p) = 22 − 2p. Издержки: фирма 1 платит 1 за штуку, фирма 2 — 3 за штуку.</p>
+      <p><b>Очки фирмы</b> = (цена − её издержки на штуку) × её количество.</p>
+    </div>
+
+    <section class="quest" data-q="B1-a">
+      <div class="q-head"><span class="q-tag">(a)</span><span class="q-pts">10 очков</span><h3>Лучшие ответы</h3></div>
+      <ol class="moves">
+        <li>Переверни спрос, чтобы цена была слева: Q = 22 − 2p → <b>p = 11 − Q/2</b>, где Q = q<sub>1</sub> + q<sub>2</sub>.</li>
+        <li>Очки фирмы 1: (11 − (q<sub>1</sub> + q<sub>2</sub>)/2 − 1)·q<sub>1</sub> = (10 − q<sub>1</sub>/2 − q<sub>2</sub>/2)·q<sub>1</sub>.</li>
+        <li>Производная по q<sub>1</sub>: 10 − q<sub>1</sub> − q<sub>2</sub>/2 = 0 → <b>q<sub>1</sub> = 10 − q<sub>2</sub>/2</b>.</li>
+        <li>Фирма 2 так же, только издержки 3: 8 − q<sub>2</sub> − q<sub>1</sub>/2 = 0 → <b>q<sub>2</sub> = 8 − q<sub>1</sub>/2</b>.</li>
+      </ol>
+      <p class="answer"><b>Ответ:</b> BR<sub>1</sub>: q<sub>1</sub> = 10 − q<sub>2</sub>/2. BR<sub>2</sub>: q<sub>2</sub> = 8 − q<sub>1</sub>/2 (если получилось меньше 0, то 0).</p>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+
+    <section class="quest" data-q="B1-b">
+      <div class="q-head"><span class="q-tag">(b)</span><span class="q-pts">10 очков</span><h3>Нарисуй лучшие ответы</h3></div>
+      <ol class="moves">
+        <li>Оси: q<sub>1</sub> вправо, q<sub>2</sub> вверх. Подпиши их.</li>
+        <li>BR<sub>1</sub> — прямая. Две точки: q<sub>2</sub> = 0 → q<sub>1</sub> = 10. q<sub>1</sub> = 0 → q<sub>2</sub> = 20. Соедини (10; 0) и (0; 20).</li>
+        <li>BR<sub>2</sub>: q<sub>1</sub> = 0 → q<sub>2</sub> = 8. q<sub>2</sub> = 0 → q<sub>1</sub> = 16. Соедини (0; 8) и (16; 0).</li>
+        <li>Подпиши прямые «BR1» и «BR2» и числа на осях.</li>
+      </ol>
+      <div class="check"><b>За 10 очков:</b><p>подписаны оси, обе прямые, все четыре числа на осях (10, 20, 8, 16), точка пересечения.</p></div>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+
+    <section class="quest" data-q="B1-c">
+      <div class="q-head"><span class="q-tag">(c)</span><span class="q-pts">10 очков</span><h3>Равновесие и прибыли</h3></div>
+      <ol class="moves">
+        <li>Подставь q<sub>2</sub> в BR<sub>1</sub>: q<sub>1</sub> = 10 − (8 − q<sub>1</sub>/2)/2 = 6 + q<sub>1</sub>/4.</li>
+        <li>q<sub>1</sub> − q<sub>1</sub>/4 = 6 → ¾q<sub>1</sub> = 6 → q<sub>1</sub> = 8. Тогда q<sub>2</sub> = 8 − 4 = 4.</li>
+        <li>Цена: p = 11 − 12/2 = 5.</li>
+        <li>Очки: фирма 1 (5 − 1)·8 = 32. Фирма 2 (5 − 3)·4 = 8.</li>
+      </ol>
+      <p class="answer"><b>Ответ:</b> q<sub>1</sub> = 8, q<sub>2</sub> = 4, p = 5, прибыли 32 и 8.</p>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+  </div>
+</details>
+
+<!-- ============ B.2 ============ -->
+<details class="level" data-level="B2">
+  <summary><span class="lvl">B.2</span><h2>Курно с буквой c</h2><span class="got" data-got></span></summary>
+  <div class="lvl-body">
+    <div class="story"><p>То же, что B.1, но издержки фирмы 2 неизвестны: c за штуку. Надо понять, при каких c она вообще производит.</p></div>
+
+    <section class="quest" data-q="B2-a">
+      <div class="q-head"><span class="q-tag">(a)</span><span class="q-pts">10 очков</span><h3>Лучшие ответы</h3></div>
+      <ol class="moves">
+        <li>Фирма 1 как в B.1: q<sub>1</sub> = 10 − q<sub>2</sub>/2.</li>
+        <li>Фирма 2: производная (11 − c) − q<sub>2</sub> − q<sub>1</sub>/2 = 0 → q<sub>2</sub> = 11 − c − q<sub>1</sub>/2.</li>
+      </ol>
+      <p class="answer"><b>Ответ:</b> q<sub>1</sub> = max(0; 10 − q<sub>2</sub>/2), q<sub>2</sub> = max(0; 11 − c − q<sub>1</sub>/2).</p>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+
+    <section class="quest" data-q="B2-b">
+      <div class="q-head"><span class="q-tag">(b)</span><span class="q-pts">10 очков</span><h3>Работает только одна фирма</h3></div>
+      <ol class="moves">
+        <li>Если фирма 2 молчит (q<sub>2</sub> = 0), фирма 1 выпускает 10.</li>
+        <li>Фирма 2 при q<sub>1</sub> = 10 хотела бы 11 − c − 5 = 6 − c. Она молчит, если 6 − c ≤ 0, то есть <b>c ≥ 6</b>.</li>
+        <li>Цена 11 − 5 = 6, прибыль фирмы 1: (6 − 1)·10 = 50.</li>
+      </ol>
+      <p class="answer"><b>Ответ:</b> при c ≥ 6: q<sub>1</sub> = 10, q<sub>2</sub> = 0, прибыль 50 и 0.</p>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+
+    <section class="quest" data-q="B2-c">
+      <div class="q-head"><span class="q-tag">(c)</span><span class="q-pts">10 очков</span><h3>Работают обе</h3></div>
+      <ol class="moves">
+        <li>Решаем систему как в B.1, но с c: q<sub>1</sub> = 10 − (11 − c − q<sub>1</sub>/2)/2.</li>
+        <li>Получаем q<sub>1</sub> = (18 + 2c)/3, q<sub>2</sub> = (24 − 4c)/3.</li>
+        <li>q<sub>2</sub> больше нуля, когда c &lt; 6.</li>
+        <li>Проверка: c = 3 даёт (8; 4) — как в B.1.</li>
+      </ol>
+      <p class="answer"><b>Ответ:</b> при 1 ≤ c &lt; 6: q<sub>1</sub> = (18 + 2c)/3, q<sub>2</sub> = (24 − 4c)/3.</p>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+  </div>
+</details>
+
+<!-- ============ B.3 ============ -->
+<details class="level" data-level="B3">
+  <summary><span class="lvl">B.3</span><h2>Бертран: фирмы выбирают цену</h2><span class="got" data-got></span></summary>
+  <div class="lvl-body">
+    <div class="story">
+      <p>Ход фирмы — цена. Товар одинаковый. Все покупают у того, кто дешевле. Если цены равны — рынок пополам.</p>
+      <p>Спрос 6 − 2p. Издержки q² (чем больше делаешь, тем дороже каждая штука).</p>
+      <p>Ищем цены p, при которых обе ставят одинаковую цену и никто не хочет менять.</p>
+    </div>
+
+    <section class="quest" data-q="B3-a">
+      <div class="q-head"><span class="q-tag">(a)</span><span class="q-pts">10 очков</span><h3>Прибыль не отрицательная</h3></div>
+      <ol class="moves">
+        <li>Каждая продаёт половину: q = (6 − 2p)/2 = 3 − p.</li>
+        <li>Прибыль: p·q − q² = (3 − p)·(p − (3 − p)) = (3 − p)(2p − 3).</li>
+        <li>Это ≥ 0, когда p от 1,5 до 3.</li>
+      </ol>
+      <p class="answer"><b>Ответ:</b> 1,5 ≤ p ≤ 3.</p>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+
+    <section class="quest" data-q="B3-b">
+      <div class="q-head"><span class="q-tag">(b)</span><span class="q-pts">10 очков</span><h3>Сбивать цену невыгодно</h3></div>
+      <ol class="moves">
+        <li>Если фирма чуть-чуть снизит цену, она заберёт <b>весь</b> спрос: 2q штук. Прибыль 2pq − 4q².</li>
+        <li>Сбивать невыгодно, если pq − q² ≥ 2pq − 4q². Сокращаем: 3q ≥ p.</li>
+        <li>Подставляем q = 3 − p: 9 − 3p ≥ p → p ≤ 2,25.</li>
+      </ol>
+      <p class="answer"><b>Ответ:</b> p ≤ 2,25.</p>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+
+    <section class="quest" data-q="B3-c">
+      <div class="q-head"><span class="q-tag">(c)</span><span class="q-pts">10 очков</span><h3>Все равновесия и конкурентная цена</h3></div>
+      <ol class="moves">
+        <li>Поднимать цену бессмысленно: продашь 0 и получишь 0, а сейчас не меньше 0.</li>
+        <li>Склеиваем (a) и (b): p от 1,5 до 2,25.</li>
+        <li>Конкурентная цена: каждая фирма готова продавать, пока цена = её предельные издержки 2q. Значит q = p/2 у каждой, вместе p. Спрос 6 − 2p = p → p = 2. Это внутри отрезка.</li>
+      </ol>
+      <p class="answer"><b>Ответ:</b> p от 1,5 до 2,25. Конкурентная цена 2 — тоже равновесие.</p>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+  </div>
+</details>
+
+<!-- ============ B.4 ============ -->
+<details class="level" data-level="B4">
+  <summary><span class="lvl">B.4</span><h2>Бертран с целыми ценами</h2><span class="got" data-got></span></summary>
+  <div class="lvl-body">
+    <div class="story">
+      <p>Цены только целые рубли. Спрос 20 − 2p. Издержки c за штуку.</p>
+      <p>При равных ценах каждая получает (p − c)·(10 − p). Если снизить на 1 рубль — заберёшь всех: (p − 1 − c)·(22 − 2p).</p>
+    </div>
+
+    <section class="quest" data-q="B4-a">
+      <div class="q-head"><span class="q-tag">(a)</span><span class="q-pts">10 очков</span><h3>c = 3,2</h3></div>
+      <div class="tbl-wrap"><table><thead><tr><th>цена p</th><th>делим рынок</th><th>снизить на 1</th><th>равновесие?</th></tr></thead><tbody>
+        <tr><td>4</td><td>0,8·6 = 4,8</td><td>убыток</td><td class="hit">да</td></tr>
+        <tr><td>5</td><td>1,8·5 = 9</td><td>0,8·12 = 9,6</td><td>нет</td></tr>
+        <tr><td>6</td><td>2,8·4 = 11,2</td><td>1,8·10 = 18</td><td>нет</td></tr></tbody></table></div>
+      <ol class="moves">
+        <li>Цена 3 и ниже — меньше издержек, в убыток. Не равновесие.</li>
+        <li>При 5 и выше снижать выгодно.</li>
+      </ol>
+      <p class="answer"><b>Ответ:</b> только (4, 4).</p>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+
+    <section class="quest" data-q="B4-b">
+      <div class="q-head"><span class="q-tag">(b)</span><span class="q-pts">10 очков</span><h3>(6, 6) не равновесие</h3></div>
+      <ol class="moves">
+        <li>c = 3 + δ. При (6, 6) каждая получает (3 − δ)·4 = 12 − 4δ.</li>
+        <li>Снизить до 5: (2 − δ)·10 = 20 − 10δ.</li>
+        <li>Разница 8 − 6δ. При δ меньше 1 это больше 0. Снижать выгодно всегда.</li>
+      </ol>
+      <p class="answer"><b>Ответ:</b> при любом δ фирме выгодно сбить цену до 5.</p>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+
+    <section class="quest" data-q="B4-c">
+      <div class="q-head"><span class="q-tag">(c)</span><span class="q-pts">10 очков</span><h3>Все равновесия для любого δ</h3></div>
+      <ol class="moves">
+        <li>(4, 4): делим (1 − δ)·6 &gt; 0, снижение до 3 — убыток. Равновесие всегда.</li>
+        <li>(5, 5): делим 10 − 5δ, снижение до 4 даёт 12 − 12δ. Равновесие, если 10 − 5δ ≥ 12 − 12δ → δ ≥ 2/7.</li>
+        <li>6 и выше: снижать выгодно.</li>
+      </ol>
+      <p class="answer"><b>Ответ:</b> (4, 4) всегда. (5, 5) — когда δ ≥ 2/7.</p>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+  </div>
+</details>
+
+<!-- ============ B.5 ============ -->
+<details class="level" data-level="B5">
+  <summary><span class="lvl">B.5</span><h2>Курно, товары немного разные</h2><span class="got" data-got></span></summary>
+  <div class="lvl-body">
+    <div class="story"><p>У каждой фирмы своя цена: p<sub>1</sub> = 11 − q<sub>1</sub> − Q. Свой товар снижает твою цену сильнее, чем чужой. Издержки 1 за штуку.</p></div>
+
+    <section class="quest" data-q="B5-a">
+      <div class="q-head"><span class="q-tag">(a)</span><span class="q-pts">10 очков</span><h3>Лучшие ответы</h3></div>
+      <ol class="moves">
+        <li>Раскрой Q: p<sub>1</sub> = 11 − 2q<sub>1</sub> − q<sub>2</sub>.</li>
+        <li>Очки фирмы 1: (11 − 2q<sub>1</sub> − q<sub>2</sub> − 1)·q<sub>1</sub> = (10 − 2q<sub>1</sub> − q<sub>2</sub>)·q<sub>1</sub>.</li>
+        <li>Производная: 10 − 4q<sub>1</sub> − q<sub>2</sub> = 0 → q<sub>1</sub> = (10 − q<sub>2</sub>)/4.</li>
+      </ol>
+      <p class="answer"><b>Ответ:</b> q<sub>1</sub> = (10 − q<sub>2</sub>)/4, q<sub>2</sub> = (10 − q<sub>1</sub>)/4.</p>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+
+    <section class="quest" data-q="B5-b">
+      <div class="q-head"><span class="q-tag">(b)</span><span class="q-pts">10 очков</span><h3>График</h3></div>
+      <ol class="moves">
+        <li>Оси q<sub>1</sub> вправо, q<sub>2</sub> вверх.</li>
+        <li>BR<sub>1</sub>: через (2,5; 0) и (0; 10).</li>
+        <li>BR<sub>2</sub>: через (0; 2,5) и (10; 0).</li>
+        <li>Пересекаются в (2; 2).</li>
+      </ol>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+
+    <section class="quest" data-q="B5-c">
+      <div class="q-head"><span class="q-tag">(c)</span><span class="q-pts">10 очков</span><h3>Равновесие</h3></div>
+      <ol class="moves">
+        <li>Фирмы одинаковые, значит q<sub>1</sub> = q<sub>2</sub> = q. q = (10 − q)/4 → 5q = 10 → q = 2.</li>
+        <li>Цена: 11 − 4 − 2 = 5. Очки: (5 − 1)·2 = 8.</li>
+      </ol>
+      <p class="answer"><b>Ответ:</b> по 2 штуки, цены 5, прибыль по 8.</p>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+  </div>
+</details>
+
+<!-- ============ B.6 ============ -->
+<details class="level" data-level="B6">
+  <summary><span class="lvl">B.6</span><h2>Бертран, товары немного разные</h2><span class="got" data-got></span></summary>
+  <div class="lvl-body">
+    <div class="story"><p>Ход — цена. Спрос фирмы 1: 10 − p<sub>1</sub> + (p<sub>2</sub> − p<sub>1</sub>). Если соперник дороже, к тебе приходит больше людей. Издержки 4 за штуку.</p></div>
+
+    <section class="quest" data-q="B6-a">
+      <div class="q-head"><span class="q-tag">(a)</span><span class="q-pts">10 очков</span><h3>Лучшие ответы</h3></div>
+      <ol class="moves">
+        <li>Упрости спрос: 10 − 2p<sub>1</sub> + p<sub>2</sub>.</li>
+        <li>Очки: (p<sub>1</sub> − 4)(10 − 2p<sub>1</sub> + p<sub>2</sub>).</li>
+        <li>Производная по p<sub>1</sub>: (10 − 2p<sub>1</sub> + p<sub>2</sub>) − 2(p<sub>1</sub> − 4) = 18 − 4p<sub>1</sub> + p<sub>2</sub> = 0.</li>
+      </ol>
+      <p class="answer"><b>Ответ:</b> p<sub>1</sub> = (18 + p<sub>2</sub>)/4, p<sub>2</sub> = (18 + p<sub>1</sub>)/4.</p>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+
+    <section class="quest" data-q="B6-b">
+      <div class="q-head"><span class="q-tag">(b)</span><span class="q-pts">10 очков</span><h3>График</h3></div>
+      <ol class="moves">
+        <li>Оси p<sub>1</sub> вправо, p<sub>2</sub> вверх.</li>
+        <li>BR<sub>1</sub> начинается на оси p<sub>1</sub> в точке 4,5 и круто идёт вверх.</li>
+        <li>BR<sub>2</sub> начинается на оси p<sub>2</sub> в точке 4,5 и полого идёт вправо.</li>
+        <li>Обе <b>растут</b>: соперник дороже — и тебе можно дороже. Пересечение (6; 6).</li>
+      </ol>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+
+    <section class="quest" data-q="B6-c">
+      <div class="q-head"><span class="q-tag">(c)</span><span class="q-pts">10 очков</span><h3>Равновесие</h3></div>
+      <ol class="moves">
+        <li>p = (18 + p)/4 → 3p = 18 → p = 6.</li>
+        <li>Спрос: 10 − 12 + 6 = 4. Очки: (6 − 4)·4 = 8.</li>
+      </ol>
+      <p class="answer"><b>Ответ:</b> цены 6, по 4 штуки, прибыль по 8.</p>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+  </div>
+</details>
+
+<!-- ============ B.7 ============ -->
+<details class="level" data-level="B7">
+  <summary><span class="lvl">B.7</span><h2>Штакельберг: лидер ходит первым</h2><span class="got" data-got></span></summary>
+  <div class="lvl-body">
+    <div class="story">
+      <p>Фирма 1 выбирает количество первой. Фирма 2 видит и отвечает. Спрос 12 − p, у фирмы 1 издержек нет, у фирмы 2 — c за штуку.</p>
+      <p>Фирма 1 умная: она заранее знает ответ фирмы 2 и учитывает его в своих очках.</p>
+    </div>
+
+    <section class="quest" data-q="B7-a">
+      <div class="q-head"><span class="q-tag">(a)</span><span class="q-pts">10 очков</span><h3>Лучший ответ фирмы 2</h3></div>
+      <ol class="moves">
+        <li>Очки фирмы 2: (12 − q<sub>1</sub> − q<sub>2</sub> − c)·q<sub>2</sub>.</li>
+        <li>Производная: 12 − q<sub>1</sub> − 2q<sub>2</sub> − c = 0 → q<sub>2</sub> = (12 − c − q<sub>1</sub>)/2.</li>
+        <li>Если q<sub>1</sub> ≥ 12 − c, выходит 0 или меньше — фирма 2 ничего не делает.</li>
+      </ol>
+      <p class="answer"><b>Ответ:</b> q<sub>2</sub> = (12 − c − q<sub>1</sub>)/2 при q<sub>1</sub> &lt; 12 − c, иначе 0.</p>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+
+    <section class="quest" data-q="B7-b">
+      <div class="q-head"><span class="q-tag">(b)</span><span class="q-pts">10 очков</span><h3>c = 5</h3></div>
+      <ol class="moves">
+        <li>Фирма 2 отвечает (7 − q<sub>1</sub>)/2, если q<sub>1</sub> меньше 7.</li>
+        <li>Если q<sub>1</sub> &lt; 7: очки фирмы 1 = (12 − q<sub>1</sub> − (7 − q<sub>1</sub>)/2)·q<sub>1</sub> = (17 − q<sub>1</sub>)·q<sub>1</sub>/2. Вершина в 8,5 — это больше 7. Значит до 7 очки только растут.</li>
+        <li>Если q<sub>1</sub> ≥ 7: фирма 2 молчит, очки (12 − q<sub>1</sub>)·q<sub>1</sub>. Вершина в 6 — это меньше 7. Значит после 7 очки только падают.</li>
+        <li>Лучшее место — ровно 7. Цена 5, очки 35.</li>
+      </ol>
+      <p class="answer"><b>Ответ:</b> q<sub>1</sub> = 7, фирма 2 выпускает 0, прибыль лидера 35.</p>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+
+    <section class="quest" data-q="B7-c">
+      <div class="q-head"><span class="q-tag">(c)</span><span class="q-pts">10 очков</span><h3>Любое c</h3></div>
+      <ol class="moves">
+        <li>Делаем то же, но с буквой. Вершина левой части: (12 + c)/2. Она внутри, если (12 + c)/2 &lt; 12 − c → c &lt; 4.</li>
+        <li>Вершина правой части 6. Она внутри, если 6 ≥ 12 − c → c ≥ 6.</li>
+        <li>Между 4 и 6 лучший выбор — граница 12 − c.</li>
+      </ol>
+      <p class="answer"><b>Ответ:</b> c &lt; 4: q<sub>1</sub> = 6 + c/2. От 4 до 6: q<sub>1</sub> = 12 − c (фирма 2 молчит). c ≥ 6: q<sub>1</sub> = 6.</p>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+  </div>
+</details>
+
+<!-- ============ B.8 ============ -->
+<details class="level" data-level="B8">
+  <summary><span class="lvl">B.8</span><h2>Не пустить конкурента</h2><span class="got" data-got></span></summary>
+  <div class="lvl-body">
+    <div class="story">
+      <p>Как B.7, но у фирмы 2 нет издержек на штуку, зато <b>вход стоит F</b>. Цена 12 − Q. Если фирме 2 всё равно, она не входит.</p>
+    </div>
+
+    <section class="quest" data-q="B8-a">
+      <div class="q-head"><span class="q-tag">(a)</span><span class="q-pts">10 очков</span><h3>Лучший ответ фирмы 2</h3></div>
+      <ol class="moves">
+        <li>Если входит: q<sub>2</sub> = (12 − q<sub>1</sub>)/2, очки ((12 − q<sub>1</sub>)/2)² − F.</li>
+        <li>Входит, если это больше 0: (12 − q<sub>1</sub>)/2 &gt; √F → q<sub>1</sub> &lt; 12 − 2√F.</li>
+      </ol>
+      <p class="answer"><b>Ответ:</b> q<sub>2</sub> = (12 − q<sub>1</sub>)/2 при q<sub>1</sub> &lt; 12 − 2√F, иначе 0.</p>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+
+    <section class="quest" data-q="B8-b">
+      <div class="q-head"><span class="q-tag">(b)</span><span class="q-pts">10 очков</span><h3>F = 0</h3></div>
+      <ol class="moves">
+        <li>Фирма 2 входит всегда. Очки лидера: (12 − q<sub>1</sub> − (12 − q<sub>1</sub>)/2)·q<sub>1</sub> = (12 − q<sub>1</sub>)·q<sub>1</sub>/2.</li>
+        <li>Вершина: q<sub>1</sub> = 6. Тогда q<sub>2</sub> = 3, цена 3.</li>
+      </ol>
+      <p class="answer"><b>Ответ:</b> q<sub>1</sub> = 6, q<sub>2</sub> = 3; прибыли 18 и 9.</p>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+
+    <section class="quest" data-q="B8-c">
+      <div class="q-head"><span class="q-tag">(c)</span><span class="q-pts">10 очков</span><h3>F = 4</h3></div>
+      <ol class="moves">
+        <li>Порог: 12 − 2·2 = 8. Если лидер выпустит 8 и больше, фирма 2 не войдёт.</li>
+        <li>Вариант «пустить»: q<sub>1</sub> = 6, очки 18.</li>
+        <li>Вариант «не пустить»: q<sub>1</sub> = 8, цена 4, очки 32.</li>
+        <li>32 больше 18. Лидер выпускает 8.</li>
+      </ol>
+      <p class="answer"><b>Ответ:</b> q<sub>1</sub> = 8, фирма 2 не входит; прибыли 32 и 0.</p>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+  </div>
+</details>
+
+<!-- ============ B.9 ============ -->
+<details class="level" data-level="B9">
+  <summary><span class="lvl">B.9</span><h2>Хотеллинг: мороженое на улице</h2><span class="got" data-got></span></summary>
+  <div class="lvl-body">
+    <div class="story">
+      <p>Улица длиной 1 км, люди живут равномерно. Киоск 1 на левом краю, киоск 2 на правом. Дорога стоит 20 рублей за км.</p>
+      <p>Человек идёт туда, где «цена + дорога» меньше. Ход киоска — цена. Киоск 1 ставит цену первым.</p>
+    </div>
+
+    <section class="quest" data-q="B9-a">
+      <div class="q-head"><span class="q-tag">(a)</span><span class="q-pts">10 очков</span><h3>Кто куда идёт</h3></div>
+      <ol class="moves">
+        <li>Человек в точке x: к киоску 1 платит p<sub>1</sub> + 20x, к киоску 2 платит p<sub>2</sub> + 20(1 − x).</li>
+        <li>Безразличный: p<sub>1</sub> + 20x = p<sub>2</sub> + 20 − 20x → x̂ = 1/2 + (p<sub>2</sub> − p<sub>1</sub>)/40.</li>
+        <li>Все левее идут к киоску 1. Оба что-то продают, если x̂ между 0 и 1: |p<sub>2</sub> − p<sub>1</sub>| &lt; 20.</li>
+      </ol>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+
+    <section class="quest" data-q="B9-b">
+      <div class="q-head"><span class="q-tag">(b)</span><span class="q-pts">10 очков</span><h3>Ответ киоска 2 и очки киоска 1</h3></div>
+      <ol class="moves">
+        <li>Очки киоска 2: (p<sub>2</sub> − c)·(1 − x̂) = (p<sub>2</sub> − c)(20 + p<sub>1</sub> − p<sub>2</sub>)/40.</li>
+        <li>Производная = 0 → p<sub>2</sub> = (20 + p<sub>1</sub> + c)/2.</li>
+        <li>Подставь в x̂: x̂ = (60 + c − p<sub>1</sub>)/80. Очки киоска 1: (p<sub>1</sub> − c)(60 + c − p<sub>1</sub>)/80.</li>
+      </ol>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+
+    <section class="quest" data-q="B9-c">
+      <div class="q-head"><span class="q-tag">(c)</span><span class="q-pts">10 очков</span><h3>Цены и кто богаче</h3></div>
+      <ol class="moves">
+        <li>Производная очков киоска 1: 60 + c − 2p<sub>1</sub> + c = 0 → p<sub>1</sub> = c + 30.</li>
+        <li>Киоск 2: p<sub>2</sub> = (20 + c + 30 + c)/2 = c + 25. x̂ = 3/8.</li>
+        <li>Очки: киоск 1: 30·3/8 = 11,25. Киоск 2: 25·5/8 = 15,6.</li>
+      </ol>
+      <p class="answer"><b>Ответ:</b> p<sub>1</sub> = c + 30, p<sub>2</sub> = c + 25. Больше получает второй: он чуть дешевле и забирает большую часть улицы.</p>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+  </div>
+</details>
+
+<!-- ============ B.10 ============ -->
+<details class="level" data-level="B10">
+  <summary><span class="lvl">B.10</span><h2>Мороженое в горах</h2><span class="got" data-got></span></summary>
+  <div class="lvl-body">
+    <div class="story">
+      <p>Киоск 1 внизу горы, киоск 2 наверху. Вниз идти бесплатно. Вверх — 3 рубля за км. Цены ставят одновременно.</p>
+    </div>
+
+    <section class="quest" data-q="B10-a">
+      <div class="q-head"><span class="q-tag">(a)</span><span class="q-pts">10 очков</span><h3>Кто куда идёт</h3></div>
+      <ol class="moves">
+        <li>Человек в x: к киоску 1 (вниз) платит только p<sub>1</sub>. К киоску 2 (вверх 1 − x км) платит p<sub>2</sub> + 3(1 − x).</li>
+        <li>Безразличный: p<sub>1</sub> = p<sub>2</sub> + 3(1 − x) → x̂ = 1 − (p<sub>1</sub> − p<sub>2</sub>)/3.</li>
+        <li>Оба продают, если 0 &lt; p<sub>1</sub> − p<sub>2</sub> &lt; 3: верхний киоск должен быть дешевле.</li>
+      </ol>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+
+    <section class="quest" data-q="B10-b">
+      <div class="q-head"><span class="q-tag">(b)</span><span class="q-pts">10 очков</span><h3>Лучшие ответы</h3></div>
+      <ol class="moves">
+        <li>Киоск 1: очки (p<sub>1</sub> − c)(3 − p<sub>1</sub> + p<sub>2</sub>)/3. Производная → p<sub>1</sub> = (3 + p<sub>2</sub> + c)/2.</li>
+        <li>Киоск 2: очки (p<sub>2</sub> − c)(p<sub>1</sub> − p<sub>2</sub>)/3. Производная → p<sub>2</sub> = (p<sub>1</sub> + c)/2.</li>
+      </ol>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+
+    <section class="quest" data-q="B10-c">
+      <div class="q-head"><span class="q-tag">(c)</span><span class="q-pts">10 очков</span><h3>Равновесие</h3></div>
+      <ol class="moves">
+        <li>Подставь p<sub>2</sub> в p<sub>1</sub>: 4p<sub>1</sub> = 6 + 2c + p<sub>1</sub> + c → p<sub>1</sub> = c + 2.</li>
+        <li>p<sub>2</sub> = (c + 2 + c)/2 = c + 1. x̂ = 2/3.</li>
+        <li>Очки: киоск 1: 2·2/3 = 4/3. Киоск 2: 1·1/3 = 1/3.</li>
+      </ol>
+      <p class="answer"><b>Ответ:</b> p<sub>1</sub> = c + 2, p<sub>2</sub> = c + 1; прибыли 4/3 и 1/3.</p>
+      <button class="claim" type="button">Забрать 10 очков</button>
+    </section>
+  </div>
+</details>
+
+<div class="box">
+  <h2>Перед сном: 4 правила, которые стоят больше всего очков</h2>
+  <ol>
+    <li>Таблица — подчёркивай лучшие ответы, клетка с двумя подчёркиваниями = равновесие.</li>
+    <li>Ход-число — производная своих очков по своему ходу = 0.</li>
+    <li>Ходят по очереди — решай с конца.</li>
+    <li>Всегда пиши шаги. Даже если ответ не вышел, за шаги дают часть из 10 очков.</li>
+  </ol>
+</div>
+
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  var KEY='micro2-game-v1', SKEY='micro2-game-size', got={}, size=19;
+  try{ got=JSON.parse(localStorage.getItem(KEY)||'{}')||{}; }catch(e){ got={}; }
+  try{ var s=parseInt(localStorage.getItem(SKEY),10); if(s>=15&&s<=27) size=s; }catch(e){}
+  var quests=[].slice.call(document.querySelectorAll('.quest[data-q]'));
+  var total=quests.length*10;
+  var ranks=[[0,'новичок. Начни с уровня 0.'],[60,'знаешь правила игры.'],[150,'уверенно читаешь таблицы.'],[300,'половина пути пройдена.'],[450,'почти мастер.'],[600,'мастер теории игр.']];
+  function save(){ try{ localStorage.setItem(KEY,JSON.stringify(got)); }catch(e){} }
+  function render(){
+    var n=0;
+    quests.forEach(function(q){
+      var on=!!got[q.dataset.q]; if(on) n+=10;
+      q.classList.toggle('claimed',on);
+      var b=q.querySelector('.claim'); b.setAttribute('aria-pressed',on?'true':'false'); b.textContent=on?'Очки получены ✓':'Забрать 10 очков';
+    });
+    document.querySelectorAll('details.level').forEach(function(d){
+      var qs=[].slice.call(d.querySelectorAll('.quest[data-q]')), k=qs.filter(function(q){return got[q.dataset.q];}).length;
+      d.querySelector('[data-got]').textContent=(k*10)+' / '+(qs.length*10);
+      d.classList.toggle('done',qs.length>0&&k===qs.length);
+    });
+    document.getElementById('score').textContent=n+' / '+total;
+    document.getElementById('fill').style.width=(n/total*100)+'%';
+    var r=ranks[0][1]; ranks.forEach(function(x){ if(n>=x[0]) r=x[1]; });
+    document.getElementById('rank').textContent='Ранг: '+r;
+    return n;
+  }
+  var toast=document.getElementById('toast'), tt;
+  function show(msg){ toast.textContent=msg; toast.classList.add('show'); clearTimeout(tt); tt=setTimeout(function(){toast.classList.remove('show');},1400); }
+  quests.forEach(function(q){
+    q.querySelector('.claim').addEventListener('click',function(){
+      var id=q.dataset.q;
+      if(got[id]){ delete got[id]; save(); render(); return; }
+      got[id]=true; save(); var n=render(); show('+10 очков · всего '+n);
+    });
+  });
+  function applySize(){ document.documentElement.style.setProperty('--size',size+'px'); try{ localStorage.setItem(SKEY,String(size)); }catch(e){} }
+  document.getElementById('smaller').addEventListener('click',function(){ if(size>15){size-=2;applySize();} });
+  document.getElementById('bigger').addEventListener('click',function(){ if(size<27){size+=2;applySize();} });
+  applySize(); render();
+})();
+</script>
+</html>
